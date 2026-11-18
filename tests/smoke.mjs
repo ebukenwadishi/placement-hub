@@ -110,7 +110,7 @@ try {
   check('Support worker has no "Add shift" button', await page.locator('[data-sheet=shift]').count() === 0);
   check('Support worker isn’t asked to decide leave', !(await page.innerText('[data-seg="team|leave"]')).includes('to decide'));
 
-  await page.evaluate(() => { location.hash = 'evidence'; }); await page.waitForTimeout(150);
+  await page.evaluate(() => { location.hash = 'documents'; }); await page.waitForTimeout(150);
   check('Manager-only page is blocked for support workers', (await pageText(page)).includes('for managers'));
   await openSheet(page, 'medPlan'); await page.waitForTimeout(150);
   check('Support worker can’t add medication to a plan', await page.locator('.sheet').count() === 0);
@@ -165,7 +165,7 @@ try {
   check('Manager can add medication to a plan', (await pageText(page)).includes('Vitamin D'));
 
   // ---------------------------------------------------------------- every page, both roles
-  const routes = ['home', 'people', 'tasks', 'more', 'health', 'log', 'safeguarding', 'evidence', 'documents', 'team', 'repairs', 'reports', 'about', 'person-yp1', 'person-yp2', 'concern-INC-104'];
+  const routes = ['home', 'people', 'tasks', 'more', 'health', 'log', 'safeguarding', 'documents', 'team', 'repairs', 'reports', 'about', 'person-yp1', 'person-yp2', 'concern-INC-104'];
   let overflow = [];
   for (const who of ['amira', 'maya']) {
     await signOut(page); await signInAs(page, who);
@@ -719,6 +719,22 @@ try {
     await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
     await openSheet(page, 'staffNew'); await page.waitForTimeout(150);
     check('Staff (support worker): can’t add staff', await page.locator('.sheet').count() === 0);
+    await ctx.close();
+  }
+
+  // ---------------------------------------------------------------- Ofsted evidence was removed (18 Nov 2026)
+  {
+    const { ctx, page } = await signedIn('amira@placementhub.demo');
+    await goTo(page, 'more');
+    const inMore = /Ofsted evidence|Quality standards|Service checklist/i.test(await pageText(page));
+    await goTo(page, 'evidence');
+    const pageGone = !/Ofsted evidence|checks evidenced/i.test(await pageText(page));
+    await goTo(page, 'reports');
+    const inReports = /Quality standards|Service checklist/i.test(await pageText(page));
+    const saved = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('placementhub.demo')).map(k => localStorage.getItem(k)).join(''));
+    const inData = /"standards"|"checklist"/.test(saved);
+    check('Ofsted evidence is gone from the menu, its page, Reports and the saved data', !inMore && pageGone && !inReports && !inData, JSON.stringify({ inMore, pageGone, inReports, inData }));
+    check('Ofsted evidence removal: no errors', page.errors.length === 0, page.errors.join(' | '));
     await ctx.close();
   }
 

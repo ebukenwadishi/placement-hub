@@ -197,17 +197,13 @@ button.row:hover,.row-main:hover{background:#f8fafd}
 .done-row b{text-decoration:line-through;color:var(--muted)}
 .due{font-size:14px;font-weight:650;color:var(--muted);white-space:nowrap}.due.bad{color:var(--bad)}
 
-/* evidence */
+/* fold-out cards */
 .acc summary{list-style:none;display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer}
 .acc summary::-webkit-details-marker{display:none}
 .acc summary .chev{transition:transform .15s}
 .acc[open] summary .chev{transform:rotate(90deg)}
-.check-item{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-top:1px solid var(--line);font-size:15px;cursor:pointer}
-.check-item input{width:22px;height:22px;accent-color:var(--blue);flex:none;margin:1px 0 0}
 .progress{height:10px;background:#e5eaf1;border-radius:99px;overflow:hidden}
 .progress span{display:block;height:100%;background:var(--blue);border-radius:99px}
-.progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
-.progress-head b{color:var(--ink)}.progress-head span{font-size:22px;font-weight:750;color:var(--blue-d)}
 
 /* reports */
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
@@ -540,14 +536,6 @@ const seedData = () => Object.assign(shiftDates({
     { id: 's4', staffId: 'st4', home: 'Willow House', date: '2026-10-17', start: '07:30', end: '19:30' },
     { id: 's5', staffId: 'st2', home: 'Brookside House', date: '2026-10-17', start: '19:30', end: '07:30' }
   ],
-  checklist: [
-    { id: 'c1', title: 'Support plans', items: [['Plans reviewed on schedule', true], ['Young people’s views recorded', true], ['Actions have named owners', true]] },
-    { id: 'c2', title: 'Risk assessments', items: [['Recent risks reflected in plan', false], ['Manager review evidenced', true], ['Control measures recorded', true]] },
-    { id: 'c3', title: 'Missing from home', items: [['Individual response plans in place', true], ['Return discussion follow-up evidenced', false], ['Episodes logged and reviewed', true]] },
-    { id: 'c4', title: 'Accommodation & safety', items: [['Fire safety checks filed', true], ['Maintenance actions tracked', true], ['Cleanliness inspection recorded', false]] },
-    { id: 'c5', title: 'Education & pathway', items: [['Education plans updated', false], ['Progress and next steps recorded', true], ['Pathway information easy to find', true]] },
-    { id: 'c6', title: 'Leadership & staff', items: [['Supervision records up to date', true], ['Training evidence checked', false], ['Quality audits reviewed', true]] }
-  ],
   handovers: [
     { id: 'h1', date: '2026-10-16', home: 'Maple House', shift: 'Day to evening', author: 'Amira R.', summary: 'Quiet morning. Alex’s support plan review is due next week.', actions: 'Confirm Alex’s college travel. Chase the bathroom tile repair.', ack: false },
     { id: 'h2', date: '2026-10-16', home: 'Brookside House', shift: 'Night to day', author: 'Daniel O.', summary: 'Jordan’s whereabouts need following up in line with their plan. Incident recorded separately.', actions: 'Review the safeguarding record with the manager.', ack: true }
@@ -572,12 +560,6 @@ const seedData = () => Object.assign(shiftDates({
     { id: 'doc4', name: 'House safety checklist', subject: 'Maple House', version: 4, status: 'Approved', review: '2026-11-01', owner: 'Amira R.' },
     { id: 'doc5', name: 'Education & pathway plan', subject: 'Taylor M.', version: 2, status: 'Approved', review: '2026-11-03', owner: 'Maya T.' },
     { id: 'doc6', name: 'Safeguarding policy', subject: 'Organisation', version: 5, status: 'Approved', review: '2026-11-16', owner: 'Amira R.' }
-  ],
-  standards: [
-    { id: 'lead', name: 'Leadership & management', ref: 'Regulation 4', items: [{ label: 'Supervision and training records evidenced', done: true, link: 'Team & rota' }, { label: 'Quality and audit actions assigned', done: false, link: 'Tasks' }, { label: 'Workforce and continuity plan reviewed', done: true, link: 'Documents' }] },
-    { id: 'protect', name: 'Protection', ref: 'Regulation 5', items: [{ label: 'Individual risks inform day-to-day support', done: false, link: 'Risk assessments' }, { label: 'Missing episode response reviewed', done: false, link: 'Safeguarding' }, { label: 'Incident follow-up and outcomes recorded', done: true, link: 'Safeguarding' }] },
-    { id: 'accom', name: 'Accommodation', ref: 'Regulation 6', items: [{ label: 'Repairs followed through', done: true, link: 'Repairs' }, { label: 'Location assessments due for review', done: true, link: 'Documents' }, { label: 'Cleaning and safety inspections evidenced', done: false, link: 'Service checklist' }] },
-    { id: 'support', name: 'Support', ref: 'Regulation 7', items: [{ label: 'Young people’s wishes recorded and acted on', done: true, link: 'Daily notes and keywork' }, { label: 'Support plans regularly reviewed', done: false, link: 'Young people' }, { label: 'Education and pathway progress tracked', done: true, link: 'Documents' }] }
   ],
   reviews: [
     { id: 'n1', incidentId: 'INC-103', decision: 'Pending', reason: 'Manager to look at the incident, the young person’s circumstances and the reporting duties that apply.', date: '2026-10-16' }
@@ -615,7 +597,7 @@ const STORE_BASE = 'placementhub.demo.v14';
 let STORE = STORE_BASE;
 const WELCOME = 'placementhub.welcomed.v4';
 let d;
-const migrate = () => { d.archived = d.archived || []; if (!d.files) d.files = seedData().files; if (!d.staffArchived) { const s0 = seedData(); d.staffArchived = s0.staffArchived; s0.files.filter(f => f.staffId && !d.files.some(x => x.id === f.id)).forEach(f => d.files.push(f)); d.staff.forEach(x => { const o = s0.staff.find(z => z.id === x.id); if (o && !x.started) x.started = o.started; }); } d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
+const migrate = () => { d.archived = d.archived || []; if (!d.files) d.files = seedData().files; if (!d.staffArchived) { const s0 = seedData(); d.staffArchived = s0.staffArchived; s0.files.filter(f => f.staffId && !d.files.some(x => x.id === f.id)).forEach(f => d.files.push(f)); d.staff.forEach(x => { const o = s0.staff.find(z => z.id === x.id); if (o && !x.started) x.started = o.started; }); } d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); delete d.standards; delete d.checklist; };
 /* Each signed-in account gets its own copy of the sample data on this device */
 const loadData = () => { let x = null; try { const s = JSON.parse(localStorage.getItem(STORE) || 'null'); if (s && s.data && Array.isArray(s.data.young)) x = s.data; } catch (e) { /* storage unavailable */ } d = x || seedData(); migrate(); };
 loadData();
@@ -777,7 +759,7 @@ const seenWelcome = () => { try { return !!localStorage.getItem(WELCOME); } catc
 
 const ui = {
   route: 'home', sub: null,
-  tab: { health: 'meds', log: 'notes', safeguarding: 'concerns', evidence: 'standards', team: 'rota', person: 'timeline', people: 'current', staff: 'files', tasks: 'Open', repairs: 'Open', documents: 'All' },
+  tab: { health: 'meds', log: 'notes', safeguarding: 'concerns', team: 'rota', person: 'timeline', people: 'current', staff: 'files', tasks: 'Open', repairs: 'Open', documents: 'All' },
   peopleHome: 'All', peopleQ: '', taskWho: 'Mine', healthHome: null, loginEmail: '', loginError: '', forgot: false, focusPw: false, authScreen: 'signin', authError: '', authInfo: '', busy: false, signupName: '', signupRole: 'worker', verifyEmail: '', focusField: '', wantSignup: false, justSignedIn: false, lastSent: 0, incFilter: 'All', logHome: 'All',
   staffView: 'Current', rotaDate: TODAY, sheet: null, sheetData: {}, searchQ: '', openAcc: {}
 };
@@ -1046,7 +1028,7 @@ const MAIN = [['home', 'home', 'Home'], ['people', 'users', 'Young people'], ['t
 const MORE_MANAGER = [
   ['On shift', [['health', 'pill', 'Medication & appointments', 'What’s due today, and what’s coming up'], ['log', 'clipboard', 'Shift log', 'Daily notes, in & out, and handovers']]],
   ['Safety', [['safeguarding', 'shield', 'Safeguarding', 'Concerns, missing episodes and Reg 27 decisions']]],
-  ['Running the service', [['evidence', 'award', 'Ofsted evidence', 'Quality standards and service checklist'], ['documents', 'file', 'Documents', 'Plans and policies, and when they’re due for review'], ['team', 'calendar', 'Team & rota', 'Shifts, messages and leave'], ['repairs', 'tools', 'Repairs', 'Report and track house repairs'], ['reports', 'chart', 'Reports', 'Summaries and data to copy or download']]],
+  ['Running the service', [['documents', 'file', 'Documents', 'Plans and policies, and when they’re due for review'], ['team', 'calendar', 'Team & rota', 'Shifts, messages and leave'], ['repairs', 'tools', 'Repairs', 'Report and track house repairs'], ['reports', 'chart', 'Reports', 'Summaries and data to copy or download']]],
   ['Help', [['about', 'info', 'About this demo', 'What this is, and how to reset the sample data']]]
 ];
 const MORE_WORKER = [
@@ -1056,9 +1038,9 @@ const MORE_WORKER = [
   ['Help', [['about', 'info', 'About this demo', 'What this is, and how to reset the sample data']]]
 ];
 const moreGroups = () => (isWorker() ? MORE_WORKER : MORE_MANAGER);
-const MANAGER_ONLY = ['evidence', 'documents', 'reports'];
-const ROUTES = ['home', 'people', 'tasks', 'more', 'health', 'log', 'safeguarding', 'evidence', 'documents', 'team', 'repairs', 'reports', 'about'];
-const TITLES = { health: 'Medication & appointments', home: 'Home', people: 'Young people', tasks: 'Tasks', more: 'More', log: 'Shift log', safeguarding: 'Safeguarding', evidence: 'Ofsted evidence', documents: 'Documents', team: 'Team & rota', repairs: 'Repairs', reports: 'Reports', about: 'About this demo' };
+const MANAGER_ONLY = ['documents', 'reports'];
+const ROUTES = ['home', 'people', 'tasks', 'more', 'health', 'log', 'safeguarding', 'documents', 'team', 'repairs', 'reports', 'about'];
+const TITLES = { health: 'Medication & appointments', home: 'Home', people: 'Young people', tasks: 'Tasks', more: 'More', log: 'Shift log', safeguarding: 'Safeguarding', documents: 'Documents', team: 'Team & rota', repairs: 'Repairs', reports: 'Reports', about: 'About this demo' };
 const healthAlerts = () => { const sc = isWorker() && myShift() ? d.young.filter(y => y.home === myShift().home) : null; return dosesToday(sc).filter(x => !x.rec && doseState(x) === 'Overdue').length + d.appts.filter(a => (!sc || sc.some(y => y.id === a.youngId)) && apptNeedsOutcome(a)).length; };
 const badge = r => r === 'health' ? healthAlerts() : r === 'tasks' ? overdueTasks().filter(t => !isWorker() || t.owner === me().name).length : r === 'log' ? unread().length + d.young.filter(y => isLate(openMove(y))).length : r === 'safeguarding' ? (isWorker() ? 0 : pendingReviews().length) : 0;
 
@@ -1376,19 +1358,6 @@ function health() {
   return head('Medication & appointments', 'What’s due today, and what’s coming up.', t === 'meds' ? addBtn('dose', 'Record a dose') : addBtn('appt', 'Add appointment')) +
     seg('health', [['meds', 'Medication', overdue ? `${overdue} overdue` : ''], ['appts', 'Appointments', toRecord ? `${toRecord} to record` : '']]) + homeChips('healthHome') + body;
 }
-function evidence() {
-  const t = ui.tab.evidence;
-  const groups = t === 'standards'
-    ? d.standards.map(s => ({ id: 's-' + s.id, title: s.name, sub: s.ref, items: s.items.map((it, i) => ({ label: it.label, done: it.done, hint: 'Where to look: ' + it.link, key: `std|${s.id}|${i}` })) }))
-    : d.checklist.map(c => ({ id: 'c-' + c.id, title: c.title, sub: '', items: c.items.map((it, i) => ({ label: it[0], done: it[1], hint: '', key: `chk|${c.id}|${i}` })) }));
-  const all = groups.flatMap(g => g.items), done = all.filter(x => x.done).length, pct = Math.round(done / all.length * 100);
-  return head('Ofsted evidence', 'Tick off the evidence you can show for each area.', `<button class="btn secondary" data-export="${t}">${icon('download', 18)}<span class="head-btn-label">Export</span></button>`) +
-    seg('evidence', [['standards', 'Quality standards'], ['checklist', 'Service checklist']]) +
-    `<div class="card pad"><div class="progress-head"><b>${done} of ${all.length} checks evidenced</b><span>${pct}%</span></div><div class="progress"><span style="width:${pct}%"></span></div></div>` +
-    groups.map(g => { const n = g.items.filter(x => x.done).length; return `<details class="card acc" data-acc="${g.id}" ${ui.openAcc[g.id] ? 'open' : ''}><summary><span class="grow"><b>${esc(g.title)}</b><span class="sub">${g.sub ? esc(g.sub) + ' · ' : ''}${n} of ${g.items.length} done</span></span>${chip(n === g.items.length ? 'Complete' : `${g.items.length - n} to do`, n === g.items.length ? 'good' : 'warn')}<span class="chev">${icon('chev', 18)}</span></summary>${g.items.map(it => `<label class="check-item"><input type="checkbox" data-check="${it.key}" ${it.done ? 'checked' : ''}><span><b style="font-weight:600;font-size:15px">${esc(it.label)}</b>${it.hint ? `<span class="sub">${esc(it.hint)}</span>` : ''}</span></label>`).join('')}</details>`; }).join('') +
-    `<p class="small-note">A tick is a reminder that evidence exists. It isn’t an inspection grade. Regulation 32 also asks for a full quality of support review at least every six months.</p>`;
-}
-
 const docAction = x => x.status === 'Approved' ? ['Review needed', 'Reopen'] : x.status === 'Review needed' ? ['Pending approval', 'Send for approval'] : ['Approved', 'Approve'];
 const docRow = x => { const [next, label] = docAction(x); const n = daysBetween(TODAY, x.review); return `<div class="row wrap"><span class="ico ${toneOf(x.status) === 'good' ? '' : 'warn'}">${icon('file')}</span><span class="grow"><b>${esc(x.name)}</b><span class="sub">${esc(x.subject)} · v${x.version} · review ${n < 0 ? `<span class="t-bad">overdue (${fmt(x.review)})</span>` : fmt(x.review)}</span></span><span class="row-end">${chip(x.status)}${isWorker() ? '' : `<button class="btn small secondary" data-doc="${x.id}|${next}">${label}</button>`}</span></div>`; };
 function documents() {
@@ -1474,7 +1443,7 @@ function reports() {
   const bars = (rows, total) => rows.map(([k, n]) => `<div class="bar-row"><span>${esc(k)}</span><div class="progress"><span style="width:${total ? Math.round(n / total * 100) : 0}%"></span></div><b>${n}</b></div>`).join('');
   const sev = ['High', 'Medium', 'Low'].map(s => [s, d.incidents.filter(i => i.severity === s).length]);
   const byHome = HOMES.map(h => [h.replace(' House', ''), oc.filter(i => (person(i.youngId) || {}).home === h).length]);
-  const ex = [['summary', 'Summary'], ['notes', 'Daily notes'], ['medication', 'Medication records'], ['appointments', 'Appointments'], ['moves', 'In and out log'], ['tasks', 'Tasks'], ['incidents', 'Concerns and incidents'], ['missing', 'Missing register'], ['repairs', 'Repairs'], ['standards', 'Quality standards evidence'], ['checklist', 'Service checklist']];
+  const ex = [['summary', 'Summary'], ['notes', 'Daily notes'], ['medication', 'Medication records'], ['appointments', 'Appointments'], ['moves', 'In and out log'], ['tasks', 'Tasks'], ['incidents', 'Concerns and incidents'], ['missing', 'Missing register'], ['repairs', 'Repairs']];
   return head('Reports', 'A quick picture of the service, and data you can take away.') +
     `<div class="stat-grid"><div class="card stat"><b>${d.young.length}</b><span>Young people</span></div><div class="card stat"><b>${oc.length}</b><span>Open concerns</span></div><div class="card stat"><b>${done}/${d.tasks.length}</b><span>Tasks done</span></div></div>
     <div class="section-head"><h2>Concerns by severity</h2></div><div class="card pad">${bars(sev, d.incidents.length)}</div>
@@ -1492,7 +1461,7 @@ function more() {
 }
 
 function about() {
-  const ideas = [['Clearcare', 'Recording, safeguarding and regulatory reports for children’s services.', 'Clearer links from a young person’s words to incidents, actions and oversight.'], ['RoundSys', 'Care rounds, point-of-care logs, tasks and handovers.', 'The same shift-first simplicity, built for supported accommodation.'], ['Log my Care', 'Handovers and incident logging, including safeguarding.', 'Track everything that follows an incident, through to review.'], ['Nourish Care', 'Personalised plans, mobile recording and insights.', 'Keep supported-accommodation priorities front and centre.'], ['CareDocs', 'Custom support plans and assessments.', 'Add an Ofsted evidence map and document approvals.'], ['Person Centred Software', 'Mobile recording and data-led oversight.', 'Make independence goals first-class.'], ['Care Control', 'Care management, rota and staff tools.', 'Bring shifts, follow-up and accountability together.'], ['QCS', 'Policy, audit and compliance guidance.', 'Link policies to real examples of practice.'], ['Birdie', 'Scheduling and visit management.', 'Adapt scheduling to residential shifts and keywork.'], ['Microsoft SharePoint', 'Document libraries, versions and approvals.', 'Structured workflows around documents, not just storage.']];
+  const ideas = [['Clearcare', 'Recording, safeguarding and regulatory reports for children’s services.', 'Clearer links from a young person’s words to incidents, actions and oversight.'], ['RoundSys', 'Care rounds, point-of-care logs, tasks and handovers.', 'The same shift-first simplicity, built for supported accommodation.'], ['Log my Care', 'Handovers and incident logging, including safeguarding.', 'Track everything that follows an incident, through to review.'], ['Nourish Care', 'Personalised plans, mobile recording and insights.', 'Keep supported-accommodation priorities front and centre.'], ['CareDocs', 'Custom support plans and assessments.', 'Add document approvals and review dates.'], ['Person Centred Software', 'Mobile recording and data-led oversight.', 'Make independence goals first-class.'], ['Care Control', 'Care management, rota and staff tools.', 'Bring shifts, follow-up and accountability together.'], ['QCS', 'Policy, audit and compliance guidance.', 'Link policies to real examples of practice.'], ['Birdie', 'Scheduling and visit management.', 'Adapt scheduling to residential shifts and keywork.'], ['Microsoft SharePoint', 'Document libraries, versions and approvals.', 'Structured workflows around documents, not just storage.']];
   return head('About this demo') +
     `<div class="card pad"><p style="margin:0 0 10px"><b style="color:var(--ink)">Placement Hub is a prototype.</b> All young people, staff and records are made up.</p><ul style="margin:0;padding-left:20px;line-height:1.7"><li>Don’t enter real information about young people or staff.</li><li>Changes are saved in this browser on this device only.</li><li>Nothing is sent to Ofsted, the police, the council or anyone else.</li></ul>
       <div class="btn-row"><button class="btn secondary" data-sheet="welcome">Show the welcome again</button><button class="btn danger" data-sheet="reset">${icon('refresh', 18)} Reset sample data</button>${SITE_URL ? `<a class="btn secondary" href="${SITE_URL}">${icon('back', 18)} Visit the website</a>` : ''}</div>${PRIVACY_URL ? `<p class="small-note" style="margin:6px 0 0"><a class="privacy-link" style="padding:12px 0;white-space:normal" href="${PRIVACY_URL}">How the demo handles your information</a></p>` : ''}</div>
@@ -1864,8 +1833,6 @@ function buildCsv(kind) {
     incidents: ['Concerns and incidents', [['Ref', 'Date', 'Young person', 'Home', 'Type', 'Severity', 'Status', 'Summary'], ...d.incidents.map(i => [i.id, i.date, nameOf(i.youngId), (person(i.youngId) || {}).home, i.type, i.severity, i.status, i.description])]],
     missing: ['Missing register', [['Ref', 'Date', 'Young person', 'Home', 'Status', 'Summary'], ...d.incidents.filter(i => /missing/i.test(i.type)).map(i => [i.id, i.date, nameOf(i.youngId), (person(i.youngId) || {}).home, i.status, i.description])]],
     repairs: ['Repairs', [['Home', 'Area', 'Issue', 'Priority', 'Status', 'Reported'], ...d.repairs.map(r => [r.home, r.area, r.issue, r.priority, r.status, r.reported])]],
-    standards: ['Quality standards evidence', [['Standard', 'Regulation', 'Evidence check', 'Where to look', 'Evidenced'], ...d.standards.flatMap(s => s.items.map(it => [s.name, s.ref, it.label, it.link, it.done ? 'Yes' : 'No']))]],
-    checklist: ['Service checklist', [['Area', 'Check', 'Done'], ...d.checklist.flatMap(c => c.items.map(it => [c.title, it[0], it[1] ? 'Yes' : 'No']))]],
     notes: ['Daily notes', [['Date', 'Time', 'Young person', 'Mood', 'Education', 'Note', 'For next shift', 'Written by'], ...d.notes.map(n => [n.date, n.time, nameOf(n.youngId), n.mood, n.education, n.note, n.next, n.staff])]],
     moves: ['In and out log', [['Date', 'Young person', 'Out', 'Back by', 'Back', 'Where', 'Signed out by'], ...d.moves.map(m => [m.date, nameOf(m.youngId), m.out, m.backBy, m.back || 'Still out', m.where, m.staff])]],
     medication: ['Medication records', [['Date', 'Time', 'Young person', 'Medicine', 'Dose due', 'What happened', 'Recorded by', 'Note'], ...d.medLog.map(r => [r.date, r.time, nameOf(r.youngId), medName(r.medId), r.due || 'When needed', r.outcome, r.staff, r.note])]],
@@ -1938,7 +1905,7 @@ function signIn(email, password, remember) {
 }
 function shell() {
   const r = ui.route;
-  const page = isWorker() && MANAGER_ONLY.includes(r) ? managerOnly : ({ home, people, tasks, more, health, log, safeguarding, evidence, documents, team, repairs, reports, about }[r] || home);
+  const page = isWorker() && MANAGER_ONLY.includes(r) ? managerOnly : ({ home, people, tasks, more, health, log, safeguarding, documents, team, repairs, reports, about }[r] || home);
   const navItem = ([id, ic, t]) => { const n = badge(id); return `<button class="nav-item ${r === id ? 'on' : ''}" data-go="${id}" ${r === id ? 'aria-current="page"' : ''}>${icon(ic)}<span>${t}</span>${n ? `<span class="count">${n}</span>` : ''}</button>`; };
   const moreOn = !['home', 'people', 'tasks'].includes(r);
   const tab = (id, ic, t) => { const n = badge(id); return `<button class="${r === id ? 'on' : ''}" data-go="${id}" ${r === id ? 'aria-current="page"' : ''}>${icon(ic, 24)}<span>${t}</span>${n ? `<span class="count">${n}</span>` : ''}</button>`; };
@@ -2144,12 +2111,6 @@ document.addEventListener('change', e => {
     };
     img.onerror = () => { URL.revokeObjectURL(url); toast('That picture couldn’t be opened. Try a JPEG or PNG photo.'); };
     img.src = url; return;
-  }
-  if (el.dataset.check) {
-    const [kind, id, i] = el.dataset.check.split('|');
-    if (kind === 'std') { const s = d.standards.find(x => x.id === id); if (s) s.items[i].done = el.checked; }
-    else { const c = d.checklist.find(x => x.id === id); if (c) c.items[i][1] = el.checked; }
-    render(); return;
   }
   if (el.matches('[data-rota-date]') && el.value) { ui.rotaDate = el.value; render(); }
 });
