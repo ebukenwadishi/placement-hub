@@ -399,6 +399,7 @@ const dot = x => (/[.!?]$/.test(x) ? x : x + '.');
    Icons
    ================================================================ */
 const P = {
+  archive: '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/>',
   home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
   checklist: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',
@@ -478,6 +479,15 @@ const seedData = () => Object.assign(shiftDates({
       keywork: [{ date: '2026-10-11', topic: 'Education planning', note: 'Looked at options for courses starting soon.' }],
       supportPlan: { version: '4', reviewed: '2026-09-15', by: 'Amira R.', agreedOn: '2026-09-15', approvedBy: 'Amira R.', approvedOn: '2026-09-16', moveIn: '2026-01-09', legal: 'Care leaver (relevant child)', la: 'Westmoor Borough Council', socialWorker: '', pa: 'Lena O.', hours: '8 hours a week', keywork: 'Every Friday', gp: 'Willow Medical Centre', about: 'Taylor is 17 and lives at Willow House. They enjoy art and are deciding what to study next.', strengths: 'Creative and talented at art. Kind to newer residents. Keeps their room clean.', communication: 'Gets frustrated when plans change at short notice. Give clear reminders and explain changes early.', areas: [{ area: 'Living skills', status: 'On track', now: 'Keeps their room clean and does their own washing.', goal: 'Cook three meals a week from scratch.', actions: [{ what: 'Cooking session with staff on Sundays', who: 'Staff on shift', by: '2026-11-30', status: 'In progress' }] }, { area: 'Money and benefits', status: 'Some progress', now: 'Gets their leaving care allowance. Has a bank account and photo ID.', goal: 'Save up for a laptop for college.', actions: [{ what: 'Open a savings pot', who: 'Taylor with Lena O. (personal adviser)', by: '2026-11-06', status: 'Not started' }] }, { area: 'Education, training and work', status: 'Needs more support', now: 'Not in education at the moment. Interested in art courses that start in September.', goal: 'Get a place on an art course for September.', actions: [{ what: 'Look at art courses together', who: 'Amira R.', by: '2026-10-30', status: 'In progress' }, { what: 'Build an art portfolio', who: 'Taylor', by: '2027-03-31', status: 'In progress' }] }, { area: 'Health', status: 'Some progress', now: 'Manages their own hay fever tablet. Has missed two health appointments.', goal: 'Go to every planned health appointment.', actions: [{ what: 'Remind Taylor the day before and on the morning', who: 'Staff on shift', by: '', status: 'In progress' }] }, { area: 'Emotional wellbeing', status: 'Some progress', now: 'Can get very frustrated after bad news. Damaged property once (INC-102).', goal: 'Find ways to calm down that work for them.', actions: [{ what: 'Talk in keywork about what helps, and write it down', who: 'Amira R.', by: '2026-11-13', status: 'In progress' }] }, { area: 'Family and friends', status: 'On track', now: 'Speaks to their gran most days. Still has friends from their old school.', goal: 'Visit gran once a month.', actions: [{ what: 'Help plan the journey to gran’s', who: 'Amira R.', by: '2026-11-20', status: 'Not started' }] }, { area: 'Identity, culture and faith', status: 'On track', now: 'Art is a big part of who they are.', goal: 'Show their art somewhere public.', actions: [{ what: 'Ask the library about the young artists display', who: 'Taylor', by: '2026-12-01', status: 'Not started' }] }, { area: 'Keeping safe', status: 'Some progress', now: 'Medium risk. See the risk assessment.', goal: 'Manage frustration safely.', actions: [] }, { area: 'Moving on and turning 18', status: 'Some progress', now: 'Turns 18 in June. Has a personal adviser and a pathway plan.', goal: 'Choose where to live after 18.', actions: [{ what: 'Look at housing options together', who: 'Lena O. (personal adviser)', by: '2027-02-28', status: 'Not started' }] }], contacts: [{ role: 'Personal adviser', name: 'Lena O.', org: 'Westmoor Leaving Care Team' }, { role: 'GP', name: 'Dr Shah', org: 'Willow Medical Centre' }, { role: 'Gran', name: 'Contact details are in the office file', org: '' }], changes: 'Updated the education goals and added appointment reminders.' },
       riskAssessment: { version: '3', reviewed: '2026-10-06', by: 'Amira R.', next: '2026-11-30', discussedOn: '2026-10-06', approvedBy: 'Amira R.', approvedOn: '2026-10-06', summary: 'Medium risk overall. Taylor can get very frustrated when plans change or after bad news, and has missed some appointments.', protective: 'Art helps them calm down. Speaks to their gran most days. Has a good relationship with their personal adviser.', triggers: 'Bad news from family, last-minute changes, and missed appointments.', items: [{ area: 'Damage when frustrated', level: 'Medium', after: 'Low', history: 'Damaged a door when frustrated in October (INC-102). No one was hurt.', signs: 'Raised voice, pacing, or slamming doors.', plan: 'Give them space and a quiet place to calm down. Talk it through later and agree what helps next time.', yp: 'Go to their room or the garden when they feel frustration building.', tell: 'The on-call manager if anyone is at risk of getting hurt.' }, { area: 'Missing appointments', level: 'Medium', after: 'Low', history: 'Missed two health appointments since the summer.', signs: 'Forgetting dates or saying they’ll go another time.', plan: 'Remind them the day before and on the morning. Offer to go with them.', yp: 'Keep appointments in their phone calendar.', tell: 'Their keyworker, so the appointment can be rearranged.' }, { area: 'Low mood', level: 'Medium', after: 'Medium', history: 'Has felt low after difficult family news.', signs: 'Not eating, staying in bed, or stopping art.', plan: 'Check in each shift and write it in the daily note. Encourage them to talk to their personal adviser or GP.', yp: 'Tell staff or their gran when they’re feeling low.', tell: 'The on-call manager if you’re worried about how low they seem.' }], missing: { places: 'Their gran’s house, the town library, or the art shop on the High Street.', steps: [{ when: 'At 22:30', what: 'Call and message Taylor.' }, { when: 'At 23:00', what: 'Call their gran. Tell the on-call manager.' }, { when: 'At 23:30, or sooner if worried', what: 'Record a missing episode and follow the missing-from-home procedure, including telling the police.' }], onReturn: 'Welcome them back and check they’re safe and well. Offer food, a drink and a chance to talk, without telling them off. Record the time they came back and how they seemed. Tell the on-call manager. Their local authority will offer a return home interview within 72 hours.' }, changes: 'Lowered the property damage risk after a calm two months. Added appointment reminders.' } }
+  ],
+  /* files of young people who have moved on (managers only) */
+  archived: [
+    { id: 'yp5', name: 'Leah M.', initials: 'LM', portrait: { bg: '#e4eef0', skin: '#d9a07a', hair: '#3a2418', style: 'long', top: '#4f6d7a' }, dob: '2008-08-03', backBy: '22:30', home: 'Maple House', risk: 'Low', keyworker: 'Maya T.', engagement: 'Engaged', nextReview: '2026-10-30', plan: 'Current',
+      goals: ['Move into their own flat', 'Pay rent and bills on time', 'Finish their college course'],
+      keywork: [{ date: '2026-08-26', topic: 'Getting ready to move', note: 'Went through the moving-in checklist for the new flat. Leah has set up a direct debit for the rent.' }, { date: '2026-08-12', topic: 'Budgeting for a flat', note: 'Worked out a monthly budget that includes bills. Leah says they feel ready.' }],
+      supportPlan: { version: '5', reviewed: '2026-07-30', by: 'Maya T.', agreedOn: '2026-07-30', approvedBy: 'Amira R.', approvedOn: '2026-07-31', moveIn: '2025-06-02', legal: 'Care leaver (relevant child)', la: 'Northshire County Council', socialWorker: '', pa: 'Tom B.', hours: '4 hours a week', keywork: 'Every other Wednesday', gp: 'Town Surgery', about: 'Leah lived at Maple House for just over a year and moved on to their own flat soon after turning 18.', strengths: 'Organised and good with money. Kept a part-time job alongside college.', communication: 'Likes things written down so they can check later.', areas: [{ area: 'Living skills', status: 'On track', now: 'Cooks, shops and cleans on their own.', goal: 'Live in their own flat.', actions: [{ what: 'Visit the new flat together', who: 'Maya T.', by: '2026-08-20', status: 'Done' }] }, { area: 'Money and benefits', status: 'On track', now: 'Saves a little each month and has never fallen behind.', goal: 'Set up rent and bills for the new flat.', actions: [{ what: 'Set up direct debits for rent and energy', who: 'Leah with Tom B.', by: '2026-08-28', status: 'Done' }] }, { area: 'Moving on and turning 18', status: 'On track', now: 'Offered a council flat in town, with floating support.', goal: 'Move into the flat with support in place.', actions: [{ what: 'Hand over to the floating support worker', who: 'Maya T.', by: '2026-08-29', status: 'Done' }] }], contacts: [{ role: 'Personal adviser', name: 'Tom B.', org: 'Northshire leaving care team' }], changes: 'Updated for the move to their own flat.' },
+      riskAssessment: { version: '2', reviewed: '2026-07-30', by: 'Maya T.', next: '2026-10-30', discussedOn: '2026-07-30', approvedBy: 'Amira R.', approvedOn: '2026-07-31', summary: 'Low risk overall. Leah was settled and kept to agreed times.', protective: 'A part-time job, college and a close group of friends.', triggers: 'Worries about money.', items: [{ area: 'Money worries', level: 'Low', after: 'Low', history: 'Ran short of money once, soon after moving in.', signs: 'Asking to borrow money. Skipping meals.', plan: 'Check the budget together in keywork.', yp: 'Tell staff early if money is tight.', tell: 'Keyworker' }], missing: { places: 'Friends in town.', steps: [{ when: 'At their back-by time', what: 'Call and text Leah.' }], onReturn: 'Talk with them about where they were.' } },
+      left: { date: '2026-08-29', reason: 'Moved to their own tenancy', note: 'Moved into a council flat in town with floating support. Their personal adviser is Tom B.', by: 'Amira R.', on: '2026-08-29' } }
   ],
   incidents: [
     { id: 'INC-104', youngId: 'yp2', date: '2026-10-15', type: 'Missing episode', severity: 'High', status: 'Open', description: 'Returned safely. Return discussion and follow-up actions still to do.' },
@@ -577,11 +587,11 @@ const seedData = () => Object.assign(shiftDates({
 /* ================================================================
    State and saving (this browser only)
    ================================================================ */
-const STORE_BASE = 'placementhub.demo.v13';
+const STORE_BASE = 'placementhub.demo.v14';
 let STORE = STORE_BASE;
 const WELCOME = 'placementhub.welcomed.v4';
 let d;
-const migrate = () => { d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
+const migrate = () => { d.archived = d.archived || []; d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
 /* Each signed-in account gets its own copy of the sample data on this device */
 const loadData = () => { let x = null; try { const s = JSON.parse(localStorage.getItem(STORE) || 'null'); if (s && s.data && Array.isArray(s.data.young)) x = s.data; } catch (e) { /* storage unavailable */ } d = x || seedData(); migrate(); };
 loadData();
@@ -743,7 +753,7 @@ const seenWelcome = () => { try { return !!localStorage.getItem(WELCOME); } catc
 
 const ui = {
   route: 'home', sub: null,
-  tab: { health: 'meds', log: 'notes', safeguarding: 'concerns', evidence: 'standards', team: 'rota', person: 'timeline', tasks: 'Open', repairs: 'Open', documents: 'All' },
+  tab: { health: 'meds', log: 'notes', safeguarding: 'concerns', evidence: 'standards', team: 'rota', person: 'timeline', people: 'current', tasks: 'Open', repairs: 'Open', documents: 'All' },
   peopleHome: 'All', peopleQ: '', taskWho: 'Mine', healthHome: null, loginEmail: '', loginError: '', forgot: false, focusPw: false, authScreen: 'signin', authError: '', authInfo: '', busy: false, signupName: '', signupRole: 'worker', verifyEmail: '', focusField: '', wantSignup: false, justSignedIn: false, lastSent: 0, incFilter: 'All', logHome: 'All',
   rotaDate: TODAY, sheet: null, sheetData: {}, searchQ: '', openAcc: {}
 };
@@ -751,10 +761,14 @@ const ui = {
 /* ================================================================
    Helpers that read the data
    ================================================================ */
-const person = id => d.young.find(y => y.id === id);
+const person = id => d.young.find(y => y.id === id) || (d.archived || []).find(y => y.id === id);
+/* archived files belong to young people who have moved on: kept for managers to read, never on shift */
+const isArchived = y => !!(y && y.left);
+const current = id => d.young.some(y => y.id === id);
 const nameOf = id => (person(id) || {}).name || 'Unknown';
 const staffNames = () => d.staff.map(s => s.name);
-const ageOf = y => { if (!y || !y.dob) return '?'; const [a, b, c] = y.dob.split('-').map(Number), [A, B, C] = TODAY.split('-').map(Number); return A - a - ((B < b || (B === b && C < c)) ? 1 : 0); };
+const ageAt = (dob, on) => { const [a, b, c] = dob.split('-').map(Number), [A, B, C] = on.split('-').map(Number); return A - a - ((B < b || (B === b && C < c)) ? 1 : 0); };
+const ageOf = y => (!y || !y.dob ? '?' : ageAt(y.dob, TODAY));
 const turns18 = y => { if (!y || !y.dob) return null; const [a, b, c] = y.dob.split('-').map(Number); return `${a + 18}-${pad(b)}-${pad(c)}`; };
 const eighteenSoon = y => { const t = turns18(y); if (!t) return false; const n = daysBetween(TODAY, t); return n >= 0 && n <= 120; };
 const overdueTasks = () => d.tasks.filter(t => !t.done && t.due < TODAY);
@@ -784,7 +798,7 @@ const medActive = (m, date = TODAY) => (!m.from || m.from <= date) && (!m.until 
 const medName = id => (d.meds.find(m => m.id === id) || {}).name || 'Medicine';
 const medTimesText = m => m.asNeeded ? 'when needed' : m.times.length === 1 ? `at ${m.times[0]}` : 'at ' + m.times.slice(0, -1).join(', ') + ' and ' + m.times[m.times.length - 1];
 /* a day's scheduled doses (optionally just for some young people), each with its record if there is one */
-const dosesOn = (date, ys) => d.meds.filter(m => !m.asNeeded && medActive(m, date) && (!ys || ys.some(y => y.id === m.youngId)))
+const dosesOn = (date, ys) => d.meds.filter(m => !m.asNeeded && medActive(m, date) && (ys ? ys.some(y => y.id === m.youngId) : current(m.youngId)))
   .flatMap(m => m.times.map(t => ({ med: m, due: t, date, rec: d.medLog.find(r => r.medId === m.id && r.date === date && r.due === t) })))
   .sort((a, b) => a.due.localeCompare(b.due));
 const dosesToday = ys => dosesOn(TODAY, ys);
@@ -792,7 +806,7 @@ const atTime = (date, t) => { const [Y, M, D] = date.split('-').map(Number), [h,
 const hhmm = ms => { const t = new Date(ms); return `${pad(t.getHours())}:${pad(t.getMinutes())}`; };
 const HOUR = 36e5;
 const doseState = x => { const at = atTime(x.date || TODAY, x.due); return x.rec ? x.rec.outcome : Date.now() > at + HOUR ? 'Overdue' : Date.now() >= at - HOUR / 2 ? 'Due now' : 'Later'; };
-const apptsOn = (date, ys) => d.appts.filter(a => a.date === date && (!ys || ys.some(y => y.id === a.youngId))).sort((a, b) => a.time.localeCompare(b.time));
+const apptsOn = (date, ys) => d.appts.filter(a => a.date === date && (ys ? ys.some(y => y.id === a.youngId) : current(a.youngId))).sort((a, b) => a.time.localeCompare(b.time));
 const apptNeedsOutcome = a => a.status === 'Upcoming' && Date.now() > atTime(a.date, a.time) + HOUR;
 const myShift = () => (d.shift && d.shift.staff === me().name ? d.shift : null);
 
@@ -813,11 +827,11 @@ const startableHomes = () => {
 };
 function workerView(full) {
   const hs = homesSeen(), ys = full.young.filter(y => hs.includes(y.home));
-  const ids = new Set(ys.map(y => y.id)), names = new Set(ys.map(y => y.name)), allNames = new Set(full.young.map(y => y.name));
+  const ids = new Set(ys.map(y => y.id)), names = new Set(ys.map(y => y.name)), allNames = new Set([...full.young, ...(full.archived || [])].map(y => y.name));
   const byYoung = a => (a || []).filter(x => ids.has(x.youngId));
   const aboutSeen = subject => names.has(subject) || hs.includes(subject) || (!allNames.has(subject) && !HOMES.includes(subject));
   const incidents = byYoung(full.incidents), incIds = new Set(incidents.map(i => i.id));
-  return { ...full, young: ys, incidents, notes: byYoung(full.notes), moves: byYoung(full.moves),
+  return { ...full, young: ys, archived: [], incidents, notes: byYoung(full.notes), moves: byYoung(full.moves),
     meds: byYoung(full.meds), medLog: byYoung(full.medLog), appts: byYoung(full.appts),
     repairs: full.repairs.filter(r => hs.includes(r.home)), handovers: full.handovers.filter(h => hs.includes(h.home)),
     tasks: full.tasks.filter(t => aboutSeen(t.subject)), docs: (full.docs || []).filter(x => aboutSeen(x.subject)),
@@ -861,7 +875,7 @@ function shiftAgenda(ys) {
 
 const TONE = {
   good: ['On track', 'Taken', 'Taken after a prompt', 'Attended', 'Resolved', 'Current', 'Low', 'Engaged', 'Approved', 'On shift', 'Done', 'Read'],
-  warn: ['Some progress', 'Not taken', 'Due now', 'Not recorded', 'No outcome yet', 'Rearranged', 'Under review', 'Medium', 'Review due', 'Needs follow-up', 'In progress', 'Pending', 'Review needed', 'Pending approval', 'More review needed', 'To read'],
+  warn: ['Some progress', 'Not written yet', 'Not taken', 'Due now', 'Not recorded', 'No outcome yet', 'Rearranged', 'Under review', 'Medium', 'Review due', 'Needs follow-up', 'In progress', 'Pending', 'Review needed', 'Pending approval', 'More review needed', 'To read'],
   bad: ['Needs more support', 'Open', 'High', 'Overdue', 'Refused', 'Missed'],
   info: ['Reportable', 'Upcoming']
 };
@@ -885,6 +899,8 @@ const portraitSvg = p => {
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${p.bg}"/>${back}<path d="M8 66c2-13 12-20 24-20s22 7 24 20z" fill="${p.top}"/><rect x="27" y="36" width="10" height="11" rx="4" fill="${p.skin}"/><ellipse cx="32" cy="28" rx="11.5" ry="13" fill="${p.skin}"/>${front}<circle cx="27.5" cy="29" r="1.4" fill="#1d2433"/><circle cx="36.5" cy="29" r="1.4" fill="#1d2433"/><path d="M28.5 34.5q3.5 2.6 7 0" stroke="#1d2433" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>`;
 };
 const PLAN_STATUS = ['On track', 'Some progress', 'Needs more support'];
+const SUPPORT_AREAS = ['Living skills', 'Money and benefits', 'Education, training and work', 'Health', 'Emotional wellbeing', 'Family and friends', 'Identity, culture and faith', 'Keeping safe', 'Moving on and turning 18'];
+const LEAVING_REASONS = ['Moved to their own tenancy', 'Moved to another placement', 'Went back to family', 'Moved on after turning 18', 'Other'];
 const ACTION_STATUS = ['Not started', 'In progress', 'Done'];
 const LEVELS = ['High', 'Medium', 'Low'];
 const LEGAL_STATUS = ['Looked after (section 20)', 'Looked after (care order)', 'Care leaver (relevant child)', 'Homeless 16 or 17 (section 17)', 'Other'];
@@ -942,6 +958,7 @@ function attention(skipHandovers) {
   const inScope = y => !scope || (y && y.home === scope);
   const mine = y => !isWorker() || (y && y.keyworker === me().name);
   d.young.filter(inScope).forEach(y => { const m = openMove(y); if (isLate(m)) out.push({ tone: 'bad', ic: 'door', t: `${y.name} is late back`, s: `Was due back at ${m.backBy}.${m.incident ? ' ' + m.incident + ' recorded.' : ' Follow their missing-from-home plan if you can’t reach them.'}`, go: 'person-' + y.id }); });
+  if (!isWorker()) d.young.forEach(y => { const sp = (y.supportPlan || {}).version === '0', ra = (y.riskAssessment || {}).version === '0'; if (sp || ra) out.push({ tone: 'warn', ic: 'file', t: `${y.name} needs ${sp && ra ? 'a risk assessment and support plan' : ra ? 'a risk assessment' : 'a support plan'}`, s: `New at ${y.home}. Write ${sp && ra ? 'them' : 'it'} with ${y.name.split(' ')[0]}, then sign off.`, go: 'person-' + y.id }); });
   const od = overdueTasks().filter(t => !isWorker() || t.owner === me().name);
   if (od.length) out.push({ tone: 'bad', ic: 'checklist', t: `${od.length} overdue task${pl(od)}${isWorker() ? ' for you' : ''}`, s: od.slice(0, 2).map(t => t.title).join(' · '), go: 'tasks?tab=Overdue' });
   const h = unread().filter(x => !scope || x.home === scope);
@@ -950,8 +967,8 @@ function attention(skipHandovers) {
   d.young.filter(mine).forEach(y => { const n = daysBetween(TODAY, y.nextReview); if (n <= 7) out.push({ tone: n < 0 ? 'bad' : 'warn', ic: 'file', t: `${y.name}’s plan review ${n < 0 ? 'is overdue' : n === 0 ? 'is due today' : `is due in ${n} day${n === 1 ? '' : 's'}`}`, s: `Keyworker: ${y.keyworker}`, go: 'person-' + y.id }); });
   d.young.filter(y => mine(y) && eighteenSoon(y)).forEach(y => out.push({ tone: 'info', ic: 'cake', t: `${y.name} turns 18 on ${fmt(turns18(y))}`, s: 'Check their move-on and pathway plans', go: 'person-' + y.id }));
   dosesToday(d.young.filter(inScope)).filter(x => !x.rec && doseState(x) === 'Overdue').forEach(x => out.push({ tone: 'bad', ic: 'pill', t: `${nameOf(x.med.youngId)}: ${x.med.name} not recorded`, s: `Was due at ${x.due}`, go: 'health' }));
-  d.medLog.filter(r => r.date === TODAY && r.outcome === 'Refused' && inScope(person(r.youngId))).forEach(r => out.push({ tone: 'warn', ic: 'pill', t: `${nameOf(r.youngId)} refused ${medName(r.medId).toLowerCase()}`, s: `At ${r.time}. Make sure the on-call manager knows.`, go: 'health' }));
-  d.appts.filter(a => inScope(person(a.youngId)) && apptNeedsOutcome(a)).forEach(a => out.push({ tone: 'warn', ic: 'appt', t: `${nameOf(a.youngId)}: how did the ${a.type.toLowerCase()} go?`, s: `${a.date === TODAY ? 'Today' : fmt(a.date)} at ${a.time}, ${a.where}`, go: 'health?tab=appts' }));
+  d.medLog.filter(r => r.date === TODAY && r.outcome === 'Refused' && current(r.youngId) && inScope(person(r.youngId))).forEach(r => out.push({ tone: 'warn', ic: 'pill', t: `${nameOf(r.youngId)} refused ${medName(r.medId).toLowerCase()}`, s: `At ${r.time}. Make sure the on-call manager knows.`, go: 'health' }));
+  d.appts.filter(a => current(a.youngId) && inScope(person(a.youngId)) && apptNeedsOutcome(a)).forEach(a => out.push({ tone: 'warn', ic: 'appt', t: `${nameOf(a.youngId)}: how did the ${a.type.toLowerCase()} go?`, s: `${a.date === TODAY ? 'Today' : fmt(a.date)} at ${a.time}, ${a.where}`, go: 'health?tab=appts' }));
   const rp = d.repairs.filter(r => r.priority === 'High' && r.status !== 'Resolved' && (!scope || r.home === scope));
   if (rp.length) out.push({ tone: 'warn', ic: 'tools', t: `${rp.length} urgent repair${pl(rp)}`, s: rp.map(r => `${r.area}, ${r.home}`).join(' · '), go: 'repairs' });
   return out;
@@ -1059,8 +1076,15 @@ function managerHome() {
 
 function people() {
   if (ui.sub) { const y = person(ui.sub); if (y) return profile(y); }
-  const hs = homesSeen();
-  return head('Young people', hs.length > 1 ? `${d.young.length} young people in ${hs.length} homes` : `${d.young.length} young ${d.young.length === 1 ? 'person' : 'people'} at ${hs[0]}`) +
+  const hs = homesSeen(), mgr = !isWorker();
+  const top = head('Young people', hs.length > 1 ? `${d.young.length} young people in ${hs.length} homes` : `${d.young.length} young ${d.young.length === 1 ? 'person' : 'people'} at ${hs[0]}`, mgr ? addBtn('ypNew', 'Add young person') : '') +
+    (mgr ? seg('people', [['current', 'Current'], ['archived', 'Archived', (d.archived || []).length]]) : '');
+  if (mgr && ui.tab.people === 'archived') {
+    const list = (d.archived || []).slice().sort((a, b) => b.left.date.localeCompare(a.left.date));
+    return top + (list.length ? `<div class="card list">${list.map(y => `<button class="row" data-go="person-${y.id}">${avatar(y)}<span class="grow"><b>${esc(y.name)}</b><span class="sub">Left ${fmt(y.left.date, { day: 'numeric', month: 'short', year: 'numeric' })} · ${esc(y.home)}</span><span class="sub">${esc(y.left.reason)}</span></span>${chip('Archived', 'grey')}<span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>` : `<div class="card">${empty('No archived files', 'When someone moves on, archive their file from their page.')}</div>`) +
+      '<p class="small-note">Archived files are kept for managers to read. Support workers don’t see them.</p>';
+  }
+  return top +
     `<label class="search-box">${icon('search', 18)}<input type="search" placeholder="Search by name or keyworker" value="${esc(ui.peopleQ)}" data-people-q aria-label="Search young people"></label>` +
     homeChips('peopleHome') + `<div class="card list" id="peopleList">${peopleList()}</div>`;
 }
@@ -1075,7 +1099,8 @@ function peopleList() {
 }
 
 function profile(y) {
-  const t = ui.tab.person;
+  const t = ui.tab.person, arch = isArchived(y), mgr = !isWorker(), first = esc(y.name.split(' ')[0]);
+  const long = x => fmt(x, { day: 'numeric', month: 'long', year: 'numeric' });
   let body = '';
   if (t === 'timeline') {
     const items = [
@@ -1084,6 +1109,7 @@ function profile(y) {
       ...d.notes.filter(n => n.youngId === y.id).map(n => ({ date: n.date, time: n.time, ic: 'book', tone: MOOD_TONE[n.mood] || 'info', title: `Daily note: ${n.mood.toLowerCase()} day`, meta: `${n.staff} · Education: ${n.education.toLowerCase()}`, text: n.note + (n.next ? `\nFor the next shift: ${n.next}` : '') })),
       ...d.medLog.filter(r => r.youngId === y.id).map(r => ({ date: r.date, time: r.time, ic: 'pill', tone: toneOf(r.outcome), title: `Medication: ${medName(r.medId).toLowerCase()}, ${r.outcome.toLowerCase()}`, meta: r.staff, text: r.note || (r.due ? `Due at ${r.due}` : 'When needed') })),
       ...d.appts.filter(a => a.youngId === y.id && a.date <= TODAY && a.status !== 'Upcoming').map(a => ({ date: a.date, time: a.time, ic: 'appt', tone: toneOf(a.status), title: `${a.type}: ${a.status.toLowerCase()}`, meta: a.where, text: a.outcomeNote || a.note || '' })),
+      ...(arch ? [{ date: y.left.date, time: '', ic: 'archive', tone: 'grey', title: `Left: ${y.left.reason}`, meta: `File archived by ${y.left.by}`, text: y.left.note || '' }] : []),
       ...d.moves.filter(m => m.youngId === y.id).map(m => ({ date: m.date, time: m.out, ic: 'door', tone: isLate(m) ? 'bad' : 'grey', title: m.back ? `Out ${m.out} to ${m.back}` : isLate(m) ? `Late back (was due ${m.backBy})` : `Out since ${m.out}`, meta: `Signed out by ${m.staff}`, text: m.where ? `Went to: ${m.where}` : 'Signed out' }))
     ].sort((a, b) => (b.date + (b.time || '00')).localeCompare(a.date + (a.time || '00')));
     body = items.length ? `<div class="card">${items.map(it => `<div class="tl-item"><span class="ico ${it.tone}">${icon(it.ic)}</span><div class="grow"><b>${esc(it.title)}</b><span class="meta">${relDay(it.date)}${it.time ? ' · ' + esc(it.time) : ''}${it.meta ? ' · ' + esc(it.meta) : ''}</span><p>${esc(it.text)}</p>${it.go ? `<button class="link" data-go="${it.go}">Open record ${icon('chev', 16)}</button>` : ''}</div></div>`).join('')}</div>` : `<div class="card">${empty('Nothing recorded yet')}</div>`;
@@ -1092,8 +1118,8 @@ function profile(y) {
     const docs = d.docs.filter(x => x.subject === y.name);
     const planRow = (kind, ic, t, sub) => `<button class="row" data-sheet="ypPlan" data-young="${y.id}" data-kind="${kind}"><span class="ico">${icon(ic)}</span><span class="grow"><b>${t}</b><span class="sub">${sub}</span></span><span class="chev">${icon('chev', 18)}</span></button>`;
     const sp = y.supportPlan, ra = y.riskAssessment;
-    body = `<div class="card list" style="margin-top:4px">${planRow('support', 'file', 'Support plan', sp ? `Reviewed ${fmt(sp.reviewed)} · next review ${fmt(y.nextReview)}` : 'Not added yet')}${planRow('risk', 'shield', 'Risk assessment', ra ? `${esc(y.risk)} risk · next review ${fmt(ra.next)}` : 'Not added yet')}</div>
-      <div class="section-head"><h2>Goals</h2>${chip('Plan: ' + y.plan, toneOf(y.plan))}</div><div class="card"><ol class="goals">${y.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ol></div>
+    body = `<div class="card list" style="margin-top:4px">${planRow('support', 'file', 'Support plan', !sp ? 'Not added yet' : sp.version === '0' ? 'Not written yet' : `Reviewed ${fmt(sp.reviewed)} · next review ${fmt(y.nextReview)}`)}${planRow('risk', 'shield', 'Risk assessment', !ra ? 'Not added yet' : ra.version === '0' ? 'Not written yet' : `${esc(y.risk)} risk · next review ${fmt(ra.next)}`)}</div>
+      <div class="section-head"><h2>Goals</h2>${chip('Plan: ' + y.plan, toneOf(y.plan))}</div><div class="card">${(y.goals || []).length ? `<ol class="goals">${y.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ol>` : empty('No goals yet', 'They’re added with the support plan.')}</div>
       <div class="section-head"><h2>Documents</h2></div>
       <div class="card list">${docs.length ? docs.map(docRow).join('') : empty('No documents linked')}</div>`;
   }
@@ -1101,25 +1127,27 @@ function profile(y) {
     const plans = d.meds.filter(m => m.youngId === y.id && medActive(m));
     const recs = d.medLog.filter(r => r.youngId === y.id).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time)).slice(0, 6);
     const ap = d.appts.filter(a => a.youngId === y.id && (a.status === 'Upcoming' || daysBetween(a.date, TODAY) <= 28)).sort((a, b) => (a.status === 'Upcoming' ? 0 : 1) - (b.status === 'Upcoming' ? 0 : 1) || (a.date + a.time).localeCompare(b.date + b.time));
-    body = `<div class="section-head" style="margin-top:4px"><h2>Medication</h2>${isWorker() ? '' : `<button class="link" data-sheet="medPlan" data-young="${y.id}">${icon('plus', 16)} Add</button>`}</div>
+    body = `<div class="section-head" style="margin-top:4px"><h2>Medication</h2>${isWorker() || arch ? '' : `<button class="link" data-sheet="medPlan" data-young="${y.id}">${icon('plus', 16)} Add</button>`}</div>
       <div class="card list">${plans.map(planRow).join('') || empty('No medication', 'Nothing in their medication plan.')}</div>
       ${recs.length ? `<div class="section-head"><h2>Recent medication records</h2></div><div class="card list">${recs.map(r => `<div class="row"><span class="ico sm ${toneOf(r.outcome)}">${icon('pill', 18)}</span><span class="grow"><b>${esc(medName(r.medId))}: ${esc(r.outcome.toLowerCase())}</b><span class="sub">${relDay(r.date)} ${esc(r.time)} · ${esc(r.staff)}${r.note ? ' · ' + esc(r.note) : ''}</span></span></div>`).join('')}</div>` : ''}
-      <div class="section-head"><h2>Appointments</h2><button class="link" data-sheet="appt" data-young="${y.id}">${icon('plus', 16)} Add</button></div>
+      <div class="section-head"><h2>Appointments</h2>${arch ? '' : `<button class="link" data-sheet="appt" data-young="${y.id}">${icon('plus', 16)} Add</button>`}</div>
       <div class="card list">${ap.map(a => apptRow(a, true)).join('') || empty('No appointments')}</div>`;
   }
   if (t === 'details') {
     const open = d.incidents.filter(i => i.youngId === y.id && i.status !== 'Resolved').length;
-    body = `<div class="card kv">${[['Home', y.home], ['Age', `${ageOf(y)} (turns 18 on ${fmt(turns18(y), { day: 'numeric', month: 'long', year: 'numeric' })})`], ['Keyworker', y.keyworker], ['Agreed back-by time', y.backBy || '—'], ['Engagement', y.engagement], ['Support plan', y.plan], ['Next plan review', fmt(y.nextReview, { day: 'numeric', month: 'long' })], ['Risk level', y.risk], ['Open concerns', String(open)]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>
+    body = `<div class="card kv">${[...(arch ? [['Left', long(y.left.date)], ['Why', y.left.reason]] : []), ['Home', y.home], ['Moved in', y.supportPlan && y.supportPlan.moveIn ? long(y.supportPlan.moveIn) : '—'], ['Age', `${ageOf(y)} (${turns18(y) <= TODAY ? 'turned' : 'turns'} 18 on ${long(turns18(y))})`], ['Keyworker', y.keyworker], ['Agreed back-by time', y.backBy || '—'], ['Engagement', y.engagement], ['Support plan', y.plan], ['Next plan review', fmt(y.nextReview, { day: 'numeric', month: 'long' })], ['Risk level', y.risk], ['Open concerns', String(open)]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>
       <p class="small-note">Risk levels in this demo are made-up examples, not a real assessment.</p>`;
   }
-  const t18 = eighteenSoon(y) ? notice(`<span><b>Turns 18 on ${fmt(turns18(y), { day: 'numeric', month: 'long' })}</b> (in ${daysBetween(TODAY, turns18(y))} days). Plan the move to adulthood with ${esc(y.name)}, their personal adviser and the local authority.</span>`) : '';
-  return `<button class="back" data-go="people">${icon('back', 20)} Young people</button>
-    <section class="card profile-head"><div class="ph-top">${isWorker() ? avatar(y, 'lg') : `<button class="avatar-btn" data-sheet="ypPhoto" data-young="${y.id}" aria-label="Change ${esc(y.name)}’s picture">${avatar(y, 'lg')}<span class="cam" aria-hidden="true">${icon('camera', 14)}</span></button>`}<div class="grow"><h1>${esc(y.name)}</h1><span class="sub">${ageOf(y)} · ${esc(y.home)}</span></div>${chip(y.risk + ' risk')}</div>
-      <div class="where-line">${whereText(y)}</div>
-      <dl class="facts"><div><dt>Keyworker</dt><dd>${esc(y.keyworker)}</dd></div><div><dt>Back by</dt><dd>${esc(y.backBy || '—')}</dd></div><div><dt>Next review</dt><dd>${fmt(y.nextReview)}</dd></div></dl>
+  const t18 = !arch && eighteenSoon(y) ? notice(`<span><b>Turns 18 on ${fmt(turns18(y), { day: 'numeric', month: 'long' })}</b> (in ${daysBetween(TODAY, turns18(y))} days). Plan the move to adulthood with ${esc(y.name)}, their personal adviser and the local authority.</span>`) : '';
+  const archNote = arch ? `<div class="notice">${icon('archive', 18)}<div class="grow"><b>Archived file.</b> ${first} left on ${long(y.left.date)}: ${esc(y.left.reason.toLowerCase())}.${y.left.note ? ' ' + esc(y.left.note) : ''} ${esc(y.left.by)} archived the file. You can read everything here, but nothing new can be added.${mgr ? `<div class="btn-row"><button class="btn small secondary" data-restore="${y.id}">Restore to current</button></div>` : ''}</div></div>` : '';
+  const archLink = mgr && !arch ? `<div class="foot-links"><button class="link" data-sheet="ypArchive" data-young="${y.id}">${icon('archive', 16)} ${first} has moved on? Archive this file</button></div>` : '';
+  return `<button class="back" data-go="people?tab=${arch ? 'archived' : 'current'}">${icon('back', 20)} ${arch ? 'Archived files' : 'Young people'}</button>
+    <section class="card profile-head"><div class="ph-top">${isWorker() || arch ? avatar(y, 'lg') : `<button class="avatar-btn" data-sheet="ypPhoto" data-young="${y.id}" aria-label="Change ${esc(y.name)}’s picture">${avatar(y, 'lg')}<span class="cam" aria-hidden="true">${icon('camera', 14)}</span></button>`}<div class="grow"><h1>${esc(y.name)}</h1><span class="sub">${ageOf(y)} · ${esc(y.home)}</span></div>${arch ? chip('Archived', 'grey') : chip(y.risk + ' risk')}</div>
+      <div class="where-line">${arch ? `<span>${esc(y.left.reason)}</span>` : whereText(y)}</div>
+      <dl class="facts">${arch ? `<div><dt>Keyworker</dt><dd>${esc(y.keyworker)}</dd></div><div><dt>Moved in</dt><dd>${y.supportPlan && y.supportPlan.moveIn ? fmt(y.supportPlan.moveIn, { month: 'short', year: 'numeric' }) : '—'}</dd></div><div><dt>Left</dt><dd>${fmt(y.left.date, { day: 'numeric', month: 'short', year: 'numeric' })}</dd></div>` : `<div><dt>Keyworker</dt><dd>${esc(y.keyworker)}</dd></div><div><dt>Back by</dt><dd>${esc(y.backBy || '—')}</dd></div>${(y.supportPlan || {}).version === '0' ? '<div><dt>Support plan</dt><dd class="t-warn">Not written yet</dd></div>' : `<div><dt>Next review</dt><dd>${fmt(y.nextReview)}</dd></div>`}`}</dl>
       <div class="action-row two plan-btns"><button class="btn secondary" data-sheet="ypPlan" data-young="${y.id}" data-kind="support">${icon('file', 18)} Support plan</button><button class="btn secondary" data-sheet="ypPlan" data-young="${y.id}" data-kind="risk">${icon('shield', 18)} Risk assessment</button></div></section>
-    <div style="height:16px"></div>${t18}
-    ${seg('person', [['timeline', 'Timeline'], ['plan', 'Plan'], ['health', 'Health'], ['details', 'Details']])}${body}`;
+    <div style="height:16px"></div>${archNote}${t18}
+    ${seg('person', [['timeline', 'Timeline'], ['plan', 'Plan'], ['health', 'Health'], ['details', 'Details']])}${body}${archLink}`;
 }
 
 function tasks() {
@@ -1199,7 +1227,7 @@ function concern(i) {
 function health() {
   if (ui.healthHome === null) ui.healthHome = isWorker() && myShift() ? myShift().home : 'All';
   const t = ui.tab.health, ys = ui.healthHome === 'All' ? null : d.young.filter(y => y.home === ui.healthHome);
-  const inYs = id => !ys || ys.some(y => y.id === id);
+  const inYs = id => (ys ? ys.some(y => y.id === id) : current(id));
   const overdue = dosesToday(ys).filter(x => !x.rec && doseState(x) === 'Overdue').length, toRecord = d.appts.filter(a => inYs(a.youngId) && apptNeedsOutcome(a)).length;
   let body = '';
   if (t === 'meds') {
@@ -1354,6 +1382,30 @@ const SHEETS = {
         ${PHOTO_OK(y.photo) ? `<button type="button" class="btn secondary" data-photo-remove="${y.id}">Remove photo</button>` : ''}</div>` +
       notice('This demo uses made-up records. Don’t upload a photo of a real young person.', true), 'Save picture') };
   },
+  ypNew: () => ({ title: 'Add a young person', help: 'This starts their file. Next, write their risk assessment and support plan from their page.', body: form('ypNew',
+    field('Name', inp('name', 'text', '', 'required maxlength="40" autocomplete="off" placeholder="e.g. Jordan K."'), false, 'First name and the first letter of their surname.') +
+    field('Date of birth', inp('dob', 'date', '', `required max="${TODAY}"`), true) + field('Moving in on', inp('moveIn', 'date', TODAY, 'required'), true) +
+    choiceField('Which house?', 'home', HOMES.map(h => [h, h.replace(' House', '')]), HOMES[0]) +
+    field('Keyworker', sel('keyworker', staffNames(), staffNames()[0]), true) + field('Back-by time', inp('backBy', 'time', '22:00', 'required'), true) +
+    field('Legal status', sel('legal', LEGAL_STATUS, LEGAL_STATUS[0])) +
+    field('Placing authority', inp('la', 'text', '', 'maxlength="80" placeholder="e.g. Northshire County Council"'), true) + field('Social worker', inp('socialWorker', 'text', '', 'maxlength="60"'), true) +
+    choiceField('Risk level for now', 'risk', LEVELS, 'Medium') + '<p class="small-note" style="grid-column:1/-1;margin:-6px 0 0">Change it when you write their risk assessment.</p>' +
+    `<div style="grid-column:1/-1">${notice('This demo uses made-up records. Don’t add a real young person.', true)}</div>`, 'Add young person') }),
+  ypArchive: sd => {
+    const y = person(sd.young);
+    if (!y || isArchived(y)) return { title: 'Archive file', body: empty('This young person can’t be found') };
+    const first = esc(y.name.split(' ')[0]), title = `Archive ${esc(y.name)}’s file`;
+    if (openMove(y)) return { title, body: notice(`${first} is signed out right now. Sign them back in before archiving their file.`, true) + '<div class="sheet-foot"><button type="button" class="btn secondary" data-close>Close</button></div>' };
+    const n = (k, w) => k ? `${k} ${w}${k === 1 ? '' : 's'}` : '';
+    const still = [n(d.incidents.filter(i => i.youngId === y.id && i.status !== 'Resolved').length, 'open concern'), n(d.tasks.filter(t => !t.done && t.subject === y.name).length, 'open task'),
+      n(d.appts.filter(a => a.youngId === y.id && a.status === 'Upcoming').length, 'upcoming appointment'), n(d.meds.filter(m => m.youngId === y.id && medActive(m)).length, 'medication plan')].filter(Boolean);
+    return { title, help: `Use this when ${first} has moved on. Their records are kept and managers can still read them. Nothing is deleted, and you can restore the file later.`, body: form('ypArchive',
+      `<input type="hidden" name="youngId" value="${y.id}">` +
+      field('Date they left', inp('date', 'date', TODAY, `required max="${TODAY}"`)) +
+      field('Why did they leave?', sel('reason', LEAVING_REASONS, LEAVING_REASONS[0])) +
+      field('Where they went, and anything to know', area('note', 'e.g. Moved into a council flat with floating support. Their personal adviser is Tom B.', '', false)) +
+      `<div style="grid-column:1/-1">${still.length ? notice(`Still open: ${still.join(', ')}. Concerns and tasks stay open until you close them. Medication and appointments stop showing on shifts.`, true) : ''}<p class="small-note" style="margin:0">${first} won’t show on shifts, in Health or for support workers any more.</p></div>`, 'Archive file') };
+  },
   planEdit: sd => {
     const y = person(sd.young), risk = sd.kind === 'risk', part = sd.part;
     if (!y) return { title: 'Edit', body: empty('This young person can’t be found') };
@@ -1418,14 +1470,15 @@ const SHEETS = {
     const p = risk ? y.riskAssessment : y.supportPlan, first = esc(y.name.split(' ')[0]);
     if (!p) return { title: `${title}: ${esc(y.name)}`, body: empty('Not added yet', 'A manager adds this.') };
     const next = risk ? p.next : y.nextReview, overdue = next && next < TODAY;
-    const head = `<div class="card row me-card static"><span class="ico">${icon(risk ? 'shield' : 'file')}</span><span class="grow"><b>${esc(y.name)}</b><span class="chip-line">${risk ? chip(y.risk + ' risk') : chip('Plan: ' + y.plan, toneOf(y.plan))}</span><span class="sub">${esc(y.home)} · keyworker ${esc(y.keyworker)}</span><span class="sub small">Reviewed ${fmt(p.reviewed, { day: 'numeric', month: 'long', year: 'numeric' })} by ${esc(p.by)}</span><span class="sub small ${overdue ? 't-bad' : ''}">${overdue ? 'Review overdue since' : 'Next review'} ${fmt(next, { day: 'numeric', month: 'long' })}</span></span></div>`;
+    const head = `<div class="card row me-card static"><span class="ico">${icon(risk ? 'shield' : 'file')}</span><span class="grow"><b>${esc(y.name)}</b><span class="chip-line">${risk ? chip(y.risk + ' risk') : chip('Plan: ' + y.plan, toneOf(y.plan))}</span><span class="sub">${esc(y.home)} · keyworker ${esc(y.keyworker)}</span><span class="sub small">${p.reviewed ? `Reviewed ${fmt(p.reviewed, { day: 'numeric', month: 'long', year: 'numeric' })} by ${esc(p.by)}` : 'Not signed off yet'}</span>${isArchived(y) ? `<span class="sub small">Archived file · left ${fmt(y.left.date, { day: 'numeric', month: 'long', year: 'numeric' })}</span>` : p.version === '0' ? '' : `<span class="sub small ${overdue ? 't-bad' : ''}">${overdue ? 'Review overdue since' : 'Next review'} ${fmt(next, { day: 'numeric', month: 'long' })}</span>`}</span></div>`;
     const sec = (h, t) => t ? `<h3>${h}</h3><p>${esc(t)}</p>` : '';
-    const mgr = !isWorker(), kindName = risk ? 'risk' : 'support';
+    const mgr = !isWorker() && !isArchived(y), kindName = risk ? 'risk' : 'support';
+    const fresh = p.version === '0' && !p.edited ? notice(`<span><b>Not written yet.</b> ${mgr ? `Use the Edit buttons to write it with ${first}, then sign it off at the bottom.` : 'A manager writes this with them.'}</span>`) : '';
     const eb = (part, label, i) => mgr ? `<button type="button" class="btn small secondary" data-sheet="planEdit" data-young="${y.id}" data-kind="${kindName}" data-part="${part}"${i !== undefined ? ` data-i="${i}"` : ''}>${icon('pencil', 16)} ${label}</button>` : '';
     const ebs = (...b) => mgr ? `<div class="edit-btns">${b.join('')}</div>` : '';
     const edited = p.edited ? `<div class="notice warn">${icon('info', 18)}<span>Changed by ${esc(p.editedBy || 'a manager')} on ${fmt(p.editedOn)}. <b>Not signed off yet.</b>${mgr ? ' When you’ve finished, sign off a new version at the bottom.' : ''}</span></div>` : '';
     const signoff = mgr ? `<button type="button" class="btn ${p.edited ? 'primary' : 'secondary'} block signoff-btn" data-sheet="planEdit" data-young="${y.id}" data-kind="${kindName}" data-part="signoff">${icon('check', 18)} ${p.edited ? 'Sign off a new version' : 'Review and sign off'}</button>` : '';
-    const foot = `<p class="small-note plan-foot">Made-up example for the demo. ${mgr ? 'Changes are saved on this device only.' : `Only a manager can change ${risk ? 'a risk assessment' : 'a plan'}. If something has changed, tell them and write it in a daily note.`}</p>`;
+    const foot = `<p class="small-note plan-foot">Made-up example for the demo. ${isArchived(y) ? 'This file is archived, so it can’t be changed. A manager can restore it from their page.' : mgr ? 'Changes are saved on this device only.' : `Only a manager can change ${risk ? 'a risk assessment' : 'a plan'}. If something has changed, tell them and write it in a daily note.`}</p>`;
     const long = x => fmt(x, { day: 'numeric', month: 'long', year: 'numeric' });
     const kv = rows => `<div class="card kv">${rows.filter(r => r[1]).map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`;
     if (risk) {
@@ -1437,7 +1490,7 @@ const SHEETS = {
         ${it.after ? `<div class="labelled"><small>Risk level</small><span class="chip-line">Now ${chip(it.level)} With these steps ${chip(it.after)}</span></div>` : ''}${ebs(eb('risk', 'Edit this risk', i))}</div></details>`;
       const m = p.missing || {}, missingText = typeof p.missing === 'string' ? p.missing : '';
       const contacts = [['On-call manager', 'Any time, for anything you’re worried about'], ['Police', '999 if you think they’re in danger. Otherwise follow the missing-from-home procedure.'], [y.supportPlan && y.supportPlan.socialWorker ? `Social worker: ${y.supportPlan.socialWorker}` : y.supportPlan && y.supportPlan.pa ? `Personal adviser: ${y.supportPlan.pa}` : 'Social worker', 'Office hours'], ['Emergency Duty Team', 'Out of hours, for the local authority']];
-      return { title: `Risk assessment: ${esc(y.name)}`, body: `<div class="plan-doc">${head}${edited}
+      return { title: `Risk assessment: ${esc(y.name)}`, body: `<div class="plan-doc">${head}${fresh}${edited}
         ${sec('Summary', p.summary)}${sec(`What helps keep ${first} safe`, p.protective)}${sec('Things that can make it harder', p.triggers)}${ebs(eb('summary', 'Edit summary'))}
         <h3>Risks and what staff do</h3><p class="small-note" style="margin:0 0 4px">${items.length} risk${items.length === 1 ? '' : 's'}${tally ? ': ' + tally : ''}. Tap a risk to see what to do.</p>
         ${items.map(riskCard).join('')}${ebs(eb('risk', 'Add a risk', 'new'))}
@@ -1453,18 +1506,18 @@ const SHEETS = {
     const meds = d.meds.filter(m => m.youngId === y.id && medActive(m)).map(m => `${m.name}, ${m.dose} ${medTimesText(m)}`);
     const areas = p.areas || [], onTrack = areas.filter(a => a.status === 'On track').length;
     const action = a => `<div class="act"><span class="grow"><b>${esc(a.what)}</b><span class="sub">${esc(a.who)} · ${a.by ? 'by ' + fmt(a.by, { day: 'numeric', month: 'short', year: 'numeric' }) : 'ongoing'}</span></span>${chip(a.status)}</div>`;
-    const areaCard = (a, i) => `<details class="card acc" data-acc="sp-${y.id}-${i}" ${ui.openAcc['sp-' + y.id + '-' + i] ? 'open' : ''}><summary><span class="grow"><b>${esc(a.area)}</b><span class="sub">${esc(a.goal)}</span></span>${chip(a.status)}<span class="chev">${icon('chev', 18)}</span></summary>
-      <div class="acc-body"><div class="labelled"><small>Where things are now</small>${esc(a.now)}${a.area === 'Health' && meds.length ? ` Current medication: ${esc(meds.join('; '))}.` : ''}</div>
+    const areaCard = (a, i) => `<details class="card acc" data-acc="sp-${y.id}-${i}" ${ui.openAcc['sp-' + y.id + '-' + i] ? 'open' : ''}><summary><span class="grow"><b>${esc(a.area)}</b><span class="sub">${esc(a.goal || 'Not written yet')}</span></span>${chip(a.status)}<span class="chev">${icon('chev', 18)}</span></summary>
+      <div class="acc-body">${!a.now && !a.goal ? `<p class="small-note" style="margin:0">Not written yet.</p>${ebs(eb('area', 'Write this area', i))}` : `<div class="labelled"><small>Where things are now</small>${esc(a.now)}${a.area === 'Health' && meds.length ? ` Current medication: ${esc(meds.join('; '))}.` : ''}</div>
       <div class="labelled"><small>What ${first} wants to achieve</small>${esc(a.goal)}</div>
-      <div class="labelled"><small>Actions</small></div>${a.actions.length ? a.actions.map(action).join('') : '<p class="small-note" style="margin:6px 0 0">No actions needed right now.</p>'}${ebs(eb('area', 'Edit this area', i))}</div></details>`;
-    return { title: `Support plan: ${esc(y.name)}`, body: `<div class="plan-doc">${head}${edited}${ebs(eb('details', 'Edit details and goals'))}
+      <div class="labelled"><small>Actions</small></div>${a.actions.length ? a.actions.map(action).join('') : '<p class="small-note" style="margin:6px 0 0">No actions needed right now.</p>'}${ebs(eb('area', 'Edit this area', i))}`}</div></details>`;
+    return { title: `Support plan: ${esc(y.name)}`, body: `<div class="plan-doc">${head}${fresh}${edited}${ebs(eb('details', 'Edit details and goals'))}
       ${sec(`About ${first}`, p.about)}${sec('What’s going well', p.strengths)}${sec(`How to talk with ${first}`, p.communication)}
       <h3>Key information</h3>${kv([['Date of birth', `${fmt(y.dob, { day: 'numeric', month: 'long', year: 'numeric' })} (${ageOf(y)})`], ['Moved in', p.moveIn && long(p.moveIn)], ['Legal status', p.legal], ['Placing authority', p.la], ['Social worker', p.socialWorker], ['Personal adviser', p.pa], ['Keyworker', y.keyworker], ['Keywork sessions', p.keywork], ['Support hours', p.hours], ['GP', p.gp], ['Agreed back-by time', y.backBy]])}
-      <h3>${first}’s main goals</h3><div class="card"><ol class="goals">${y.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ol></div>
+      <h3>${first}’s main goals</h3><div class="card">${(y.goals || []).length ? `<ol class="goals">${y.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ol>` : empty('No goals yet')}</div>
       <h3>Areas of support</h3><p class="small-note" style="margin:0 0 4px">${onTrack} of ${areas.length} on track. Tap an area to see what’s happening and who’s doing what.</p>
       ${areas.map(areaCard).join('')}
       ${(p.contacts || []).length || mgr ? `<h3>Professionals and contacts</h3>${(p.contacts || []).length ? `<div class="card list">${p.contacts.map(c => `<div class="row"><span class="grow"><b>${esc(c.role)}: ${esc(c.name)}</b>${c.org ? `<span class="sub">${esc(c.org)}</span>` : ''}</span></div>`).join('')}</div>` : ''}${ebs(eb('contacts', 'Edit contacts'))}` : ''}
-      <h3>Review and sign-off</h3>${kv([['Version', p.version], ['Reviewed', `${long(p.reviewed)} by ${p.by}`], [`Agreed with ${y.name.split(' ')[0]}`, p.agreedOn && long(p.agreedOn)], ['Approved by', p.approvedBy && `${p.approvedBy}, ${long(p.approvedOn)}`], ['Next review', long(y.nextReview)]])}
+      <h3>Review and sign-off</h3>${kv([['Version', p.version], ['Reviewed', p.reviewed && `${long(p.reviewed)} by ${p.by}`], [`Agreed with ${y.name.split(' ')[0]}`, p.agreedOn && long(p.agreedOn)], ['Approved by', p.approvedBy && `${p.approvedBy}, ${long(p.approvedOn)}`], ['Next review', long(y.nextReview)]])}
       ${p.changes ? `<div class="labelled"><small>What changed in this version</small>${esc(p.changes)}</div>` : ''}${signoff}${foot}</div>` };
   },
   staffHome: sd => {
@@ -1576,6 +1629,7 @@ function searchResults() {
   const has = (...xs) => xs.some(x => String(x).toLowerCase().includes(q));
   const res = [
     ...d.young.filter(y => has(y.name, y.home, y.keyworker)).map(y => ['person-' + y.id, 'users', y.name, `Young person · ${y.home}`]),
+    ...(d.archived || []).filter(y => has(y.name, y.home, y.keyworker)).map(y => ['person-' + y.id, 'archive', y.name, `Archived file · left ${fmt(y.left.date)}`]),
     ...d.incidents.filter(i => has(i.id, i.type, i.description, nameOf(i.youngId))).map(i => ['concern-' + i.id, 'alert', i.type, `${i.id} · ${nameOf(i.youngId)}`]),
     ...d.tasks.filter(t => has(t.title, t.subject, t.owner)).map(t => ['tasks?tab=' + (t.done ? 'Done' : 'Open'), 'checklist', t.title, `Task · ${t.subject}`]),
     ...d.docs.filter(x => has(x.name, x.subject)).map(x => ['documents', 'file', x.name, `Document · ${x.subject}`]),
@@ -1755,7 +1809,7 @@ function toast(msg) {
   el.innerHTML = icon('check', 18) + `<span>${esc(msg)}</span>`; el.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
-const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto', 'planEdit'];
+const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto', 'planEdit', 'ypNew', 'ypArchive'];
 const openSheet = (name, data = {}) => { if (isWorker() && MANAGER_SHEETS.includes(name)) { toast('Only managers can do that.'); return; } ui.sheet = name; ui.sheetData = data; render(); };
 const closeSheet = () => { ui.sheet = null; ui.sheetData = {}; render(); };
 
@@ -1800,6 +1854,13 @@ document.addEventListener('click', e => {
     Object.assign(p, { edited: true, editedBy: me().name, editedOn: TODAY });
     Object.keys(ui.openAcc).filter(k => k.startsWith(`ra-${yid}-`)).forEach(k => delete ui.openAcc[k]);
     ui.sheet = 'ypPlan'; ui.sheetData = { young: yid, kind: 'risk' }; render(); toast(`${gone.area} removed`); return;
+  }
+  if (ds.restore) {
+    if (isWorker()) return;
+    const i = d.archived.findIndex(x => x.id === ds.restore); if (i < 0) return;
+    const y = d.archived.splice(i, 1)[0];
+    y.pastStays = [...(y.pastStays || []), y.left]; delete y.left; d.young.push(y);
+    render(); toast(`${y.name} is back on the current list. Check their house, keyworker and review dates.`); return;
   }
   if (ds.photoRemove) { if (isWorker()) return; const y = person(ds.photoRemove); if (y) { y.photo = ''; ui.sheet = null; ui.sheetData = {}; render(); toast('Photo removed. The drawn picture is back.'); } return; }
   if (ds.incNext) { const i = d.incidents.find(x => x.id === ds.incNext); if (i && i.status !== 'Resolved') { i.status = i.status === 'Open' ? 'Under review' : 'Resolved'; render(); toast(`Status changed to ${i.status.toLowerCase()}`); } return; }
@@ -1865,6 +1926,7 @@ document.addEventListener('submit', e => {
   if (f.dataset.form === 'signup') { const sv = Object.fromEntries(new FormData(f).entries()); if (authMode === 'live') liveSignUp(sv); return; }
   const v = Object.fromEntries(new FormData(f).entries());
   if (isWorker() && v.youngId && !sees(person(v.youngId))) { toast('You can only record for young people in your house.'); return; }
+  if (v.youngId && isArchived(person(v.youngId))) { toast(`${nameOf(v.youngId)}’s file is archived. A manager can restore it from their page.`); return; }
   const sd = ui.sheetData || {};
   const trim = x => String(x || '').trim();
   let msg = 'Saved', dest = null, reopen = null;
@@ -1903,7 +1965,8 @@ document.addEventListener('submit', e => {
         msg = 'Support plan details saved';
       } else if (part === 'area') {
         const a = (p.areas || [])[i]; if (!a) break;
-        Object.assign(a, { status: PLAN_STATUS.includes(v.status) ? v.status : a.status, now: trim(v.now), goal: trim(v.goal), actions: rows('a', ['what', 'who', 'by', 'status'], 'what').map(r => ({ ...r, status: ACTION_STATUS.includes(r.status) ? r.status : 'Not started' })) });
+        if (!PLAN_STATUS.includes(v.status)) { toast('Choose how it’s going.'); return; }
+        Object.assign(a, { status: v.status, now: trim(v.now), goal: trim(v.goal), actions: rows('a', ['what', 'who', 'by', 'status'], 'what').map(r => ({ ...r, status: ACTION_STATUS.includes(r.status) ? r.status : 'Not started' })) });
         ui.openAcc[`sp-${y.id}-${i}`] = true; msg = `${a.area} saved`;
       } else if (part === 'contacts') {
         p.contacts = rows('c', ['role', 'name', 'org'], 'role'); msg = 'Contacts saved';
@@ -1935,6 +1998,29 @@ document.addEventListener('submit', e => {
       if (!v.photo) { toast('Take or choose a photo first.'); return; }
       if (!PHOTO_OK(v.photo)) { toast('That picture couldn’t be saved. Try another photo.'); return; }
       y.photo = v.photo; msg = `Picture saved for ${y.name}`; dest = 'person-' + y.id; break;
+    }
+    case 'ypNew': {
+      const name = trim(v.name).replace(/\s+/g, ' ');
+      if (!name) { toast('Add their name.'); return; }
+      if (d.young.some(y => y.name.toLowerCase() === name.toLowerCase())) { toast(`There’s already a ${name}. Add another letter to tell them apart.`); return; }
+      if (!v.dob || !v.moveIn) { toast('Add their date of birth and when they move in.'); return; }
+      const age = ageAt(v.dob, v.moveIn);
+      if (age < 16 || age > 17) { toast(`They’d be ${age} when they move in. Supported accommodation here is for 16 and 17 year olds, so check the date of birth.`); return; }
+      if (!HOMES.includes(v.home)) { toast('Choose a house.'); return; }
+      const review = addDays(v.moveIn > TODAY ? v.moveIn : TODAY, 28);
+      const y = { id: uid('yp'), name, initials: initialsOf(name), dob: v.dob, backBy: v.backBy || '22:00', home: v.home, risk: LEVELS.includes(v.risk) ? v.risk : 'Medium', keyworker: v.keyworker, engagement: 'Settling in', nextReview: review, plan: 'Not written yet', goals: [], keywork: [],
+        supportPlan: { version: '0', moveIn: v.moveIn, legal: trim(v.legal), la: trim(v.la), socialWorker: trim(v.socialWorker), pa: '', hours: '', keywork: '', gp: '', about: '', strengths: '', communication: '', areas: SUPPORT_AREAS.map(area => ({ area, status: 'Not written yet', now: '', goal: '', actions: [] })), contacts: [] },
+        riskAssessment: { version: '0', next: review, items: [], missing: { places: '', steps: [], onReturn: '' } } };
+      d.young.push(y);
+      msg = `${name} added. Next, write their risk assessment and support plan.`; dest = 'person-' + y.id; break;
+    }
+    case 'ypArchive': {
+      const y = person(v.youngId); if (!y || isArchived(y)) break;
+      if (openMove(y)) { toast(`${y.name} is signed out. Sign them back in first.`); return; }
+      if (!v.date || v.date > TODAY) { toast('The leaving date can’t be in the future.'); return; }
+      y.left = { date: v.date, reason: LEAVING_REASONS.includes(v.reason) ? v.reason : 'Other', note: trim(v.note), by: me().name, on: TODAY };
+      d.young.splice(d.young.indexOf(y), 1); d.archived.unshift(y);
+      msg = `${y.name}’s file is archived. Find it under People → Archived.`; dest = 'people?tab=archived'; break;
     }
     case 'staffHome': {
       const st = d.staff.find(x => x.id === v.staffId); if (!st) break;

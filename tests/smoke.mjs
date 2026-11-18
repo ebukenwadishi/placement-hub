@@ -432,6 +432,120 @@ try {
     await ctx.close();
   }
 
+  // ---------------------------------------------------------------- managers add young people and archive files of those who've moved on
+  {
+    const { ctx, page } = await signedIn('amira@placementhub.demo');
+    const iso = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+    const yearsAgo = (y, extraMonths = 0) => { const dt = new Date(); dt.setFullYear(dt.getFullYear() - y); dt.setMonth(dt.getMonth() - extraMonths); return iso(dt); };
+    await goTo(page, 'people');
+    check('People (manager): Add button and Current / Archived tabs', await page.locator('#page [data-sheet=ypNew]').count() === 1 && await page.locator('[data-seg="people|archived"]').count() === 1);
+    await page.click('[data-seg="people|archived"]'); await page.waitForTimeout(150);
+    let t = await pageText(page);
+    check('People (manager): the Archived tab lists files of people who moved on', t.includes('Leah M.') && t.includes('Moved to their own tenancy') && !t.includes('Jordan K.'), t.slice(0, 200));
+    await page.click('[data-seg="people|current"]'); await page.waitForTimeout(150);
+    check('People (manager): archived files aren’t in the current list', !(await pageText(page)).includes('Leah M.'));
+
+    // add someone new
+    await page.click('#page [data-sheet=ypNew]'); await page.waitForTimeout(200);
+    await page.fill('form[data-form=ypNew] [name=name]', 'Robin T.');
+    await page.fill('form[data-form=ypNew] [name=dob]', yearsAgo(20));
+    await page.click('form[data-form=ypNew] button[type=submit]'); await page.waitForTimeout(200);
+    check('Add young person: refuses anyone who isn’t 16 or 17', await page.locator('form[data-form=ypNew]').count() === 1 && !(await page.innerText('body')).includes('Robin T. added'));
+    await page.fill('form[data-form=ypNew] [name=dob]', yearsAgo(16, 6));
+    await page.click('form[data-form=ypNew] input[value="Willow House"] + span');
+    await page.fill('form[data-form=ypNew] [name=la]', 'Westmoor Borough Council');
+    await page.click('form[data-form=ypNew] button[type=submit]'); await page.waitForTimeout(300);
+    t = await pageText(page);
+    check('Add young person: opens their new page', /#person-yp/.test(page.url()) && t.includes('Robin T.') && t.includes('Willow House') && /16 ·/.test(t), page.url());
+    await page.click('.profile-head [data-sheet=ypPlan][data-kind=support]'); await page.waitForTimeout(200);
+    t = await page.innerText('.sheet');
+    check('Add young person: support plan starts with nine areas to write', t.includes('Not written yet') && await page.locator('.sheet [data-part=area]').count() === 9 && t.includes('Westmoor Borough Council'));
+    await page.click('.sheet details.acc:has-text("Living skills") summary'); await page.waitForTimeout(100);
+    await page.click('.sheet details.acc:has-text("Living skills") [data-part=area]'); await page.waitForTimeout(200);
+    await page.fill('form[data-form=planEdit] [name=now]', 'Can make simple meals.');
+    await page.fill('form[data-form=planEdit] [name=goal]', 'Cook three meals a week.');
+    await page.click('form[data-form=planEdit] button[type=submit]'); await page.waitForTimeout(200);
+    check('Add young person: an area can’t be saved without saying how it’s going', await page.locator('form[data-form=planEdit]').count() === 1);
+    await page.click('form[data-form=planEdit] input[value="Some progress"] + span');
+    await page.click('form[data-form=planEdit] button[type=submit]'); await page.waitForTimeout(250);
+    check('Add young person: a manager can write the first area', (await page.innerText('.sheet')).includes('Cook three meals a week.'));
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await goTo(page, 'home');
+    check('Add young person: Home reminds the manager to write their plans', (await pageText(page)).includes('Robin T. needs a risk assessment and support plan'));
+
+    // archiving: not while they're signed out
+    await goTo(page, 'person-yp2');
+    await page.click('[data-sheet=ypArchive]'); await page.waitForTimeout(200);
+    check('Archive: not while they’re signed out', (await page.innerText('.sheet')).includes('signed out right now') && await page.locator('form[data-form=ypArchive]').count() === 0);
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+
+    // archive Sam
+    await goTo(page, 'health');
+    await page.click('[data-seg="health|appts"]'); await page.waitForTimeout(150);
+    const dentistBefore = (await pageText(page)).includes('High Street Dental');
+    await goTo(page, 'person-yp3');
+    await page.click('[data-sheet=ypArchive]'); await page.waitForTimeout(200);
+    t = await page.innerText('.sheet');
+    check('Archive: the form lists what’s still open', t.includes('1 open task') && t.includes('upcoming appointment'), t);
+    await page.selectOption('form[data-form=ypArchive] [name=reason]', 'Moved to another placement');
+    await page.fill('form[data-form=ypArchive] [name=note]', 'Moved to a placement nearer family.');
+    await page.click('form[data-form=ypArchive] button[type=submit]'); await page.waitForTimeout(300);
+    t = await pageText(page);
+    check('Archive: the file moves to the Archived tab', t.includes('Sam L.') && t.includes('Moved to another placement') && t.includes('Leah M.'), t.slice(0, 200));
+    await page.click('[data-seg="people|current"]'); await page.waitForTimeout(150);
+    check('Archive: they leave the current list', !(await pageText(page)).includes('Sam L.'));
+    await goTo(page, 'health');
+    await page.click('[data-seg="health|appts"]'); await page.waitForTimeout(150);
+    check('Archive: their appointments stop showing in Health', dentistBefore && !(await pageText(page)).includes('High Street Dental'));
+    await goTo(page, 'person-yp3');
+    t = await pageText(page);
+    check('Archive: their page is read-only with a Restore button', t.includes('Archived file') && t.includes('nearer family') && await page.locator('[data-restore]').count() === 1 && await page.locator('[data-sheet=ypArchive]').count() === 0 && await page.locator('[data-sheet=ypPhoto]').count() === 0 && await page.locator('#page [data-sheet=appt]').count() === 0);
+    await page.click('.profile-head [data-sheet=ypPlan][data-kind=support]'); await page.waitForTimeout(200);
+    check('Archive: plans can be read but not edited', (await page.innerText('.sheet')).includes('Areas of support') && await page.locator('.sheet [data-sheet=planEdit]').count() === 0);
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await openSheet(page, 'search'); await page.waitForTimeout(150);
+    await page.fill('.sheet input[type=search]', 'Leah'); await page.waitForTimeout(250);
+    check('Archive: managers can find archived files in search', (await page.innerText('.sheet')).includes('Archived file'));
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+
+    // the same manager in the support worker view (Brookside House) can't see Sam's archived file
+    await openSheet(page, 'me'); await page.waitForTimeout(150);
+    await page.click('[data-view=worker]'); await page.waitForTimeout(250);
+    await page.click('.sheet [data-close]').catch(() => {}); await page.waitForTimeout(150);
+    await goTo(page, 'people');
+    const wPeople = await pageText(page);
+    await goTo(page, 'person-yp3');
+    const wProfile = await pageText(page);
+    await goTo(page, 'tasks');
+    await page.click('[data-filter="taskWho|Everyone"]').catch(() => {}); await page.waitForTimeout(150);
+    const wTasks = await pageText(page);
+    check('Archive: support workers don’t see archived files or tasks about them', !wPeople.includes('Sam L.') && !wPeople.includes('Archived') && !wProfile.includes('Archived file') && !wTasks.includes('supported cooking'), JSON.stringify({ p: wPeople.includes('Sam L.'), f: wProfile.includes('Archived file'), t: wTasks.includes('supported cooking') }));
+    await openSheet(page, 'me'); await page.waitForTimeout(150);
+    await page.click('[data-view=manager]'); await page.waitForTimeout(250);
+    await page.click('.sheet [data-close]').catch(() => {}); await page.waitForTimeout(150);
+
+    // restore
+    await goTo(page, 'person-yp3');
+    await page.click('[data-restore]'); await page.waitForTimeout(250);
+    t = await pageText(page);
+    check('Restore: the file is current again', !t.includes('Archived file') && await page.locator('[data-sheet=ypArchive]').count() === 1);
+    await goTo(page, 'people');
+    await page.click('[data-seg="people|current"]'); await page.waitForTimeout(150);
+    check('Restore: they’re back on the current list', (await pageText(page)).includes('Sam L.'));
+    check('Add and archive: no errors', page.errors.length === 0, page.errors.join(' | '));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await signedIn('nia@placementhub.demo');
+    await goTo(page, 'people');
+    check('Add and archive: support workers get no Add button or Archived tab', await page.locator('[data-sheet=ypNew]').count() === 0 && await page.locator('[data-seg="people|archived"]').count() === 0);
+    await goTo(page, 'person-yp2');
+    check('Add and archive: support workers can’t archive a file', await page.locator('[data-sheet=ypArchive]').count() === 0);
+    await openSheet(page, 'ypNew'); await page.waitForTimeout(150);
+    check('Add and archive: support workers can’t open the add form', await page.locator('.sheet').count() === 0);
+    await ctx.close();
+  }
+
   // ---------------------------------------------------------------- welfare checks were removed (15 Nov 2026)
   {
     const { ctx, page } = await shiftAt(23, 30);
