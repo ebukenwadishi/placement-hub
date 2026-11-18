@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Placement Hub is a phone app for staff in Ofsted-registered supported accommodation for 16 and 17 year olds: daily notes, signing in and out, medication, handovers, and a clear view for managers." />
+<meta name="theme-color" content="#f5f8fc" />
+<link rel="icon" type="image/png" href="app/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet" />
+<title>Placement Hub website</title>
+<style>
+:root{
+  /* Palette: biro blue on cool white, like a staff daily log book; the warm margin line is the only warm note */
+  --paper:#f5f8fc;
+  --ink:#11233f;
+  --ink-soft:#4a5a72;
+  --biro:#1f5fbf;
+  --biro-deep:#163f88;
+  --rule:#d7e2f3;
+  --margin:#e3a59c;
+  --card:#ffffff;
+  --ok:#16794d; --ok-bg:#e6f4ec;
+  --alert:#b3261e; --alert-bg:#fdeceb;
+  --info-bg:#eaf1fc;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  /* Layout: left-aligned, one column of reading width; the log book is the single bold element, phone screens sit beside plain feature lists */
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+a{color:var(--biro)}
+:focus-visible{outline:3px solid #7aa7ea;outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:var(--display);color:var(--ink);margin:0;text-wrap:balance;letter-spacing:-.02em}
+h1{font-size:clamp(2.6rem,6.2vw,4.6rem);line-height:1.02;font-weight:800;letter-spacing:-.035em}
+h2{font-size:clamp(2rem,4vw,2.9rem);line-height:1.08;font-weight:800}
+h3{font-size:1.25rem;line-height:1.25;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+.lead{font-size:1.2rem;color:var(--ink-soft);max-width:36em}
+.section{padding:clamp(64px,9vw,112px) 0}
+.section-intro{display:grid;gap:16px;max-width:40em;margin-bottom:48px}
+.section-intro p{color:var(--ink-soft);font-size:1.1rem}
+
+/* buttons */
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:12px 24px;border-radius:14px;font:700 1.05rem/1 var(--body);text-decoration:none;border:2px solid transparent;transition:background .15s,border-color .15s}
+.btn-primary{background:var(--biro);color:#fff}
+.btn-primary:hover{background:var(--biro-deep)}
+.btn-quiet{border-color:#b9c9e2;color:var(--ink);background:#fff}
+.btn-quiet:hover{border-color:var(--biro)}
+
+/* header */
+.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid transparent}
+.top.scrolled{border-bottom-color:var(--rule)}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font:800 1.3rem/1 var(--display);letter-spacing:-.03em;color:var(--ink);text-decoration:none}
+.brand span b{color:var(--biro);font-weight:800}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--biro);display:grid;place-items:center;color:#fff}
+.top nav{display:flex;align-items:center;gap:28px}
+.top nav a:not(.btn){color:var(--ink-soft);text-decoration:none;font-weight:700;font-size:1rem}
+.top nav a:not(.btn):hover{color:var(--biro)}
+.top .btn{min-height:44px;padding:10px 18px;font-size:.98rem}
+@media (max-width:860px){.top nav a:not(.btn){display:none}}
+
+/* hero */
+.hero{padding:clamp(40px,7vw,88px) 0 clamp(56px,8vw,96px)}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:48px;align-items:start}
+@media (min-width:980px){.hero-grid{grid-template-columns:1.02fr .98fr;gap:56px}}
+.hero-copy{display:grid;gap:24px;padding-top:8px}
+.hero-copy .note{font-size:.95rem;color:var(--ink-soft)}
+
+/* the log book */
+.logbook{position:relative;background:var(--card);border:1px solid var(--rule);border-radius:20px;box-shadow:0 1px 0 #fff inset,0 24px 50px -28px #11233f40;overflow:hidden}
+.logbook::before{content:"";position:absolute;top:0;bottom:0;left:84px;width:2px;background:var(--margin)}
+.log-head{display:grid;grid-template-columns:84px 1fr auto;align-items:end;border-bottom:2px solid var(--rule)}
+.log-head span{padding:20px 14px 14px 0;text-align:right;font-weight:700;font-size:.85rem;color:var(--ink-soft)}
+.log-head div{padding:18px 20px 14px}
+.log-head h2{font-size:1.5rem;letter-spacing:-.02em}
+.log-head p{font-size:.95rem;color:var(--ink-soft)}
+.log ol{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:84px 1fr;border-bottom:1px solid var(--rule)}
+.log li:last-child{border-bottom:0}
+.log time{padding:14px 14px 14px 0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;color:var(--biro-deep);font-size:1rem}
+.log .entry{padding:13px 20px 14px;font-size:1rem;line-height:1.5}
+.tag{display:inline-block;margin-top:6px;font-size:.82rem;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--info-bg);color:var(--biro-deep)}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.tag.alert{background:var(--alert-bg);color:var(--alert)}
+.log-caption{margin-top:12px;font-size:.92rem;color:var(--ink-soft)}
+
+@media (max-width:520px){
+  .logbook::before{left:64px}
+  .log-head{grid-template-columns:64px 1fr auto}
+  .log li{grid-template-columns:64px 1fr}
+  .now-dot{left:65px}
+  .clock{font-size:1.1rem;padding-right:14px}
+  .log time{font-size:.92rem;padding-right:10px}
+  .log .entry{padding:12px 14px 13px}
+}
+
+/* phones */
+.phone{width:min(290px,100%);border-radius:42px;padding:10px;background:var(--ink);box-shadow:0 30px 60px -24px #11233f66}
+.phone img{width:100%;height:auto;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:32px;background:#fff}
+.phones{display:flex;gap:20px;align-items:flex-start;justify-content:center}
+.phones .phone:nth-child(2){margin-top:64px}
+@media (max-width:640px){.phones{gap:12px}.phones .phone{width:calc(50% - 6px);border-radius:28px;padding:6px}.phones .phone img{border-radius:22px}.phones .phone:nth-child(2){margin-top:40px}}
+
+/* feature sections */
+.split{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+@media (min-width:980px){.split{grid-template-columns:1fr 1fr;gap:72px}.split.flip>:first-child{order:2}}
+.features{list-style:none;margin:0;padding:0;display:grid;gap:0;border-top:1px solid var(--rule)}
+.features li{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.features .ico{width:44px;height:44px;border-radius:12px;background:var(--info-bg);color:var(--biro);display:grid;place-items:center}
+.features h3{margin-bottom:4px}
+.features p{color:var(--ink-soft);font-size:1.02rem}
+
+/* the band around the managers section */
+.band{background:#fff;border-block:1px solid var(--rule)}
+
+/* standards table */
+.standards{width:100%;border-collapse:collapse;font-size:1.02rem}
+.standards-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:18px}
+.standards th,.standards td{text-align:left;padding:18px 22px;vertical-align:top;border-bottom:1px solid var(--rule)}
+.standards tr:last-child td{border-bottom:0}
+.standards thead th{font-size:.9rem;color:var(--ink-soft);font-weight:700;background:#f9fbfe}
+.standards td:first-child{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--ink);white-space:nowrap}
+.standards td:nth-child(2){color:var(--biro-deep);font-weight:700;white-space:nowrap}
+.standards td:last-child{color:var(--ink-soft)}
+.fine{margin-top:20px;max-width:46em;color:var(--ink-soft);font-size:1rem}
+@media (max-width:640px){
+  .standards thead{display:none}
+  .standards,.standards tbody,.standards tr,.standards td{display:block}
+  .standards tr{padding:16px 18px;border-bottom:1px solid var(--rule)}
+  .standards tr:last-child{border-bottom:0}
+  .standards td{padding:0;border:0;white-space:normal!important}
+  .standards td:nth-child(2){font-size:.92rem;margin:2px 0 6px}
+}
+
+/* three plain points */
+.points{display:grid;grid-template-columns:1fr;gap:0;border-top:2px solid var(--ink)}
+@media (min-width:820px){.points{grid-template-columns:repeat(3,1fr)}.points>div+div{border-left:1px solid var(--rule)}}
+.points>div{padding:24px 24px 8px 0}
+@media (min-width:820px){.points>div+div{padding-left:24px}}
+@media (max-width:819px){.points>div{border-bottom:1px solid var(--rule);padding:20px 0}}
+.points h3{margin-bottom:6px}
+.points p{color:var(--ink-soft);font-size:1.02rem}
+
+/* status */
+.status-grid{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:820px){.status-grid{grid-template-columns:1fr 1fr;gap:24px}}
+.status-card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:26px 26px 18px}
+.status-card.must{border-color:#efc6c0;background:#fffafa}
+.status-card h3{margin-bottom:12px}
+.status-card ul{margin:0;padding:0;list-style:none}
+.status-card li{padding:10px 0 10px 30px;border-top:1px solid var(--rule);position:relative;color:var(--ink-soft)}
+.status-card li::before{content:"";position:absolute;left:4px;top:19px;width:10px;height:10px;border-radius:50%;border:2px solid var(--biro)}
+.status-card.must li::before{border-color:var(--alert)}
+
+/* questions */
+.faq{max-width:46em;border-top:1px solid var(--rule)}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;font:600 1.2rem/1.35 var(--display);position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";position:absolute;right:8px;top:50%;width:12px;height:12px;border-right:2.5px solid var(--biro);border-bottom:2.5px solid var(--biro);transform:translateY(-70%) rotate(45deg);transition:transform .15s}
+.faq details[open] summary::after{transform:translateY(-30%) rotate(225deg)}
+.faq details p{padding:0 0 22px;color:var(--ink-soft);max-width:40em}
+
+/* closing call */
+.closing{background:var(--biro);color:#fff;border-radius:28px;padding:clamp(36px,6vw,64px);display:grid;gap:20px;position:relative;overflow:hidden}
+.closing::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0 47px,#ffffff1f 47px 48px);pointer-events:none}
+.closing>*{position:relative}
+.closing h2{color:#fff;max-width:14em}
+.closing p{color:#dbe7fb;font-size:1.15rem;max-width:34em}
+.closing .btn-primary{background:#fff;color:var(--biro-deep)}
+.closing .btn-primary:hover{background:#eaf1fc}
+.closing .btn-quiet{background:transparent;color:#fff;border-color:#ffffff80}
+
+/* motion: the shift plays through the log book, taps land on real buttons, sections glide in */
+.screen{position:relative}
+.tap{position:absolute;left:var(--x);top:var(--y);width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#1f5fbf2e;border:2px solid #1f5fbfaa;opacity:0;pointer-events:none}
+@media (max-width:640px){.tap{width:30px;height:30px;margin:-15px 0 0 -15px}}
+.clock{display:flex;align-items:center;gap:8px;padding:18px 20px 14px 0;font:700 1.4rem/1 var(--display);font-variant-numeric:tabular-nums;color:var(--biro-deep)}
+.clock-ico .hand{transform-origin:12px 12px}
+.log li{transition:background-color .5s ease}
+.log li.now{background:#eef4fd}
+.log li.now time{color:var(--biro)}
+.now-dot{position:absolute;left:85px;top:0;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--biro);box-shadow:0 0 0 5px #1f5fbf26;transition:top .6s cubic-bezier(.3,.7,.2,1);z-index:2}
+@media (prefers-reduced-motion:no-preference){
+  .hero-copy>*{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+  .hero-copy>*:nth-child(2){animation-delay:.08s}
+  .hero-copy>*:nth-child(3){animation-delay:.16s}
+  .hero-copy>*:nth-child(4){animation-delay:.24s}
+  .logbook{animation:rise .8s .25s cubic-bezier(.2,.7,.2,1) both}
+  .clock-ico .hand{animation:spin 2.4s linear infinite}
+  .log li.now .tag{animation:pop .5s ease-out}
+  .log li.now .tag.alert{animation:pop .5s ease-out,throb 1.2s ease-in-out .5s 2}
+  .phone{animation:float 7s ease-in-out infinite}
+  .phones .phone:nth-child(2){animation-delay:-3.5s}
+  .tap{animation:tap 4.8s ease-out infinite;animation-delay:var(--d,0s)}
+  .closing::before{animation:drift 9s linear infinite}
+  .js .reveal{opacity:.4;translate:0 18px;transition:opacity .7s ease,translate .7s cubic-bezier(.2,.7,.2,1),transform .35s ease-out}
+  .js .reveal.in{opacity:1;translate:0 0}
+}
+@keyframes rise{from{opacity:.3;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:none}}
+@keyframes throb{0%,100%{box-shadow:0 0 0 0 #b3261e00}50%{box-shadow:0 0 0 6px #b3261e22}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes tap{0%{opacity:0;transform:scale(.4)}8%{opacity:1;transform:scale(.85)}20%{opacity:0;transform:scale(1.7)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes drift{from{background-position:0 0}to{background-position:0 -48px}}
+
+/* ---------- more motion ---------- */
+.top{position:sticky}
+.read-line{position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--biro);transform-origin:0 50%;transform:scaleX(var(--read,0));pointer-events:none}
+h1 .line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+h1 .line>span{display:inline-block}
+.log-progress{height:3px;background:var(--rule)}
+.log-progress span{display:block;height:100%;width:0;background:var(--biro);transition:width .6s cubic-bezier(.3,.7,.2,1)}
+.log-toast{position:absolute;left:-28px;bottom:58px;z-index:3;display:flex;align-items:center;gap:10px;max-width:min(330px,calc(100% - 20px));background:#13233a;color:#fff;border-radius:14px;padding:12px 16px;font-size:.98rem;font-weight:700;box-shadow:0 16px 36px -12px #11233f80;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .35s ease,transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.log-toast.show{opacity:1;transform:none}
+.lt-ico{width:22px;height:22px;border-radius:50%;background:#2fa36b;flex:none;display:grid;place-items:center}
+.lt-ico::before{content:"";width:9px;height:5px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:translateY(-1px) rotate(-45deg)}
+.log-toast.alert .lt-ico{background:#e2554b}
+.log-toast.alert .lt-ico::before{width:2.5px;height:9px;border:0;background:#fff;transform:none;border-radius:2px}
+@media (max-width:980px){.log-toast{left:12px;bottom:52px}}
+.ticker{overflow:hidden;border-block:1px solid var(--rule);background:#fff;padding:14px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.ticker-track{display:flex;gap:12px;width:max-content}
+.tick-chip{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;font-weight:700;font-size:.95rem;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:8px 16px}
+.tick-chip i{width:9px;height:9px;border-radius:50%;background:var(--biro)}
+.tick-chip.ok i{background:var(--ok)}.tick-chip.warn i{background:#d68d1c}.tick-chip.alert i{background:var(--alert)}
+#staff{padding-top:clamp(56px,8vw,96px)}
+.section-intro h2::after{content:"";display:block;width:72px;height:4px;border-radius:4px;background:var(--biro);margin-top:16px;transform-origin:0 50%}
+.std-tick{width:22px;height:22px;vertical-align:-4px;margin-right:10px;fill:none;stroke:var(--ok);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.btn{transition:background .15s,border-color .15s,transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px #1f5fbf99}
+.btn:active{transform:translateY(0)}
+.phones{transition:transform .35s ease-out;transform-style:preserve-3d}
+@media (prefers-reduced-motion:no-preference){
+  h1 .line>span{animation:lineUp .9s cubic-bezier(.2,.8,.2,1) both}
+  h1 .line:nth-child(2)>span{animation-delay:.12s}
+  .hero-copy>h1{animation:none}
+  .ticker-track{animation:tickerMove 48s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .hero .btn-primary{position:relative;overflow:hidden}
+  .hero .btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff59 50%,transparent 70%);transform:translateX(-130%);animation:sheen 6s 2.2s ease-in-out infinite}
+  .js .section-intro.reveal h2::after{transform:scaleX(0);transition:transform .9s .25s cubic-bezier(.2,.8,.2,1)}
+  .js .section-intro.reveal.in h2::after{transform:scaleX(1)}
+  .js .features li.reveal .ico{transform:scale(.7);transition:transform .5s cubic-bezier(.3,1.6,.5,1) .15s}
+  .js .features li.reveal.in .ico{transform:none}
+  .js .features li.reveal .ico svg *{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset 1.1s ease .3s}
+  .js .features li.reveal.in .ico svg *{stroke-dashoffset:0}
+  .js .standards-wrap.reveal .std-tick path{stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .6s ease}
+  .js .standards-wrap.reveal.in .std-tick path{stroke-dashoffset:0}
+  .js .standards-wrap.reveal tbody tr{opacity:.35;translate:-10px 0;transition:opacity .5s ease,translate .5s ease}
+  .js .standards-wrap.reveal.in tbody tr{opacity:1;translate:0 0}
+  .js .standards-wrap.in tbody tr:nth-child(2),.js .standards-wrap.in tbody tr:nth-child(2) .std-tick path{transition-delay:.18s}
+  .js .standards-wrap.in tbody tr:nth-child(3),.js .standards-wrap.in tbody tr:nth-child(3) .std-tick path{transition-delay:.36s}
+  .js .standards-wrap.in tbody tr:nth-child(4),.js .standards-wrap.in tbody tr:nth-child(4) .std-tick path{transition-delay:.54s}
+  .js .status-card.reveal li{opacity:.4;translate:0 8px;transition:opacity .5s ease,translate .5s ease}
+  .js .status-card.reveal.in li{opacity:1;translate:0 0}
+  .js .status-card.in li:nth-child(2){transition-delay:.1s}.js .status-card.in li:nth-child(3){transition-delay:.2s}.js .status-card.in li:nth-child(4){transition-delay:.3s}
+  .faq details[open] p{animation:openDown .35s ease-out}
+  .closing .btn-primary{animation:breathe 3.2s ease-in-out infinite}
+}
+@keyframes lineUp{from{transform:translateY(105%)}to{transform:none}}
+@keyframes tickerMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes sheen{0%{transform:translateX(-130%)}22%,100%{transform:translateX(130%)}}
+@keyframes openDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 #ffffff00}50%{box-shadow:0 0 0 8px #ffffff2e}}
+
+footer{padding:40px 0 56px;color:var(--ink-soft);font-size:.95rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between;align-items:center;border-top:1px solid var(--rule);padding-top:28px}
+.foot-links{display:flex;flex-wrap:wrap;gap:4px 24px}
+.foot-links a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;text-decoration:none}
+.foot-links a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="read-line" aria-hidden="true"></div>
+  <div class="wrap top-in">
+    <a class="brand" href="#top" aria-label="Placement Hub, back to top">
+      <span class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Zm-9 10 9 5 9-5M3 17l9 5 9-5"/></svg></span>
+      <span>placement<b>hub</b></span>
+    </a>
+    <nav aria-label="Main">
+      <a href="#staff">For staff</a>
+      <a href="#managers">For managers</a>
+      <a href="#standards">Quality standards</a>
+      <a href="#questions">Questions</a>
+      <a class="btn btn-primary" href="app/index.html" data-try>Try the demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1><span class="line"><span>Record the shift</span></span> <span class="line"><span>as it happens.</span></span></h1>
+        <p class="lead">Placement Hub is a phone app for staff in Ofsted-registered supported accommodation for 16 and 17 year olds. Daily notes, signing in and out, medication and handovers each take a few taps. Managers see what needs attention, and the evidence Ofsted will ask for.</p>
+        <div class="btns">
+          <a class="btn btn-primary" href="app/index.html" data-try>Try the demo</a>
+          <a class="btn btn-quiet" href="#staff">See what staff get</a>
+        </div>
+        <p class="note"><span data-when="demo">No sign-up needed: pick a demo account and look around.</span><span data-when="live" hidden>Create a free account with your email to try it.</span> The demo uses made-up young people and staff.</p>
+      </div>
+
+      <figure class="log" style="margin:0;position:relative">
+        <div class="logbook">
+          <div class="log-head"><span>Time</span><div><h2>Brookside House</h2><p>Day shift, Nia P.</p></div><div class="clock" aria-hidden="true"><svg class="clock-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path class="hand" d="M12 12V6.5"/><path d="M12 12l3.2 1.8"/></svg><span class="clock-time">07:30</span></div></div>
+          <div class="log-progress" aria-hidden="true"><span></span></div>
+          <span class="now-dot" aria-hidden="true" hidden></span>
+          <ol>
+            <li data-toast="Marked as read" data-tone="ok"><time>07:30</time><div class="entry">Nia starts her shift and reads the night handover.<br /><span class="tag ok">Handover read</span></div></li>
+            <li data-toast="Antibiotic tablets recorded for Jordan K." data-tone="ok"><time>08:05</time><div class="entry">Medication: Jordan takes their morning antibiotic, and Nia records it.<br /><span class="tag ok">Taken</span></div></li>
+            <li data-toast="Jordan K. signed out. Back by 11:00." data-tone="ok"><time>09:15</time><div class="entry">Jordan signs out to see a friend in town, back by 11:00.<br /><span class="tag">Signed out</span></div></li>
+            <li data-toast="Jordan K. is late back" data-tone="alert"><time>11:08</time><div class="entry">Jordan was due back. The app raises a late-back alert with the missing-from-home steps.<br /><span class="tag alert">Late back</span></div></li>
+            <li data-toast="Jordan K. signed back in at 12:30" data-tone="ok"><time>12:30</time><div class="entry">Jordan is home. Nia signs them back in and notes their conversation.<br /><span class="tag ok">Back in</span></div></li>
+            <li data-toast="Daily note saved for Sam L." data-tone="ok"><time>16:10</time><div class="entry">Daily note for Sam: a good day at college, then cooked dinner with support.<br /><span class="tag ok">Good day</span></div></li>
+            <li data-toast="Handover saved. Thanks, Nia." data-tone="ok"><time>19:15</time><div class="entry">The handover is drafted from the day’s records. Nia checks it and finishes.<br /><span class="tag">Handed over</span></div></li>
+          </ol>
+        </div>
+        <div class="log-toast" aria-hidden="true"><span class="lt-ico"></span><span class="lt-text"></span></div>
+        <figcaption class="log-caption">A day at Brookside House, recorded in the demo.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track"><span class="tick-chip ok"><i></i>Medication recorded</span><span class="tick-chip "><i></i>Daily note saved</span><span class="tick-chip warn"><i></i>Signed out, back by 22:00</span><span class="tick-chip ok"><i></i>Back in at 21:40</span><span class="tick-chip "><i></i>Handover read</span><span class="tick-chip "><i></i>Keywork session</span><span class="tick-chip alert"><i></i>Late back alert</span><span class="tick-chip "><i></i>Concern logged</span><span class="tick-chip warn"><i></i>Plan review due</span><span class="tick-chip "><i></i>Turns 18 in 35 days</span><span class="tick-chip ok"><i></i>Repair fixed</span><span class="tick-chip "><i></i>Shift started at Brookside House</span><span class="tick-chip "><i></i>Reg 27 decision recorded</span><span class="tick-chip ok"><i></i>Task done</span><span class="tick-chip ok"><i></i>Medication recorded</span><span class="tick-chip "><i></i>Daily note saved</span><span class="tick-chip warn"><i></i>Signed out, back by 22:00</span><span class="tick-chip ok"><i></i>Back in at 21:40</span><span class="tick-chip "><i></i>Handover read</span><span class="tick-chip "><i></i>Keywork session</span><span class="tick-chip alert"><i></i>Late back alert</span><span class="tick-chip "><i></i>Concern logged</span><span class="tick-chip warn"><i></i>Plan review due</span><span class="tick-chip "><i></i>Turns 18 in 35 days</span><span class="tick-chip ok"><i></i>Repair fixed</span><span class="tick-chip "><i></i>Shift started at Brookside House</span><span class="tick-chip "><i></i>Reg 27 decision recorded</span><span class="tick-chip ok"><i></i>Task done</span></div></div>
+
+  <section class="section" id="staff">
+    <div class="wrap split">
+      <div class="phones" aria-label="Screens from the app">
+        <div class="phone"><div class="screen"><img src="img/shift.webp" width="600" height="1298" alt="The shift home screen for Brookside House. A red alert says Jordan K. is late back, with buttons for They’re back and Record missing episode. Below, Who’s here lists Jordan and Sam, with their pictures and Back in and Sign out buttons." /><span class="tap" style="--x:30.4%;--y:40.5%;--d:0.6s" aria-hidden="true"></span><span class="tap" style="--x:81.8%;--y:65.0%;--d:2.4s" aria-hidden="true"></span></div></div>
+        <div class="phone"><div class="screen"><img src="img/note.webp" width="600" height="1298" alt="The daily note form. Big buttons ask how they were today (Good, Okay, Low, Unsettled) and whether they went to education, then a box for what happened." /><span class="tap" style="--x:19.0%;--y:42.1%;--d:1.0s" aria-hidden="true"></span><span class="tap" style="--x:19.0%;--y:60.2%;--d:1.9s" aria-hidden="true"></span><span class="tap" style="--x:73.3%;--y:95.6%;--d:2.9s" aria-hidden="true"></span></div></div>
+      </div>
+      <div>
+        <div class="section-intro" style="margin-bottom:28px">
+          <h2>Made for the people on shift</h2>
+          <p>Support workers record as they go, on the phone in their pocket. Plain words and big buttons mean there’s no manual to learn.</p>
+        </div>
+        <ul class="features">
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3>Start of shift</h3><p>Pick your house and shift, read the handover and tap “I’ve read it”.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg></span><div><h3>Who’s in, who’s out</h3><p>See where everyone is and when they agreed to be back. Sign people out and back in with one tap.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></span><div><h3>Late-back alerts</h3><p>If someone isn’t back on time, the app says so and opens the missing-from-home steps, already filled in.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></span><div><h3>Daily notes</h3><p>How their day went in a few lines: mood, education, what happened, and anything for the next shift.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span><div><h3>Concerns</h3><p>Log a concern in seconds. If someone is late back, the missing-episode record is filled in for you, so nothing is typed twice.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h4"/></svg></span><div><h3>Handover, drafted for you</h3><p>When you finish, the handover is written from the day’s records. Check it, add anything else, and save.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="managers">
+    <div class="wrap split flip">
+      <div class="phones"><div class="phone"><div class="screen"><img src="img/manager.webp" width="600" height="1298" alt="The manager home screen. A handover is waiting to be read, and Needs attention lists Jordan K. late back, an overdue task and a Reg 27 decision waiting." /><span class="tap" style="--x:25.6%;--y:50.1%;--d:1.2s" aria-hidden="true"></span></div></div></div>
+      <div>
+        <div class="section-intro" style="margin-bottom:28px">
+          <h2>A clear view for managers</h2>
+          <p>Managers use the same simple app, with the extra tools they need to run the service and show how it’s going.</p>
+        </div>
+        <ul class="features">
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M10.3 21a2 2 0 0 0 3.4 0"/></svg></span><div><h3>Needs attention</h3><p>One list of what needs following up today, across every house.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22V4h11l-2 4 2 4H5"/></svg></span><div><h3>Regulation 27 decisions</h3><p>Record whether a serious event needs reporting to Ofsted. The app never decides for you and never sends anything.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/></svg></span><div><h3>Ofsted evidence</h3><p>Tick off evidence against the four quality standards and export it when you need it.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></span><div><h3>Rota, leave and documents</h3><p>Plan shifts, approve leave, and see which version of each plan is current and when it’s due for review.</p></div></li>
+          <li><span class="ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span><div><h3>The right view for each person</h3><p>Support workers see the shift pages. Only managers can change the rota or make decisions. Every record carries the name of whoever wrote it.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap split">
+      <div class="phones"><div class="phone"><div class="screen"><img src="img/profile.webp" width="600" height="1298" alt="Jordan K.’s profile with their picture: age 17, Brookside House, high risk. A note says Jordan turns 18 in 35 days, with buttons for Support plan and Risk assessment." /></div></div></div>
+      <div class="section-intro" style="margin:0">
+        <h2>Each young person, in one place</h2>
+        <p>Open a young person to see one timeline of their daily notes, medication, keywork, concerns and time out of the house, newest first.</p>
+        <p>When someone is within four months of turning 18, the app says so, so planning for the move to adulthood starts in time.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="standards">
+    <div class="wrap">
+      <div class="section-intro">
+        <h2>Organised around the quality standards</h2>
+        <p>The Supported Accommodation (England) Regulations 2023 set four quality standards. Placement Hub keeps the everyday evidence for each one together.</p>
+      </div>
+      <div class="standards-wrap">
+        <table class="standards">
+          <thead><tr><th scope="col">Quality standard</th><th scope="col">Regulation</th><th scope="col">Where it shows up in Placement Hub</th></tr></thead>
+          <tbody>
+            <tr><td><svg class="std-tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Leadership and management</td><td>Regulation 4</td><td>Training and supervision records, tasks with named owners, documents with review dates</td></tr>
+            <tr><td><svg class="std-tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Protection</td><td>Regulation 5</td><td>Concerns, missing episodes, late-back alerts, and follow-up after each incident</td></tr>
+            <tr><td><svg class="std-tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Accommodation</td><td>Regulation 6</td><td>Repairs tracked until they’re fixed, plus house safety checks and documents</td></tr>
+            <tr><td><svg class="std-tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Support</td><td>Regulation 7</td><td>Daily notes, keywork, goals, and preparing for 18</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine">It also helps with two other duties: deciding whether a serious event needs a Regulation 27 notification, and gathering material for the six-monthly quality of support review under Regulation 32. Placement Hub helps you organise evidence. It doesn’t replace professional judgement or tell you whether you’re compliant.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="points">
+        <div><h3>Works on the phones staff already have</h3><p>It runs in the web browser. Add it to the home screen and it opens like any other app.</p></div>
+        <div><h3>Keeps going when the signal drops</h3><p>Once added from its website, it still opens without a connection.</p></div>
+        <div><h3>Easy to read on a busy shift</h3><p>Large text, big buttons and plain English, set in a typeface designed for legibility.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="status" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-intro">
+        <h2>Where Placement Hub is now</h2>
+        <p>Placement Hub is a working prototype. Everything in the demo is made up, and changes are saved only on the device you’re using.</p>
+      </div>
+      <div class="status-grid">
+        <div class="status-card">
+          <h3>Coming next</h3>
+          <ul><li>Appointments and medication support</li><li>Life skills and money: allowances, savings and independence goals</li><li>Automatic sign-out on shared phones</li></ul>
+        </div>
+        <div class="status-card must">
+          <h3>Needed before real use</h3>
+          <ul><li>A secure database, so records are shared safely between staff</li><li>A full record of who changed what, and when</li><li>A data protection review</li><li>Backups, and access that managers control</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="questions">
+    <div class="wrap">
+      <div class="section-intro"><h2>Questions</h2></div>
+      <div class="faq">
+        <details><summary>How do I try it?</summary><p data-when="demo">Tap “Try the demo” and choose a demo account, such as Nia, a support worker, or Amira, a deputy manager. You don’t need to create an account. Start a shift at Brookside House to see what happens when Jordan is late back.</p><p data-when="live" hidden>Tap “Try the demo” and create an account with your email address. We’ll email you a link to confirm it’s yours, then you can sign in. Start a shift at Brookside House to see what happens when Jordan is late back.</p></details>
+        <details><summary>Can we use it with real young people’s information?</summary><p data-when="demo">Not yet. The demo sign-in only shows how signing in would work, and the records are made-up and stay on the device you’re using. The list under “Needed before real use” has to be done first.</p><p data-when="live" hidden>Not yet. Accounts are real and need a confirmed email, but the records are made-up and stay on the device you’re using. The list under “Needed before real use” has to be done first.</p></details>
+        <details><summary>Does it send anything to Ofsted?</summary><p>No. It helps a manager record their decision about a Regulation 27 notification. Notifications are made through Ofsted’s own reporting service.</p></details>
+        <details><summary>Does it work on any phone?</summary><p>Yes. It works in the browser on iPhone and Android, and on computers. Staff can add it to their home screen.</p></details>
+        <details><summary>Who is it for?</summary><p>Providers of supported accommodation for 16 and 17 year olds in England: support workers, senior staff and managers.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="closing">
+        <h2>See a shift for yourself</h2>
+        <p>It takes about two minutes. <span data-when="demo">Pick a demo account</span><span data-when="live" hidden>Create an account</span>, start a shift at Brookside House, and follow the day from the handover to the next one.</p>
+        <div class="btns"><a class="btn btn-primary" href="app/index.html" data-try>Try the demo</a><a class="btn btn-quiet" id="contactBtn" hidden>Get in touch</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:var(--ink)">Placement Hub</b>, a prototype for supported accommodation in England.</span>
+    <span>The demo uses made-up records. © 2026</span>
+    <nav class="foot-links" aria-label="Footer"><a href="privacy.html">Privacy</a><a id="footContact" hidden>Contact</a></nav>
+  </div>
+</footer>
+
+<script src="site-config.js"></script>
+<script src="app/auth-config.js"></script>
+<script>
+/* Demo sign-in or real accounts? Real accounts are on when app/auth-config.js has Firebase settings.
+   Shows the matching wording, and points "Try the demo" at Create account only when accounts can be made. */
+(() => {
+  const live = !!(window.PLACEMENT_HUB_FIREBASE && window.PLACEMENT_HUB_FIREBASE.apiKey);
+  document.querySelectorAll('[data-when]').forEach(el => { el.hidden = el.dataset.when !== (live ? 'live' : 'demo'); });
+  if (live) document.querySelectorAll('a[data-try]').forEach(a => { a.href = 'app/index.html#signup'; });
+})();
+</script>
+<script>
+/* The contact email is set in site-config.js. While it's empty, the contact links stay hidden. */
+const CONTACT_EMAIL = String(window.PLACEMENT_HUB_CONTACT_EMAIL || '').trim();
+(() => {
+  if (CONTACT_EMAIL) for (const c of [document.getElementById('contactBtn'), document.getElementById('footContact')]) {
+    if (c) { c.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent('Placement Hub'); c.hidden = false; }
+  }
+  const top = document.getElementById('top');
+  const onScroll = () => top.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+
+  /* Play the shift through the log book, one entry at a time */
+  const book = document.querySelector('.logbook');
+  const items = [...book.querySelectorAll('li')];
+  const clock = book.querySelector('.clock-time');
+  const dot = book.querySelector('.now-dot');
+  const bar = book.querySelector('.log-progress span');
+  const toastEl = document.querySelector('.log-toast');
+  let toastTimer;
+  const showToast = (text, tone) => {
+    if (!toastEl || !text) return;
+    toastEl.classList.remove('show');
+    clearTimeout(toastTimer);
+    setTimeout(() => {
+      toastEl.querySelector('.lt-text').textContent = text;
+      toastEl.classList.toggle('alert', tone === 'alert');
+      toastEl.classList.add('show');
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1700);
+    }, 220);
+  };
+  let i = -1, paused = false;
+  const place = () => { if (i < 0) return; const li = items[i]; dot.style.top = (li.querySelector('time').offsetTop + 19) + 'px'; };
+  const step = () => {
+    if (paused || document.hidden) return;
+    i += 1;
+    if (i >= items.length) { i = -1; items.forEach(li => li.classList.remove('now')); dot.hidden = true; clock.textContent = '07:30'; bar.style.width = '0%'; return; }
+    items.forEach((li, k) => li.classList.toggle('now', k === i));
+    clock.textContent = items[i].querySelector('time').textContent;
+    dot.hidden = false; place();
+    const t = items[i].querySelector('time').textContent.split(':').map(Number);
+    bar.style.width = Math.min(100, Math.max(0, ((t[0] * 60 + t[1]) - 450) / 720 * 100)) + '%';
+    showToast(items[i].dataset.toast, items[i].dataset.tone);
+  };
+  ['mouseenter', 'focusin'].forEach(ev => book.addEventListener(ev, () => { paused = true; }));
+  ['mouseleave', 'focusout'].forEach(ev => book.addEventListener(ev, () => { paused = false; }));
+  window.addEventListener('resize', place);
+  setTimeout(() => { step(); setInterval(step, 2400); }, 1400);
+
+  /* A thin line under the header shows how far down the page you are */
+  const readLine = document.querySelector('.read-line');
+  const onRead = () => { const max = document.documentElement.scrollHeight - innerHeight; readLine.style.setProperty('--read', max > 0 ? Math.min(1, scrollY / max) : 0); };
+  onRead(); addEventListener('scroll', onRead, { passive: true }); addEventListener('resize', onRead);
+
+  /* Feature icons draw themselves like biro strokes */
+  document.querySelectorAll('.features .ico svg *').forEach(el => { try { el.style.setProperty('--len', Math.ceil(el.getTotalLength()) + 1); } catch (e) { /* not a shape */ } });
+
+  /* Phones lean towards the pointer on computers */
+  if (window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.phones').forEach(group => {
+      group.addEventListener('pointermove', e => {
+        const r = group.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        group.style.transform = `perspective(1100px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg)`;
+      });
+      group.addEventListener('pointerleave', () => { group.style.transform = ''; });
+    });
+  }
+
+  /* Sections glide in as they come into view; they start visible, just softer */
+  if ('IntersectionObserver' in window) {
+    document.documentElement.classList.add('js');
+    const els = document.querySelectorAll('.section-intro, .features li, .phones, .standards-wrap, .points > div, .status-card, .faq details, .closing');
+    document.querySelectorAll('.features').forEach(ul => [...ul.children].forEach((li, k) => { li.style.transitionDelay = (k * 70) + 'ms'; }));
+    const io = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+    els.forEach(el => { el.classList.add('reveal'); io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>

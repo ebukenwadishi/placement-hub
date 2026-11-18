@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="How the Placement Hub website and demo handle your information." />
+<meta name="theme-color" content="#f5f8fc" />
+<link rel="icon" type="image/png" href="app/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet" />
+<title>Privacy · Placement Hub</title>
+<style>
+:root{
+  --paper:#f5f8fc; --ink:#11233f; --ink-soft:#4a5a72; --biro:#1f5fbf; --biro-deep:#163f88;
+  --rule:#d7e2f3; --card:#ffffff; --info-bg:#eaf1fc;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+a{color:var(--biro)}
+:focus-visible{outline:3px solid #7aa7ea;outline-offset:3px;border-radius:6px}
+h1,h2{font-family:var(--display);color:var(--ink);margin:0;text-wrap:balance;letter-spacing:-.02em}
+h1{font-size:clamp(2.4rem,6vw,3.6rem);line-height:1.04;font-weight:800;letter-spacing:-.035em}
+h2{font-size:clamp(1.45rem,3vw,1.8rem);line-height:1.15;font-weight:800;margin:48px 0 12px}
+h2::after{content:"";display:block;width:56px;height:4px;border-radius:4px;background:var(--biro);margin-top:12px}
+p{margin:0 0 14px}
+ul{margin:0 0 14px;padding-left:22px}
+li{margin-bottom:8px}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+.read{max-width:40em}
+
+.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font:800 1.3rem/1 var(--display);letter-spacing:-.03em;color:var(--ink);text-decoration:none}
+.brand span b{color:var(--biro);font-weight:800}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--biro);display:grid;place-items:center;color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:14px;font:700 .98rem/1 var(--body);text-decoration:none;border:2px solid transparent;background:var(--biro);color:#fff}
+.btn:hover{background:var(--biro-deep)}
+
+main{padding:clamp(40px,7vw,80px) 0 24px}
+.back{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:700;text-decoration:none;margin-bottom:12px}
+.back:hover{text-decoration:underline}
+.lead{font-size:1.2rem;color:var(--ink-soft);margin-top:16px}
+.updated{color:var(--ink-soft);font-size:1rem}
+.summary{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:22px 24px 10px;margin-top:32px}
+.summary h2{margin-top:0;font-size:1.3rem}
+.summary h2::after{display:none}
+.note{background:var(--info-bg);border-radius:14px;padding:16px 18px;margin:18px 0}
+.note p:last-child{margin-bottom:0}
+
+footer{padding:40px 0 56px;color:var(--ink-soft);font-size:.95rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between;align-items:center;border-top:1px solid var(--rule);padding-top:28px}
+footer a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;text-decoration:none}
+@media (max-width:420px){.top .btn{padding:10px 14px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="index.html" aria-label="Placement Hub website">
+      <span class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Zm-9 10 9 5 9-5M3 17l9 5 9-5"/></svg></span>
+      <span>placement<b>hub</b></span>
+    </a>
+    <a class="btn" href="app/index.html" data-try>Try the demo</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="read">
+    <a class="back" href="index.html">← Back to the website</a>
+    <h1>Privacy</h1>
+    <p class="lead">Placement Hub is a prototype. This page explains what happens to your information when you visit this website or try the demo.</p>
+    <p class="updated">Last updated 13 November 2026</p>
+
+    <section class="summary" aria-labelledby="shortTitle">
+      <h2 id="shortTitle">The short version</h2>
+      <ul>
+        <li>You don’t need to give us any personal information to read the website.</li>
+        <li>No cookies, no advertising, and no tracking or visitor statistics.</li>
+        <li data-when="demo">The demo uses made-up records, and what you do in it stays on your own device.</li>
+        <li data-when="live" hidden>The demo uses made-up records. If you create an account, your name, email address and password are handled by Google Firebase so you can sign in.</li>
+      </ul>
+    </section>
+
+    <h2 id="who">Who we are</h2>
+    <p>This website and the demo are run by Placement Hub, a prototype for supported accommodation in England. It isn’t a live service yet.</p>
+    <p data-contact="yes" hidden>If you have a question about privacy, email <a data-contact-link></a>.</p>
+    <p data-contact="no">We don’t have a contact address yet. One will be added to this page.</p>
+
+    <h2 id="website">This website</h2>
+    <p>Reading the website doesn’t need any personal information. We don’t use cookies, analytics or advertising tools.</p>
+    <p>Two outside services help show you the pages:</p>
+    <ul>
+      <li><b>Netlify</b> hosts the website. Like any web host, it receives your IP address and basic browser details to send you the pages, and keeps short-term logs to keep the service working and secure.</li>
+      <li><b>Google Fonts</b> supplies the typefaces. Your browser downloads them from Google’s servers, so Google receives your IP address.</li>
+    </ul>
+
+    <h2 id="demo">The demo</h2>
+    <div data-when="demo">
+      <ul>
+        <li>You sign in with a shared demo account. No account is made for you, and you don’t give us your email address.</li>
+        <li>Everything you add or change is saved in your web browser on that device. It isn’t sent to us or anyone else.</li>
+        <li>To remove it, open <b>About</b> in the demo and choose <b>Reset sample data</b>, or clear this website’s data in your browser settings.</li>
+      </ul>
+    </div>
+    <div data-when="live" hidden>
+      <ul>
+        <li>To create an account, you give your name, email address and a password. These are stored by <b>Google Firebase Authentication</b>, which we use to sign you in, confirm your email address and reset your password. Google may store this information outside the UK.</li>
+        <li>We use your email address only for account emails, like the confirmation link and password resets.</li>
+        <li>Everything else you add or change in the demo is saved in your web browser on that device. It isn’t sent to us or anyone else.</li>
+        <li>To remove your records, open <b>About</b> in the demo and choose <b>Reset sample data</b>, or clear this website’s data in your browser settings. To have your account deleted, contact us using the details under “Who we are”.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <p><b>Please don’t enter real information</b> about young people, staff or anyone else. The demo isn’t built to protect it.</p>
+    </div>
+
+    <section data-contact="yes" hidden>
+      <h2 id="email">If you email us</h2>
+      <p>We use your email address and message only to reply to you. We delete them once we no longer need them.</p>
+    </section>
+
+    <h2 id="rights">Your rights</h2>
+    <p>Under UK data protection law, you can ask what information we hold about you, and ask us to correct or delete it. <span data-when="demo">In most cases we hold nothing about you.</span></p>
+    <p>If you’re unhappy with how your information has been handled, you can complain to the Information Commissioner’s Office (ICO) at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.</p>
+
+    <h2 id="real-use">Before real use</h2>
+    <p>Placement Hub isn’t ready for real information about young people or staff. Before it is, it needs a full privacy notice, a data protection review, and the other safeguards listed under <a href="index.html#status">“Needed before real use”</a>.</p>
+
+    <h2 id="changes">Changes to this page</h2>
+    <p>If we change this page, we’ll update the date at the top.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:var(--ink)">Placement Hub</b>, a prototype for supported accommodation in England.</span>
+    <a href="index.html">Back to the website</a>
+  </div>
+</footer>
+
+<script src="site-config.js"></script>
+<script src="app/auth-config.js"></script>
+<script>
+/* Shows the right wording for this copy of the site:
+   - contact details come from site-config.js
+   - "real accounts" wording shows only when app/auth-config.js has Firebase settings */
+(() => {
+  const email = String(window.PLACEMENT_HUB_CONTACT_EMAIL || '').trim();
+  const fb = window.PLACEMENT_HUB_FIREBASE || {};
+  const live = !!fb.apiKey;
+  document.querySelectorAll('[data-when]').forEach(el => { el.hidden = el.dataset.when !== (live ? 'live' : 'demo'); });
+  document.querySelectorAll('[data-contact]').forEach(el => { el.hidden = el.dataset.contact !== (email ? 'yes' : 'no'); });
+  if (live) document.querySelectorAll('a[data-try]').forEach(a => { a.href = 'app/index.html#signup'; });
+  document.querySelectorAll('[data-contact-link]').forEach(a => { a.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Placement Hub privacy'); a.textContent = email; });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "Placement Hub (Demo)",
+  "short_name": "Placement Hub",
+  "description": "A simple supported-accommodation workspace demo using made-up records.",
+  "id": "./",
+  "start_url": "./#home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

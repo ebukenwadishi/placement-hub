@@ -1,0 +1,15 @@
+{
+  "name": "placement-hub",
+  "version": "0.9.0",
+  "private": true,
+  "description": "Phone-first app and website for staff in supported accommodation (prototype with made-up data).",
+  "type": "module",
+  "scripts": {
+    "serve": "node tests/serve.mjs",
+    "test": "node tests/smoke.mjs",
+    "screenshots": "node tests/screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
