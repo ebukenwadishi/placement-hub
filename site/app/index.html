@@ -2004,8 +2004,7 @@ document.addEventListener('submit', e => {
       if (!name) { toast('Add their name.'); return; }
       if (d.young.some(y => y.name.toLowerCase() === name.toLowerCase())) { toast(`There’s already a ${name}. Add another letter to tell them apart.`); return; }
       if (!v.dob || !v.moveIn) { toast('Add their date of birth and when they move in.'); return; }
-      const age = ageAt(v.dob, v.moveIn);
-      if (age < 16 || age > 17) { toast(`They’d be ${age} when they move in. Supported accommodation here is for 16 and 17 year olds, so check the date of birth.`); return; }
+      if (v.dob >= v.moveIn) { toast('The date of birth needs to be before the moving-in date.'); return; }
       if (!HOMES.includes(v.home)) { toast('Choose a house.'); return; }
       const review = addDays(v.moveIn > TODAY ? v.moveIn : TODAY, 28);
       const y = { id: uid('yp'), name, initials: initialsOf(name), dob: v.dob, backBy: v.backBy || '22:00', home: v.home, risk: LEVELS.includes(v.risk) ? v.risk : 'Medium', keyworker: v.keyworker, engagement: 'Settling in', nextReview: review, plan: 'Not written yet', goals: [], keywork: [],

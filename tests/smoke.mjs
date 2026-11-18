@@ -448,15 +448,12 @@ try {
     // add someone new
     await page.click('#page [data-sheet=ypNew]'); await page.waitForTimeout(200);
     await page.fill('form[data-form=ypNew] [name=name]', 'Robin T.');
-    await page.fill('form[data-form=ypNew] [name=dob]', yearsAgo(20));
-    await page.click('form[data-form=ypNew] button[type=submit]'); await page.waitForTimeout(200);
-    check('Add young person: refuses anyone who isn’t 16 or 17', await page.locator('form[data-form=ypNew]').count() === 1 && !(await page.innerText('body')).includes('Robin T. added'));
-    await page.fill('form[data-form=ypNew] [name=dob]', yearsAgo(16, 6));
+    await page.fill('form[data-form=ypNew] [name=dob]', yearsAgo(19, 6));
     await page.click('form[data-form=ypNew] input[value="Willow House"] + span');
     await page.fill('form[data-form=ypNew] [name=la]', 'Westmoor Borough Council');
     await page.click('form[data-form=ypNew] button[type=submit]'); await page.waitForTimeout(300);
     t = await pageText(page);
-    check('Add young person: opens their new page', /#person-yp/.test(page.url()) && t.includes('Robin T.') && t.includes('Willow House') && /16 ·/.test(t), page.url());
+    check('Add young person: opens their new page, with no age limit', /#person-yp/.test(page.url()) && t.includes('Robin T.') && t.includes('Willow House') && /19 ·/.test(t), page.url());
     await page.click('.profile-head [data-sheet=ypPlan][data-kind=support]'); await page.waitForTimeout(200);
     t = await page.innerText('.sheet');
     check('Add young person: support plan starts with nine areas to write', t.includes('Not written yet') && await page.locator('.sheet [data-part=area]').count() === 9 && t.includes('Westmoor Borough Council'));
