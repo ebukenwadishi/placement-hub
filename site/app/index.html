@@ -82,6 +82,19 @@ button.row:hover,.row-main:hover{background:#f8fafd}
 .avatar-btn{position:relative;padding:0;border:0;background:none;border-radius:50%;cursor:pointer;flex:none;min-width:44px;min-height:44px}
 .avatar-btn .cam{position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;border:2px solid #fff}
 .photo-pick{display:grid;justify-items:center;gap:12px;margin:4px 0 16px}
+.file-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 4px}
+@media(min-width:700px){.file-grid{grid-template-columns:repeat(4,1fr)}}
+.file-thumb{border:1px solid var(--line);background:#fff;border-radius:12px;padding:0;overflow:hidden;display:flex;flex-direction:column;text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.file-thumb img{width:100%;aspect-ratio:1;object-fit:cover;background:#eef2f7;display:block}
+.file-thumb span{font-size:13px;font-weight:600;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-thumb.missing img,.file-view.missing img{visibility:hidden}
+.file-pick{display:grid;gap:10px;margin:0 0 4px}
+.file-preview{border:1px dashed #c5cfdc;border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px;min-height:64px}
+.file-preview img{width:72px;height:72px;object-fit:cover;border-radius:8px;flex:none}
+.file-preview b{color:var(--ink);display:block;word-break:break-word}
+.file-view{margin:0 0 14px}
+.file-view img{width:100%;max-height:60vh;object-fit:contain;background:#eef2f7;border-radius:12px;display:block}
+.seg.five button{padding:9px 8px}
 .photo-pick .btn{width:100%}
 .chip{display:inline-flex;align-items:center;font-size:13px;font-weight:650;padding:4px 10px;border-radius:999px;white-space:nowrap;background:var(--grey-bg);color:var(--grey)}
 .chip.good{background:var(--good-bg);color:var(--good)}.chip.warn{background:var(--warn-bg);color:var(--warn)}.chip.bad{background:var(--bad-bg);color:var(--bad)}.chip.info{background:var(--blue-50);color:var(--blue-d)}
@@ -399,6 +412,7 @@ const dot = x => (/[.!?]$/.test(x) ? x : x + '.');
    Icons
    ================================================================ */
 const P = {
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>',
   archive: '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/>',
   home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -488,6 +502,10 @@ const seedData = () => Object.assign(shiftDates({
       supportPlan: { version: '5', reviewed: '2026-07-30', by: 'Maya T.', agreedOn: '2026-07-30', approvedBy: 'Amira R.', approvedOn: '2026-07-31', moveIn: '2025-06-02', legal: 'Care leaver (relevant child)', la: 'Northshire County Council', socialWorker: '', pa: 'Tom B.', hours: '4 hours a week', keywork: 'Every other Wednesday', gp: 'Town Surgery', about: 'Leah lived at Maple House for just over a year and moved on to their own flat soon after turning 18.', strengths: 'Organised and good with money. Kept a part-time job alongside college.', communication: 'Likes things written down so they can check later.', areas: [{ area: 'Living skills', status: 'On track', now: 'Cooks, shops and cleans on their own.', goal: 'Live in their own flat.', actions: [{ what: 'Visit the new flat together', who: 'Maya T.', by: '2026-08-20', status: 'Done' }] }, { area: 'Money and benefits', status: 'On track', now: 'Saves a little each month and has never fallen behind.', goal: 'Set up rent and bills for the new flat.', actions: [{ what: 'Set up direct debits for rent and energy', who: 'Leah with Tom B.', by: '2026-08-28', status: 'Done' }] }, { area: 'Moving on and turning 18', status: 'On track', now: 'Offered a council flat in town, with floating support.', goal: 'Move into the flat with support in place.', actions: [{ what: 'Hand over to the floating support worker', who: 'Maya T.', by: '2026-08-29', status: 'Done' }] }], contacts: [{ role: 'Personal adviser', name: 'Tom B.', org: 'Northshire leaving care team' }], changes: 'Updated for the move to their own flat.' },
       riskAssessment: { version: '2', reviewed: '2026-07-30', by: 'Maya T.', next: '2026-10-30', discussedOn: '2026-07-30', approvedBy: 'Amira R.', approvedOn: '2026-07-31', summary: 'Low risk overall. Leah was settled and kept to agreed times.', protective: 'A part-time job, college and a close group of friends.', triggers: 'Worries about money.', items: [{ area: 'Money worries', level: 'Low', after: 'Low', history: 'Ran short of money once, soon after moving in.', signs: 'Asking to borrow money. Skipping meals.', plan: 'Check the budget together in keywork.', yp: 'Tell staff early if money is tight.', tell: 'Keyworker' }], missing: { places: 'Friends in town.', steps: [{ when: 'At their back-by time', what: 'Call and text Leah.' }], onReturn: 'Talk with them about where they were.' } },
       left: { date: '2026-08-29', reason: 'Moved to their own tenancy', note: 'Moved into a council flat in town with floating support. Their personal adviser is Tom B.', by: 'Amira R.', on: '2026-08-29' } }
+  ],
+  files: [
+    { id: 'f1', youngId: 'yp3', name: 'Food hygiene certificate', kind: 'ID or certificate', mime: 'image/svg+xml', size: 1900, date: '2026-10-08', time: '17:20', by: 'Nia P.', note: 'Sam passed the Level 1 food hygiene course at college.', gen: 'cert' },
+    { id: 'f2', youngId: 'yp3', name: 'Letter from Riverside College', kind: 'Letter', mime: 'text/plain', size: 340, date: '2026-10-02', time: '10:05', by: 'Amira R.', note: 'Confirms Sam’s course times for this term.', gen: 'letter' }
   ],
   incidents: [
     { id: 'INC-104', youngId: 'yp2', date: '2026-10-15', type: 'Missing episode', severity: 'High', status: 'Open', description: 'Returned safely. Return discussion and follow-up actions still to do.' },
@@ -591,7 +609,7 @@ const STORE_BASE = 'placementhub.demo.v14';
 let STORE = STORE_BASE;
 const WELCOME = 'placementhub.welcomed.v4';
 let d;
-const migrate = () => { d.archived = d.archived || []; d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
+const migrate = () => { d.archived = d.archived || []; if (!d.files) d.files = seedData().files; d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
 /* Each signed-in account gets its own copy of the sample data on this device */
 const loadData = () => { let x = null; try { const s = JSON.parse(localStorage.getItem(STORE) || 'null'); if (s && s.data && Array.isArray(s.data.young)) x = s.data; } catch (e) { /* storage unavailable */ } d = x || seedData(); migrate(); };
 loadData();
@@ -832,7 +850,7 @@ function workerView(full) {
   const aboutSeen = subject => names.has(subject) || hs.includes(subject) || (!allNames.has(subject) && !HOMES.includes(subject));
   const incidents = byYoung(full.incidents), incIds = new Set(incidents.map(i => i.id));
   return { ...full, young: ys, archived: [], incidents, notes: byYoung(full.notes), moves: byYoung(full.moves),
-    meds: byYoung(full.meds), medLog: byYoung(full.medLog), appts: byYoung(full.appts),
+    meds: byYoung(full.meds), medLog: byYoung(full.medLog), appts: byYoung(full.appts), files: byYoung(full.files),
     repairs: full.repairs.filter(r => hs.includes(r.home)), handovers: full.handovers.filter(h => hs.includes(h.home)),
     tasks: full.tasks.filter(t => aboutSeen(t.subject)), docs: (full.docs || []).filter(x => aboutSeen(x.subject)),
     reviews: (full.reviews || []).filter(r => incIds.has(r.incidentId)) };
@@ -905,6 +923,87 @@ const ACTION_STATUS = ['Not started', 'In progress', 'Done'];
 const LEVELS = ['High', 'Medium', 'Low'];
 const LEGAL_STATUS = ['Looked after (section 20)', 'Looked after (care order)', 'Care leaver (relevant child)', 'Homeless 16 or 17 (section 17)', 'Other'];
 const planOf = (y, kind) => kind === 'risk' ? (y.riskAssessment = y.riskAssessment || { version: '0', items: [], missing: { steps: [] } }) : (y.supportPlan = y.supportPlan || { version: '0', areas: [] });
+/* ---- Files and pictures in a young person's file (added 18 Nov 2026).
+   The list lives in d.files. The files themselves are kept in this browser's own storage (IndexedDB, which has
+   room for photos), on this device only. Nothing is uploaded anywhere. ---- */
+const FILE_KINDS = ['Photo', 'Letter', 'Report or assessment', 'ID or certificate', 'Other'];
+const FILE_EXT = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', heic: 'image/heic', heif: 'image/heif', pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', rtf: 'application/rtf', xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', csv: 'text/csv', txt: 'text/plain' };
+const FILE_LABEL = { 'application/pdf': 'PDF', 'application/msword': 'Word', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word', 'application/rtf': 'Word', 'application/vnd.ms-excel': 'Excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel', 'text/csv': 'Spreadsheet', 'text/plain': 'Text' };
+const FILE_ACCEPT = 'image/*,' + Object.keys(FILE_EXT).map(x => '.' + x).join(',');
+const FILE_MAX = 10 * 1024 * 1024;
+const isImg = f => /^image\//.test(f.mime || '');
+const typeLabel = f => (isImg(f) ? 'Picture' : FILE_LABEL[f.mime] || 'File');
+const sizeText = n => (n < 1024 ? `${n} bytes` : n < 1048576 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1048576).toFixed(1)} MB`);
+const mimeOf = file => { const ext = (String(file.name).split('.').pop() || '').toLowerCase(), known = Object.values(FILE_EXT); return known.includes(file.type) ? file.type : FILE_EXT[ext] || ''; };
+const downloadName = f => { const ext = Object.keys(FILE_EXT).find(k => FILE_EXT[k] === f.mime) || (f.mime === 'image/svg+xml' ? 'svg' : 'bin'); return `${String(f.name).replace(/[\\/:*?"<>|]+/g, ' ').trim() || 'file'}.${ext === 'jpeg' ? 'jpg' : ext}`; };
+let filesDb = null, pendingFile = null;
+const fileUrls = new Map();
+const idbReq = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const fileStore = mode => (filesDb || (filesDb = new Promise((res, rej) => { const r = indexedDB.open('placementhub.files', 1); r.onupgradeneeded = () => r.result.createObjectStore('blobs'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }).catch(e => { filesDb = null; throw e; })))
+  .then(db => db.transaction('blobs', mode).objectStore('blobs'));
+const blobKey = id => STORE + '|' + id;
+const putBlob = (id, blob) => fileStore('readwrite').then(st => idbReq(st.put(blob, blobKey(id))));
+const delBlob = id => fileStore('readwrite').then(st => idbReq(st.delete(blobKey(id))));
+/* the two sample files are drawn by the app, so the demo has something to show */
+const SAMPLE_FILES = {
+  cert: () => new Blob([`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 566"><rect width="800" height="566" fill="#fbfaf6"/><rect x="22" y="22" width="756" height="522" fill="none" stroke="#1f5fbf" stroke-width="6"/><rect x="38" y="38" width="724" height="490" fill="none" stroke="#9db6dd" stroke-width="2"/><g font-family="Georgia,serif" text-anchor="middle" fill="#14243b"><text x="400" y="130" font-size="46">Certificate of achievement</text><text x="400" y="200" font-size="22" fill="#5b697e">This is to certify that</text><text x="400" y="262" font-size="40" font-style="italic">Sam L.</text><text x="400" y="322" font-size="22" fill="#5b697e">has completed</text><text x="400" y="372" font-size="30">Food hygiene, Level 1</text><text x="400" y="470" font-size="18" fill="#5b697e">Riverside College · made-up example for the Placement Hub demo</text></g><circle cx="680" cy="440" r="42" fill="#1f5fbf" opacity=".12"/><path d="m660 440 14 14 26-30" fill="none" stroke="#1f5fbf" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`], { type: 'image/svg+xml' }),
+  letter: () => new Blob(['Riverside College\n(A made-up example letter for the Placement Hub demo.)\n\nDear Sam,\n\nThis letter confirms your timetable for this term on the Level 1 Catering course:\nMonday, Tuesday and Thursday, 9:30am to 3pm.\n\nIf you need to miss a session, please let your tutor know before 9am.\n\nBest wishes,\nStudent Services\n'], { type: 'text/plain' })
+};
+const fileBlob = f => (f.gen ? Promise.resolve(SAMPLE_FILES[f.gen] ? SAMPLE_FILES[f.gen]() : null) : fileStore('readonly').then(st => idbReq(st.get(blobKey(f.id)))));
+const fileUrl = f => (fileUrls.has(f.id) ? Promise.resolve(fileUrls.get(f.id)) : fileBlob(f).then(b => { if (!b) return null; const u = URL.createObjectURL(b); fileUrls.set(f.id, u); return u; }));
+const fileImg = (f, alt = '') => `<img data-file-img="${f.id}" alt="${esc(alt)}"${fileUrls.has(f.id) ? ` src="${fileUrls.get(f.id)}"` : ''}>`;
+/* after each render, fill in pictures from storage */
+function hydrateFiles(root) {
+  root.querySelectorAll('img[data-file-img]:not([src])').forEach(img => {
+    const f = (d.files || []).find(x => x.id === img.dataset.fileImg), miss = () => img.parentElement && img.parentElement.classList.add('missing');
+    if (!f) return miss();
+    fileUrl(f).then(u => { if (u) img.src = u; else miss(); }).catch(miss);
+  });
+}
+/* photos are made smaller (and lose hidden details such as location) before they're saved */
+const shrinkImage = file => new Promise((res, rej) => {
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => {
+    const M = 1600, k = Math.min(1, M / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url); c.toBlob(b => (b ? res(b) : rej(new Error('encode'))), 'image/jpeg', 0.85);
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode')); };
+  img.src = url;
+});
+async function pickFile(file, form) {
+  const mime = mimeOf(file);
+  if (!mime) { toast('That kind of file can’t be added. Use a photo, PDF, Word, Excel or text file.'); return; }
+  if (file.size > FILE_MAX) { toast(`That file is ${sizeText(file.size)}. Files can be up to 10 MB.`); return; }
+  let blob, type = mime;
+  if (/^image\/(jpeg|png|webp|heic|heif)$/.test(mime)) {
+    blob = await shrinkImage(file).catch(() => null);
+    if (!blob) { toast('That photo couldn’t be opened. Try a JPEG or PNG photo.'); return; }
+    type = 'image/jpeg';
+  } else blob = new Blob([file], { type: mime });
+  if (pendingFile && pendingFile.url) URL.revokeObjectURL(pendingFile.url);
+  const img = /^image\//.test(type);
+  pendingFile = { blob, mime: type, size: blob.size, original: file.name, url: img ? URL.createObjectURL(blob) : '' };
+  const pv = document.getElementById('filePreview');
+  if (pv) pv.innerHTML = img ? `<img src="${pendingFile.url}" alt=""><span><b>Photo ready</b>${sizeText(blob.size)}</span>` : `<span class="ico">${icon('file')}</span><span><b>${esc(file.name)}</b>${typeLabel({ mime: type })} · ${sizeText(blob.size)}</span>`;
+  if (form) {
+    const nm = form.querySelector('[name=name]');
+    if (nm && !nm.value.trim()) nm.value = img ? `Photo, ${fmt(TODAY, { day: 'numeric', month: 'long' })}` : String(file.name).replace(/\.[^.]+$/, '').slice(0, 80);
+    if (img) { const r = form.querySelector('[name=kind][value="Photo"]'); if (r) r.checked = true; }
+  }
+}
+async function saveFile(v) {
+  const y = person(v.youngId); if (!y) return;
+  if (!pendingFile) { toast('Take a photo or choose a file first.'); return; }
+  if (!FILE_KINDS.includes(v.kind)) { toast('Choose what it is.'); return; }
+  const pf = pendingFile, name = String(v.name || '').trim().slice(0, 80) || pf.original, id = uid('f');
+  try { await putBlob(id, pf.blob); } catch (e) { toast('This browser couldn’t save the file. It may be in private browsing, or out of space.'); return; }
+  d.files.unshift({ id, youngId: y.id, name, kind: v.kind, mime: pf.mime, size: pf.size, date: TODAY, time: nowTime(), by: me().name, note: String(v.note || '').trim() });
+  fileUrls.set(id, pf.url || URL.createObjectURL(pf.blob)); pendingFile = null;
+  ui.sheet = null; ui.sheetData = {}; ui.tab.person = 'files';
+  render(); toast(`${name} added to ${y.name}’s file`);
+}
 const PHOTO_OK = x => typeof x === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(x) && x.length < 400000;
 const avatarInner = y => PHOTO_OK(y.photo) ? `<img src="${y.photo}" alt="">` : y.portrait ? portraitSvg(y.portrait) : esc(y.initials || y.name.split(' ').map(w => w[0]).join(''));
 const avatar = (y, cls = '') => `<span class="avatar ${PHOTO_OK(y.photo) || y.portrait ? 'pic' : ''} ${cls}" aria-hidden="true">${avatarInner(y)}</span>`;
@@ -1109,10 +1208,11 @@ function profile(y) {
       ...d.notes.filter(n => n.youngId === y.id).map(n => ({ date: n.date, time: n.time, ic: 'book', tone: MOOD_TONE[n.mood] || 'info', title: `Daily note: ${n.mood.toLowerCase()} day`, meta: `${n.staff} · Education: ${n.education.toLowerCase()}`, text: n.note + (n.next ? `\nFor the next shift: ${n.next}` : '') })),
       ...d.medLog.filter(r => r.youngId === y.id).map(r => ({ date: r.date, time: r.time, ic: 'pill', tone: toneOf(r.outcome), title: `Medication: ${medName(r.medId).toLowerCase()}, ${r.outcome.toLowerCase()}`, meta: r.staff, text: r.note || (r.due ? `Due at ${r.due}` : 'When needed') })),
       ...d.appts.filter(a => a.youngId === y.id && a.date <= TODAY && a.status !== 'Upcoming').map(a => ({ date: a.date, time: a.time, ic: 'appt', tone: toneOf(a.status), title: `${a.type}: ${a.status.toLowerCase()}`, meta: a.where, text: a.outcomeNote || a.note || '' })),
+      ...(d.files || []).filter(f => f.youngId === y.id).map(f => ({ date: f.date, time: f.time, ic: isImg(f) ? 'image' : 'file', tone: 'info', title: `${isImg(f) ? 'Picture' : 'File'} added: ${f.name}`, meta: f.by, text: f.note || '', file: f.id })),
       ...(arch ? [{ date: y.left.date, time: '', ic: 'archive', tone: 'grey', title: `Left: ${y.left.reason}`, meta: `File archived by ${y.left.by}`, text: y.left.note || '' }] : []),
       ...d.moves.filter(m => m.youngId === y.id).map(m => ({ date: m.date, time: m.out, ic: 'door', tone: isLate(m) ? 'bad' : 'grey', title: m.back ? `Out ${m.out} to ${m.back}` : isLate(m) ? `Late back (was due ${m.backBy})` : `Out since ${m.out}`, meta: `Signed out by ${m.staff}`, text: m.where ? `Went to: ${m.where}` : 'Signed out' }))
     ].sort((a, b) => (b.date + (b.time || '00')).localeCompare(a.date + (a.time || '00')));
-    body = items.length ? `<div class="card">${items.map(it => `<div class="tl-item"><span class="ico ${it.tone}">${icon(it.ic)}</span><div class="grow"><b>${esc(it.title)}</b><span class="meta">${relDay(it.date)}${it.time ? ' · ' + esc(it.time) : ''}${it.meta ? ' · ' + esc(it.meta) : ''}</span><p>${esc(it.text)}</p>${it.go ? `<button class="link" data-go="${it.go}">Open record ${icon('chev', 16)}</button>` : ''}</div></div>`).join('')}</div>` : `<div class="card">${empty('Nothing recorded yet')}</div>`;
+    body = items.length ? `<div class="card">${items.map(it => `<div class="tl-item"><span class="ico ${it.tone}">${icon(it.ic)}</span><div class="grow"><b>${esc(it.title)}</b><span class="meta">${relDay(it.date)}${it.time ? ' · ' + esc(it.time) : ''}${it.meta ? ' · ' + esc(it.meta) : ''}</span><p>${esc(it.text)}</p>${it.go ? `<button class="link" data-go="${it.go}">Open record ${icon('chev', 16)}</button>` : ''}${it.file ? `<button class="link" data-sheet="fileView" data-file="${it.file}">Open ${it.ic === 'image' ? 'picture' : 'file'} ${icon('chev', 16)}</button>` : ''}</div></div>`).join('')}</div>` : `<div class="card">${empty('Nothing recorded yet')}</div>`;
   }
   if (t === 'plan') {
     const docs = d.docs.filter(x => x.subject === y.name);
@@ -1133,6 +1233,15 @@ function profile(y) {
       <div class="section-head"><h2>Appointments</h2>${arch ? '' : `<button class="link" data-sheet="appt" data-young="${y.id}">${icon('plus', 16)} Add</button>`}</div>
       <div class="card list">${ap.map(a => apptRow(a, true)).join('') || empty('No appointments')}</div>`;
   }
+  if (t === 'files') {
+    const fs = (d.files || []).filter(f => f.youngId === y.id).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
+    const pics = fs.filter(isImg), docs = fs.filter(f => !isImg(f));
+    body = (arch ? '' : `<button class="btn primary block" data-sheet="fileAdd" data-young="${y.id}" style="margin:4px 0 4px">${icon('camera', 18)} Add a photo or file</button>`) +
+      (fs.length ? '' : `<div class="card" style="margin-top:12px">${empty('No files yet', arch ? '' : 'Add letters, reports, certificates or photos.')}</div>`) +
+      (pics.length ? `<div class="section-head"><h2>Pictures</h2></div><div class="file-grid">${pics.map(f => `<button class="file-thumb" data-sheet="fileView" data-file="${f.id}" aria-label="Open ${esc(f.name)}">${fileImg(f)}<span>${esc(f.name)}</span></button>`).join('')}</div>` : '') +
+      (docs.length ? `<div class="section-head"><h2>Files</h2></div><div class="card list">${docs.map(f => `<button class="row" data-sheet="fileView" data-file="${f.id}"><span class="ico">${icon('file')}</span><span class="grow"><b>${esc(f.name)}</b><span class="sub">${esc(f.kind)} · ${typeLabel(f)} · ${sizeText(f.size)}</span><span class="sub">${relDay(f.date)} · ${esc(f.by)}</span></span><span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>` : '') +
+      `<p class="small-note">Files are saved on this phone or computer only.${isWorker() ? ' Only a manager can remove a file.' : ''}</p>`;
+  }
   if (t === 'details') {
     const open = d.incidents.filter(i => i.youngId === y.id && i.status !== 'Resolved').length;
     body = `<div class="card kv">${[...(arch ? [['Left', long(y.left.date)], ['Why', y.left.reason]] : []), ['Home', y.home], ['Moved in', y.supportPlan && y.supportPlan.moveIn ? long(y.supportPlan.moveIn) : '—'], ['Age', `${ageOf(y)} (${turns18(y) <= TODAY ? 'turned' : 'turns'} 18 on ${long(turns18(y))})`], ['Keyworker', y.keyworker], ['Agreed back-by time', y.backBy || '—'], ['Engagement', y.engagement], ['Support plan', y.plan], ['Next plan review', fmt(y.nextReview, { day: 'numeric', month: 'long' })], ['Risk level', y.risk], ['Open concerns', String(open)]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>
@@ -1147,7 +1256,7 @@ function profile(y) {
       <dl class="facts">${arch ? `<div><dt>Keyworker</dt><dd>${esc(y.keyworker)}</dd></div><div><dt>Moved in</dt><dd>${y.supportPlan && y.supportPlan.moveIn ? fmt(y.supportPlan.moveIn, { month: 'short', year: 'numeric' }) : '—'}</dd></div><div><dt>Left</dt><dd>${fmt(y.left.date, { day: 'numeric', month: 'short', year: 'numeric' })}</dd></div>` : `<div><dt>Keyworker</dt><dd>${esc(y.keyworker)}</dd></div><div><dt>Back by</dt><dd>${esc(y.backBy || '—')}</dd></div>${(y.supportPlan || {}).version === '0' ? '<div><dt>Support plan</dt><dd class="t-warn">Not written yet</dd></div>' : `<div><dt>Next review</dt><dd>${fmt(y.nextReview)}</dd></div>`}`}</dl>
       <div class="action-row two plan-btns"><button class="btn secondary" data-sheet="ypPlan" data-young="${y.id}" data-kind="support">${icon('file', 18)} Support plan</button><button class="btn secondary" data-sheet="ypPlan" data-young="${y.id}" data-kind="risk">${icon('shield', 18)} Risk assessment</button></div></section>
     <div style="height:16px"></div>${archNote}${t18}
-    ${seg('person', [['timeline', 'Timeline'], ['plan', 'Plan'], ['health', 'Health'], ['details', 'Details']])}${body}${archLink}`;
+    ${seg('person', [['timeline', 'Timeline'], ['plan', 'Plan'], ['health', 'Health'], ['files', 'Files'], ['details', 'Details']]).replace('class="seg"', 'class="seg five"')}${body}${archLink}`;
 }
 
 function tasks() {
@@ -1391,6 +1500,30 @@ const SHEETS = {
     field('Placing authority', inp('la', 'text', '', 'maxlength="80" placeholder="e.g. Northshire County Council"'), true) + field('Social worker', inp('socialWorker', 'text', '', 'maxlength="60"'), true) +
     choiceField('Risk level for now', 'risk', LEVELS, 'Medium') + '<p class="small-note" style="grid-column:1/-1;margin:-6px 0 0">Change it when you write their risk assessment.</p>' +
     `<div style="grid-column:1/-1">${notice('This demo uses made-up records. Don’t add a real young person.', true)}</div>`, 'Add young person') }),
+  fileAdd: sd => {
+    const y = person(sd.young);
+    if (!y || isArchived(y)) return { title: 'Add a file', body: empty('This young person can’t be found') };
+    return { title: `Add to ${esc(y.name)}’s file`, help: 'A photo, letter, report or certificate. It’s saved on this device only.', body: form('fileAdd',
+      `<input type="hidden" name="youngId" value="${y.id}">
+      <div class="file-pick" style="grid-column:1/-1"><div id="filePreview" class="file-preview">No photo or file chosen yet</div>
+        <label class="btn secondary">${icon('camera', 18)} Take a photo or choose a file<input type="file" accept="${FILE_ACCEPT}" data-file-input hidden></label>
+        <p class="small-note" style="margin:0">Photos, PDF, Word, Excel or text files, up to 10 MB. Photos are made smaller and lose hidden details such as location.</p></div>` +
+      field('Name', inp('name', 'text', '', 'required maxlength="80" placeholder="e.g. College certificate"')) +
+      choiceField('What is it?', 'kind', FILE_KINDS, '') +
+      field('Notes', area('note', 'Optional: what it is and why it’s in their file', '', false)) +
+      `<div style="grid-column:1/-1">${notice('This demo uses made-up records. Don’t add real documents or photos of real young people.', true)}</div>`, 'Add file') };
+  },
+  fileView: sd => {
+    const f = (d.files || []).find(x => x.id === sd.file), y = f && person(f.youngId);
+    if (!f || !y) return { title: 'File', body: empty('This file can’t be found') };
+    const canRemove = !isWorker() && !isArchived(y), first = esc(y.name.split(' ')[0]);
+    const top = isImg(f) ? `<div class="file-view">${fileImg(f, f.name)}</div>` : `<div class="card row me-card static"><span class="ico">${icon('file')}</span><span class="grow"><b>${esc(f.name)}</b><span class="sub">${typeLabel(f)} · ${sizeText(f.size)}</span></span></div>`;
+    const info = `<div class="card kv">${[['Young person', y.name], ['What it is', f.kind], ['Added', `${relDay(f.date)}${f.time ? ' at ' + f.time : ''} by ${f.by}`], ['Type', `${typeLabel(f)} · ${sizeText(f.size)}`]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` + (f.note ? `<div class="labelled"><small>Notes</small>${esc(f.note)}</div>` : '');
+    const foot = sd.confirm
+      ? `${notice(`Remove “${esc(f.name)}” from ${first}’s file? It’s deleted from this device and can’t be undone.`, true)}<div class="sheet-foot"><button type="button" class="btn secondary" data-file-keep="${f.id}">Keep it</button><button type="button" class="btn danger" data-file-remove-yes="${f.id}">Yes, remove</button></div>`
+      : `<div class="sheet-foot">${canRemove ? `<button type="button" class="btn secondary" data-file-remove="${f.id}">Remove</button>` : ''}<button type="button" class="btn primary" data-file-download="${f.id}">${icon('download', 18)} ${isImg(f) ? 'Save a copy' : 'Open or save'}</button></div>`;
+    return { title: esc(f.name), body: top + info + foot };
+  },
   ypArchive: sd => {
     const y = person(sd.young);
     if (!y || isArchived(y)) return { title: 'Archive file', body: empty('This young person can’t be found') };
@@ -1786,6 +1919,7 @@ function render() {
   const sheetScroll = root.querySelector('.sheet')?.scrollTop || 0;
   if (!session) { ui.sheet = null; ui.sheetData = {}; }
   root.innerHTML = session ? asSeen(shell) : loginPage();
+  if (session) hydrateFiles(root);
   if (key !== lastRoute) { if (lastRoute !== null) window.scrollTo(0, 0); }
   else window.scrollTo(0, y);
   const sh = root.querySelector('.sheet');
@@ -1810,7 +1944,7 @@ function toast(msg) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto', 'planEdit', 'ypNew', 'ypArchive'];
-const openSheet = (name, data = {}) => { if (isWorker() && MANAGER_SHEETS.includes(name)) { toast('Only managers can do that.'); return; } ui.sheet = name; ui.sheetData = data; render(); };
+const openSheet = (name, data = {}) => { if (isWorker() && MANAGER_SHEETS.includes(name)) { toast('Only managers can do that.'); return; } if (name === 'fileAdd') pendingFile = null; ui.sheet = name; ui.sheetData = data; render(); };
 const closeSheet = () => { ui.sheet = null; ui.sheetData = {}; render(); };
 
 /* ================================================================
@@ -1855,6 +1989,23 @@ document.addEventListener('click', e => {
     Object.keys(ui.openAcc).filter(k => k.startsWith(`ra-${yid}-`)).forEach(k => delete ui.openAcc[k]);
     ui.sheet = 'ypPlan'; ui.sheetData = { young: yid, kind: 'risk' }; render(); toast(`${gone.area} removed`); return;
   }
+  if (ds.fileDownload) {
+    const f = (d.files || []).find(x => x.id === ds.fileDownload); if (!f || (isWorker() && !sees(person(f.youngId)))) return;
+    fileUrl(f).then(u => { if (!u) { toast('This file isn’t saved on this device.'); return; } const a = document.createElement('a'); a.href = u; a.download = downloadName(f); document.body.appendChild(a); a.click(); a.remove(); })
+      .catch(() => toast('This file couldn’t be opened on this device.'));
+    return;
+  }
+  if (ds.fileRemove) { if (isWorker()) return; ui.sheetData = { file: ds.fileRemove, confirm: true }; render(); return; }
+  if (ds.fileKeep) { ui.sheetData = { file: ds.fileKeep }; render(); return; }
+  if (ds.fileRemoveYes) {
+    if (isWorker()) return;
+    const i = (d.files || []).findIndex(x => x.id === ds.fileRemoveYes); if (i < 0) return;
+    const f = d.files[i]; if (isArchived(person(f.youngId))) return;
+    d.files.splice(i, 1);
+    if (!f.gen) delBlob(f.id).catch(() => {});
+    if (fileUrls.has(f.id)) { URL.revokeObjectURL(fileUrls.get(f.id)); fileUrls.delete(f.id); }
+    ui.sheet = null; ui.sheetData = {}; render(); toast(`${f.name} removed`); return;
+  }
   if (ds.restore) {
     if (isWorker()) return;
     const i = d.archived.findIndex(x => x.id === ds.restore); if (i < 0) return;
@@ -1886,6 +2037,7 @@ document.addEventListener('click', e => {
 
 document.addEventListener('change', e => {
   const el = e.target;
+  if (el.matches && el.matches('[data-file-input]') && el.files && el.files[0]) { pickFile(el.files[0], el.closest('form')); el.value = ''; return; }
   if (el.matches && el.matches('[data-photo-input]') && el.files && el.files[0]) {
     const f = el.closest('form'), url = URL.createObjectURL(el.files[0]), img = new Image();
     img.onload = () => {
@@ -1927,6 +2079,7 @@ document.addEventListener('submit', e => {
   const v = Object.fromEntries(new FormData(f).entries());
   if (isWorker() && v.youngId && !sees(person(v.youngId))) { toast('You can only record for young people in your house.'); return; }
   if (v.youngId && isArchived(person(v.youngId))) { toast(`${nameOf(v.youngId)}’s file is archived. A manager can restore it from their page.`); return; }
+  if (f.dataset.form === 'fileAdd') { saveFile(v); return; }
   const sd = ui.sheetData || {};
   const trim = x => String(x || '').trim();
   let msg = 'Saved', dest = null, reopen = null;

@@ -543,6 +543,82 @@ try {
     await ctx.close();
   }
 
+  // ---------------------------------------------------------------- files and pictures in a young person's file
+  {
+    const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+    const thumbLoaded = (page, id) => page.waitForFunction(i => { const im = document.querySelector(`img[data-file-img="${i}"]`); return !!im && /^blob:/.test(im.src) && im.complete && im.naturalWidth > 0; }, id, { timeout: 4000 }).then(() => true).catch(() => false);
+    const { ctx, page } = await signedIn('nia@placementhub.demo');
+    await goTo(page, 'person-yp3');
+    await page.click('[data-seg="person|files"]'); await page.waitForTimeout(200);
+    let t = await pageText(page);
+    check('Files: the Files tab shows pictures and files', t.includes('Food hygiene certificate') && t.includes('Letter from Riverside College') && await thumbLoaded(page, 'f1'), t.slice(0, 200));
+
+    await page.click('#page [data-sheet=fileAdd]'); await page.waitForTimeout(200);
+    await page.click('form[data-form=fileAdd] button[type=submit]'); await page.waitForTimeout(150);
+    check('Files: can’t add without choosing a file', await page.locator('form[data-form=fileAdd]').count() === 1);
+    await page.setInputFiles('[data-file-input]', { name: 'page.html', mimeType: 'text/html', buffer: Buffer.from('<p>hi</p>') }); await page.waitForTimeout(200);
+    check('Files: other kinds of file are refused', (await page.innerText('#filePreview')).includes('No photo or file chosen'));
+    await page.setInputFiles('[data-file-input]', { name: 'IMG_0001.png', mimeType: 'image/png', buffer: PNG });
+    await page.waitForFunction(() => /Photo ready/.test(document.getElementById('filePreview')?.innerText || ''), null, { timeout: 4000 }).catch(() => {});
+    const named = await page.inputValue('form[data-form=fileAdd] [name=name]'), photoChosen = await page.isChecked('form[data-form=fileAdd] [name=kind][value="Photo"]');
+    check('Files: choosing a photo shows it and fills in the name', named.startsWith('Photo, ') && photoChosen, named);
+    await page.fill('form[data-form=fileAdd] [name=name]', 'Cooking night');
+    await page.click('form[data-form=fileAdd] button[type=submit]'); await page.waitForTimeout(500);
+    const added = await page.$eval('.file-grid', el => [...el.querySelectorAll('.file-thumb')].map(b => b.innerText)).catch(() => []);
+    const newId = await page.$eval('.file-grid .file-thumb img', im => im.dataset.fileImg).catch(() => '');
+    check('Files: a support worker can add a photo', added.includes('Cooking night') && await page.locator('.sheet').count() === 0 && await thumbLoaded(page, newId), JSON.stringify(added));
+
+    await page.click('#page [data-sheet=fileAdd]'); await page.waitForTimeout(200);
+    await page.setInputFiles('[data-file-input]', { name: 'Review letter.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n% made-up test file\n') }); await page.waitForTimeout(300);
+    await page.click('form[data-form=fileAdd] button[type=submit]'); await page.waitForTimeout(200);
+    check('Files: has to say what the file is', await page.locator('form[data-form=fileAdd]').count() === 1);
+    await page.click('form[data-form=fileAdd] input[value="Letter"] + span');
+    await page.click('form[data-form=fileAdd] button[type=submit]'); await page.waitForTimeout(500);
+    t = await pageText(page);
+    check('Files: a PDF can be added', t.includes('Review letter') && /Letter · PDF/.test(t), t.slice(0, 300));
+
+    await page.reload(); await page.waitForTimeout(400);
+    await page.click('[data-seg="person|files"]').catch(() => {}); await page.waitForTimeout(200);
+    check('Files: they’re still there after reopening the app', (await pageText(page)).includes('Review letter') && await thumbLoaded(page, newId));
+    await page.click('.file-thumb:has-text("Cooking night")'); await page.waitForTimeout(250);
+    check('Files: tapping a picture opens it large', await thumbLoaded(page, newId) && await page.locator('.sheet .file-view img').count() === 1);
+    check('Files: support workers can’t remove files', await page.locator('.sheet [data-file-remove]').count() === 0);
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 4000 }).catch(() => null), page.click('.sheet [data-file-download]')]);
+    check('Files: "Save a copy" downloads the picture', !!dl && dl.suggestedFilename() === 'Cooking night.jpg', dl ? dl.suggestedFilename() : 'no download');
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await page.click('[data-seg="person|timeline"]'); await page.waitForTimeout(150);
+    check('Files: added files show on the timeline', (await pageText(page)).includes('Picture added: Cooking night'));
+    check('Files (support worker): no errors', page.errors.length === 0, page.errors.join(' | '));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await signedIn('maya@placementhub.demo');
+    await page.evaluate(() => { const b = document.createElement('button'); b.dataset.sheet = 'fileView'; b.dataset.file = 'f1'; document.getElementById('app').appendChild(b); b.click(); }); await page.waitForTimeout(200);
+    check('Files: staff from another house can’t open them', (await page.innerText('.sheet')).includes('can’t be found'));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await signedIn('amira@placementhub.demo');
+    await goTo(page, 'person-yp3');
+    await page.click('[data-seg="person|files"]'); await page.waitForTimeout(200);
+    await page.click('#page [data-file="f2"]'); await page.waitForTimeout(200);
+    await page.click('.sheet [data-file-remove]'); await page.waitForTimeout(150);
+    const asked = (await page.innerText('.sheet')).includes('can’t be undone');
+    await page.click('.sheet [data-file-keep]'); await page.waitForTimeout(150);
+    const kept = await page.locator('.sheet [data-file-remove]').count() === 1;
+    await page.click('.sheet [data-file-remove]'); await page.waitForTimeout(150);
+    await page.click('.sheet [data-file-remove-yes]'); await page.waitForTimeout(250);
+    check('Files: a manager can remove a file, after confirming', asked && kept && !(await pageText(page)).includes('Letter from Riverside College'));
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 4000 }).catch(() => null), page.click('#page [data-file="f1"]').then(() => page.waitForTimeout(200)).then(() => page.click('.sheet [data-file-download]'))]);
+    check('Files: sample certificate can be saved', !!dl && dl.suggestedFilename() === 'Food hygiene certificate.svg', dl ? dl.suggestedFilename() : 'no download');
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await goTo(page, 'person-yp5');
+    await page.click('[data-seg="person|files"]'); await page.waitForTimeout(150);
+    check('Files: nothing can be added to an archived file', await page.locator('#page [data-sheet=fileAdd]').count() === 0);
+    check('Files (manager): no errors', page.errors.length === 0, page.errors.join(' | '));
+    await ctx.close();
+  }
+
   // ---------------------------------------------------------------- welfare checks were removed (15 Nov 2026)
   {
     const { ctx, page } = await shiftAt(23, 30);
