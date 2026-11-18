@@ -167,6 +167,10 @@ button.row:hover,.row-main:hover{background:#f8fafd}
 .act{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .act:first-of-type{margin-top:6px}
 .act b{font-weight:600;font-size:15px;display:block}
+.edit-row{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;border:1px solid var(--line);border-radius:14px;padding:12px}
+.edit-row > b{grid-column:1/-1;font-size:14px;color:var(--muted)}
+.plan-doc .edit-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.plan-doc .signoff-btn{margin-top:14px}
 .step-no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;font-weight:700;font-size:14px}
 .plan-doc .chip-line .chip{margin:0 6px}
 .goals li{padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
@@ -413,6 +417,7 @@ const P = {
   quote: '<path d="M7 7h4v4c0 3-1.5 5-4 6M15 7h4v4c0 3-1.5 5-4 6"/>',
   tools: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4Z"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>',
+  pencil: '<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
   camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
   pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
   flag: '<path d="M5 22V4h11l-2 4 2 4H5"/>',
@@ -528,7 +533,7 @@ const seedData = () => Object.assign(shiftDates({
   ],
   docs: [
     { id: 'doc1', name: 'Support plan', subject: 'Alex Y.', version: 3, status: 'Approved', review: '2026-10-22', owner: 'Maya T.' },
-    { id: 'doc2', name: 'Risk assessment', subject: 'Jordan K.', version: 2, status: 'Review needed', review: '2026-10-18', owner: 'Daniel O.' },
+    { id: 'doc2', name: 'Risk assessment', subject: 'Jordan K.', version: 3, status: 'Review needed', review: '2026-10-18', owner: 'Daniel O.' },
     { id: 'doc3', name: 'Missing from home plan', subject: 'Alex Y.', version: 1, status: 'Pending approval', review: '2026-10-24', owner: 'Amira R.' },
     { id: 'doc4', name: 'House safety checklist', subject: 'Maple House', version: 4, status: 'Approved', review: '2026-11-01', owner: 'Amira R.' },
     { id: 'doc5', name: 'Education & pathway plan', subject: 'Taylor M.', version: 2, status: 'Approved', review: '2026-11-03', owner: 'Maya T.' },
@@ -572,7 +577,7 @@ const seedData = () => Object.assign(shiftDates({
 /* ================================================================
    State and saving (this browser only)
    ================================================================ */
-const STORE_BASE = 'placementhub.demo.v12';
+const STORE_BASE = 'placementhub.demo.v13';
 let STORE = STORE_BASE;
 const WELCOME = 'placementhub.welcomed.v4';
 let d;
@@ -753,7 +758,12 @@ const ageOf = y => { if (!y || !y.dob) return '?'; const [a, b, c] = y.dob.split
 const turns18 = y => { if (!y || !y.dob) return null; const [a, b, c] = y.dob.split('-').map(Number); return `${a + 18}-${pad(b)}-${pad(c)}`; };
 const eighteenSoon = y => { const t = turns18(y); if (!t) return false; const n = daysBetween(TODAY, t); return n >= 0 && n <= 120; };
 const overdueTasks = () => d.tasks.filter(t => !t.done && t.due < TODAY);
-const unread = () => d.handovers.filter(h => !h.ack);
+const unread = () => d.handovers.filter(h => !h.ack && h.author !== me().name);
+/* is this staff member on shift right now? Their own running shift, or a rota shift covering this moment */
+const onShiftNow = st => {
+  if (d.shift && d.shift.staff === st.name) return true;
+  return d.shifts.some(x => { if (x.staffId !== st.id) return false; const from = atTime(x.date, x.start), to = atTime(x.end > x.start ? x.date : addDays(x.date, 1), x.end); return Date.now() >= from && Date.now() < to; });
+};
 const pendingReviews = () => d.reviews.filter(r => r.decision === 'Pending');
 const openConcerns = () => d.incidents.filter(i => i.status !== 'Resolved');
 const nextIncidentId = () => 'INC-' + (Math.max(104, ...d.incidents.map(i => Number(i.id.split('-')[1]) || 0)) + 1);
@@ -874,6 +884,11 @@ const portraitSvg = p => {
   }[p.style] || '';
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${p.bg}"/>${back}<path d="M8 66c2-13 12-20 24-20s22 7 24 20z" fill="${p.top}"/><rect x="27" y="36" width="10" height="11" rx="4" fill="${p.skin}"/><ellipse cx="32" cy="28" rx="11.5" ry="13" fill="${p.skin}"/>${front}<circle cx="27.5" cy="29" r="1.4" fill="#1d2433"/><circle cx="36.5" cy="29" r="1.4" fill="#1d2433"/><path d="M28.5 34.5q3.5 2.6 7 0" stroke="#1d2433" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>`;
 };
+const PLAN_STATUS = ['On track', 'Some progress', 'Needs more support'];
+const ACTION_STATUS = ['Not started', 'In progress', 'Done'];
+const LEVELS = ['High', 'Medium', 'Low'];
+const LEGAL_STATUS = ['Looked after (section 20)', 'Looked after (care order)', 'Care leaver (relevant child)', 'Homeless 16 or 17 (section 17)', 'Other'];
+const planOf = (y, kind) => kind === 'risk' ? (y.riskAssessment = y.riskAssessment || { version: '0', items: [], missing: { steps: [] } }) : (y.supportPlan = y.supportPlan || { version: '0', areas: [] });
 const PHOTO_OK = x => typeof x === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(x) && x.length < 400000;
 const avatarInner = y => PHOTO_OK(y.photo) ? `<img src="${y.photo}" alt="">` : y.portrait ? portraitSvg(y.portrait) : esc(y.initials || y.name.split(' ').map(w => w[0]).join(''));
 const avatar = (y, cls = '') => `<span class="avatar ${PHOTO_OK(y.photo) || y.portrait ? 'pic' : ''} ${cls}" aria-hidden="true">${avatarInner(y)}</span>`;
@@ -900,13 +915,13 @@ const RECORD = [
 /* Navigation */
 const MAIN = [['home', 'home', 'Home'], ['people', 'users', 'Young people'], ['tasks', 'checklist', 'Tasks']];
 const MORE_MANAGER = [
-  ['On shift', [['health', 'pill', 'Medication & appointments', 'What’s due today, and what’s coming up'], ['log', 'clipboard', 'Shift log', 'Checks, daily notes, in & out, and handovers']]],
+  ['On shift', [['health', 'pill', 'Medication & appointments', 'What’s due today, and what’s coming up'], ['log', 'clipboard', 'Shift log', 'Daily notes, in & out, and handovers']]],
   ['Safety', [['safeguarding', 'shield', 'Safeguarding', 'Concerns, missing episodes and Reg 27 decisions']]],
   ['Running the service', [['evidence', 'award', 'Ofsted evidence', 'Quality standards and service checklist'], ['documents', 'file', 'Documents', 'Plans and policies, and when they’re due for review'], ['team', 'calendar', 'Team & rota', 'Shifts, messages and leave'], ['repairs', 'tools', 'Repairs', 'Report and track house repairs'], ['reports', 'chart', 'Reports', 'Summaries and data to copy or download']]],
   ['Help', [['about', 'info', 'About this demo', 'What this is, and how to reset the sample data']]]
 ];
 const MORE_WORKER = [
-  ['On shift', [['health', 'pill', 'Medication & appointments', 'What’s due today, and what’s coming up'], ['log', 'clipboard', 'Shift log', 'Checks, daily notes, in & out, and handovers']]],
+  ['On shift', [['health', 'pill', 'Medication & appointments', 'What’s due today, and what’s coming up'], ['log', 'clipboard', 'Shift log', 'Daily notes, in & out, and handovers']]],
   ['Safety', [['safeguarding', 'shield', 'Safeguarding', 'Concerns and missing episodes']]],
   ['House & team', [['team', 'calendar', 'Team & rota', 'Shifts, messages and leave'], ['repairs', 'tools', 'Repairs', 'Report and track house repairs']]],
   ['Help', [['about', 'info', 'About this demo', 'What this is, and how to reset the sample data']]]
@@ -1247,7 +1262,7 @@ function team() {
     body = `<div class="card day-nav"><button class="icon-btn" data-rota-step="-1" aria-label="Previous day">${icon('back')}</button><div class="grow"><b style="display:block;color:var(--ink)">${relDay(ui.rotaDate)}</b><input type="date" value="${ui.rotaDate}" data-rota-date aria-label="Choose a date"></div><button class="icon-btn" data-rota-step="1" aria-label="Next day">${icon('chev')}</button></div>
       <div class="card list">${ss.map(s => { const st = d.staff.find(x => x.id === s.staffId) || { name: 'Unknown', initials: '?' }; return `<div class="row">${avatar(st)}<span class="grow"><b>${esc(st.name)}</b><span class="sub">${esc(s.home)}</span></span>${chip(`${s.start}–${s.end}`, s.end < s.start ? 'info' : 'grey')}</div>`; }).join('') || empty('No shifts on this day', isWorker() ? 'Your manager plans the rota.' : 'Use “Add shift” to plan one.')}</div>
       <div class="section-head"><h2>The team</h2></div>
-      <div class="card list">${d.staff.map(s => `<button class="row" data-sheet="staffHome" data-staff="${s.id}" aria-label="${esc(s.name)}: change their house">${avatar(s)}<span class="grow"><b>${esc(s.name)}</b><span class="sub">${esc(s.role)} · <span class="mini-bar"><span style="width:${s.training}%"></span></span>${s.training}% training</span><span class="sub small">${s.home ? 'House: ' + esc(s.home) : 'All houses'}</span></span>${chip(s.status)}<span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>
+      <div class="card list">${d.staff.map(s => `<button class="row" data-sheet="staffHome" data-staff="${s.id}" aria-label="${esc(s.name)}: change their house">${avatar(s)}<span class="grow"><b>${esc(s.name)}</b><span class="sub">${esc(s.role)} · <span class="mini-bar"><span style="width:${s.training}%"></span></span>${s.training}% training</span><span class="sub small">${s.home ? 'House: ' + esc(s.home) : 'All houses'}</span></span>${chip(onShiftNow(s) ? 'On shift' : 'Off shift')}<span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>
       <p class="small-note">Tap someone to change their house. Support workers only see young people in their own house, plus a house they’re covering while that shift is running.</p>`;
   }
   if (t === 'messages') body = `<div class="card">${d.messages.map(m => `<div class="entry"><div class="entry-top"><div><b>${esc(m.subject)}</b><span class="meta">${esc(m.by)} · ${relDay(m.date)} ${esc(m.time || '')}</span></div></div><p>${esc(m.body)}</p></div>`).join('') || empty('No messages')}</div><p class="small-note">Messages stay in this demo. Nothing is sent to anyone.</p>`;
@@ -1339,6 +1354,64 @@ const SHEETS = {
         ${PHOTO_OK(y.photo) ? `<button type="button" class="btn secondary" data-photo-remove="${y.id}">Remove photo</button>` : ''}</div>` +
       notice('This demo uses made-up records. Don’t upload a photo of a real young person.', true), 'Save picture') };
   },
+  planEdit: sd => {
+    const y = person(sd.young), risk = sd.kind === 'risk', part = sd.part;
+    if (!y) return { title: 'Edit', body: empty('This young person can’t be found') };
+    const p = planOf(y, risk ? 'risk' : 'support'), first = esc(y.name.split(' ')[0]);
+    const hidden = `<input type="hidden" name="youngId" value="${y.id}"><input type="hidden" name="kind" value="${risk ? 'risk' : 'support'}"><input type="hidden" name="part" value="${esc(part)}"><input type="hidden" name="i" value="${esc(sd.i ?? '')}">`;
+    const txt = (label, name, value, req = false, hint) => field(label, area(name, '', value || '', req), false, hint);
+    const one = (label, name, value, half, attrs = 'maxlength="120"') => field(label, inp(name, 'text', value || '', attrs), half);
+    const date = (label, name, value, half = true, req = false) => field(label, inp(name, 'date', value || '', req ? 'required' : ''), half);
+    if (part === 'details') {
+      const legal = [...new Set([...LEGAL_STATUS, p.legal].filter(Boolean))];
+      return { title: `Edit support plan: ${esc(y.name)}`, help: 'Changes show straight away and are marked as not signed off until a manager signs off a new version.', body: form('planEdit', hidden +
+        txt(`About ${first}`, 'about', p.about, true) + txt('What’s going well', 'strengths', p.strengths) + txt(`How to talk with ${first}`, 'communication', p.communication) +
+        txt('Main goals', 'goals', (y.goals || []).join('\n'), false, 'One goal on each line.') +
+        date('Moved in', 'moveIn', p.moveIn) + field('Legal status', sel('legal', legal, p.legal || LEGAL_STATUS[0]), true) +
+        one('Placing authority', 'la', p.la, false) + one('Social worker', 'socialWorker', p.socialWorker, true) + one('Personal adviser', 'pa', p.pa, true) +
+        one('Keywork sessions', 'keywork', p.keywork, true) + one('Support hours', 'hours', p.hours, true) + one('GP', 'gp', p.gp, false), 'Save changes') };
+    }
+    if (part === 'area') {
+      const a = (p.areas || [])[Number(sd.i)]; if (!a) return { title: 'Edit', body: empty('This area can’t be found') };
+      const rows = [...a.actions, { what: '', who: '', by: '', status: 'Not started' }];
+      return { title: `${esc(a.area)}: ${esc(y.name)}`, body: form('planEdit', hidden +
+        choiceField('How is it going?', 'status', PLAN_STATUS, a.status) + txt('Where things are now', 'now', a.now, true) + one(`What ${first} wants to achieve`, 'goal', a.goal, false, 'maxlength="200" required') +
+        rows.map((r, j) => `<div class="edit-row"><b>${j < a.actions.length ? `Action ${j + 1}` : 'Add an action'}</b>${one('What', `a${j}_what`, r.what, false, 'maxlength="160"')}${one('Who', `a${j}_who`, r.who, true)}${date('By when', `a${j}_by`, r.by)}${field('Status', sel(`a${j}_status`, ACTION_STATUS, r.status || 'Not started'), false)}</div>`).join('') +
+        '<p class="small-note" style="grid-column:1/-1;margin:0">To remove an action, clear its “What” box.</p>', 'Save changes') };
+    }
+    if (part === 'contacts') {
+      const rows = [...(p.contacts || []), { role: '', name: '', org: '' }, { role: '', name: '', org: '' }];
+      return { title: `Contacts: ${esc(y.name)}`, body: form('planEdit', hidden +
+        rows.map((r, j) => `<div class="edit-row"><b>${j < (p.contacts || []).length ? `Contact ${j + 1}` : 'Add a contact'}</b>${one('Role', `c${j}_role`, r.role, true)}${one('Name', `c${j}_name`, r.name, true)}${one('Organisation', `c${j}_org`, r.org, false)}</div>`).join('') +
+        '<p class="small-note" style="grid-column:1/-1;margin:0">No phone numbers or addresses: keep those in the office file. To remove a contact, clear its role.</p>', 'Save changes') };
+    }
+    if (part === 'summary') {
+      return { title: `Edit risk assessment: ${esc(y.name)}`, help: 'Changes show straight away and are marked as not signed off until a manager signs off a new version.', body: form('planEdit', hidden +
+        choiceField('Overall risk level', 'overall', LEVELS, y.risk) + txt('Summary', 'summary', p.summary, true) + txt(`What helps keep ${first} safe`, 'protective', p.protective) + txt('Things that can make it harder', 'triggers', p.triggers), 'Save changes') };
+    }
+    if (part === 'risk') {
+      const isNew = sd.i === 'new', it = isNew ? { area: '', level: 'Medium', after: 'Low' } : (p.items || [])[Number(sd.i)];
+      if (!it) return { title: 'Edit', body: empty('This risk can’t be found') };
+      return { title: isNew ? `Add a risk: ${esc(y.name)}` : `${esc(it.area)}: ${esc(y.name)}`, body: form('planEdit', hidden +
+        one('What’s the risk?', 'area', it.area, false, 'maxlength="80" required placeholder="e.g. Going missing"') + choiceField('Risk level now', 'level', LEVELS, it.level) + choiceField('With these steps in place', 'after', LEVELS, it.after || it.level) +
+        txt('What’s happened before', 'history', it.history) + txt('Triggers and warning signs', 'signs', it.signs, true) + txt('What staff do', 'plan', it.plan, true) + txt(`What ${first} has agreed to do`, 'yp', it.yp) + txt('Who to tell', 'tell', it.tell) +
+        (isNew ? '' : `<div class="btn-row" style="grid-column:1/-1;margin:0"><button type="button" class="btn small danger" data-risk-remove="${y.id}|${esc(sd.i)}">Remove this risk</button></div>`), isNew ? 'Add risk' : 'Save changes') };
+    }
+    if (part === 'missing') {
+      const m = p.missing || {}, steps = [...(m.steps || []), { when: '', what: '' }];
+      return { title: `If ${first} is late back or missing`, body: form('planEdit', hidden +
+        txt(`Places ${first} might go`, 'places', m.places, false, 'Addresses go in the office file, not here.') +
+        steps.map((st, j) => `<div class="edit-row"><b>${j < (m.steps || []).length ? `Step ${j + 1}` : 'Add a step'}</b>${one('When', `s${j}_when`, st.when, false, 'maxlength="60" placeholder="e.g. At 22:00"')}${field('What to do', area(`s${j}_what`, '', st.what || '', false), false)}</div>`).join('') +
+        txt(`When ${first} comes back`, 'onReturn', m.onReturn) + '<p class="small-note" style="grid-column:1/-1;margin:0">To remove a step, clear its “When” box.</p>', 'Save changes') };
+    }
+    if (part === 'signoff') {
+      const nextVersion = (parseInt(p.version, 10) || 0) + 1, cur = risk ? p.next : y.nextReview;
+      return { title: `Sign off ${risk ? 'risk assessment' : 'support plan'}: ${esc(y.name)}`, help: `This makes it version ${nextVersion}, signed off by you today.`, body: form('planEdit', hidden +
+        txt('What changed in this version?', 'changes', p.edited ? '' : 'Reviewed. No changes needed.', true) +
+        date(`Talked through with ${first} on`, 'agreed', TODAY) + date('Next review', 'next', cur && cur > TODAY ? cur : addDays(TODAY, risk ? 30 : 90), true, true), `Sign off version ${nextVersion}`) };
+    }
+    return { title: 'Edit', body: empty('Nothing to edit here') };
+  },
   ypPlan: sd => {
     const y = person(sd.young), risk = sd.kind === 'risk', title = risk ? 'Risk assessment' : 'Support plan';
     if (!y) return { title, body: empty('This young person can’t be found') };
@@ -1347,7 +1420,12 @@ const SHEETS = {
     const next = risk ? p.next : y.nextReview, overdue = next && next < TODAY;
     const head = `<div class="card row me-card static"><span class="ico">${icon(risk ? 'shield' : 'file')}</span><span class="grow"><b>${esc(y.name)}</b><span class="chip-line">${risk ? chip(y.risk + ' risk') : chip('Plan: ' + y.plan, toneOf(y.plan))}</span><span class="sub">${esc(y.home)} · keyworker ${esc(y.keyworker)}</span><span class="sub small">Reviewed ${fmt(p.reviewed, { day: 'numeric', month: 'long', year: 'numeric' })} by ${esc(p.by)}</span><span class="sub small ${overdue ? 't-bad' : ''}">${overdue ? 'Review overdue since' : 'Next review'} ${fmt(next, { day: 'numeric', month: 'long' })}</span></span></div>`;
     const sec = (h, t) => t ? `<h3>${h}</h3><p>${esc(t)}</p>` : '';
-    const foot = `<p class="small-note plan-foot">Made-up example for the demo. Only a manager can change ${risk ? 'a risk assessment' : 'a plan'}. If something has changed, tell them and write it in a daily note.</p>`;
+    const mgr = !isWorker(), kindName = risk ? 'risk' : 'support';
+    const eb = (part, label, i) => mgr ? `<button type="button" class="btn small secondary" data-sheet="planEdit" data-young="${y.id}" data-kind="${kindName}" data-part="${part}"${i !== undefined ? ` data-i="${i}"` : ''}>${icon('pencil', 16)} ${label}</button>` : '';
+    const ebs = (...b) => mgr ? `<div class="edit-btns">${b.join('')}</div>` : '';
+    const edited = p.edited ? `<div class="notice warn">${icon('info', 18)}<span>Changed by ${esc(p.editedBy || 'a manager')} on ${fmt(p.editedOn)}. <b>Not signed off yet.</b>${mgr ? ' When you’ve finished, sign off a new version at the bottom.' : ''}</span></div>` : '';
+    const signoff = mgr ? `<button type="button" class="btn ${p.edited ? 'primary' : 'secondary'} block signoff-btn" data-sheet="planEdit" data-young="${y.id}" data-kind="${kindName}" data-part="signoff">${icon('check', 18)} ${p.edited ? 'Sign off a new version' : 'Review and sign off'}</button>` : '';
+    const foot = `<p class="small-note plan-foot">Made-up example for the demo. ${mgr ? 'Changes are saved on this device only.' : `Only a manager can change ${risk ? 'a risk assessment' : 'a plan'}. If something has changed, tell them and write it in a daily note.`}</p>`;
     const long = x => fmt(x, { day: 'numeric', month: 'long', year: 'numeric' });
     const kv = rows => `<div class="card kv">${rows.filter(r => r[1]).map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`;
     if (risk) {
@@ -1356,21 +1434,21 @@ const SHEETS = {
       const lab = (t, v) => v ? `<div class="labelled"><small>${t}</small>${esc(v)}</div>` : '';
       const riskCard = (it, i) => `<details class="card acc" data-acc="ra-${y.id}-${i}" ${ui.openAcc['ra-' + y.id + '-' + i] ? 'open' : ''}><summary><span class="grow"><b>${esc(it.area)}</b><span class="sub">${it.after ? `With these steps: ${esc(it.after.toLowerCase())}` : ''}</span></span>${chip(it.level)}<span class="chev">${icon('chev', 18)}</span></summary>
         <div class="acc-body">${lab('What’s happened before', it.history)}${lab('Triggers and warning signs', it.signs || '')}${lab('What staff do', it.plan)}${lab(`What ${first} has agreed to do`, it.yp)}${lab('Who to tell', it.tell)}
-        ${it.after ? `<div class="labelled"><small>Risk level</small><span class="chip-line">Now ${chip(it.level)} With these steps ${chip(it.after)}</span></div>` : ''}</div></details>`;
+        ${it.after ? `<div class="labelled"><small>Risk level</small><span class="chip-line">Now ${chip(it.level)} With these steps ${chip(it.after)}</span></div>` : ''}${ebs(eb('risk', 'Edit this risk', i))}</div></details>`;
       const m = p.missing || {}, missingText = typeof p.missing === 'string' ? p.missing : '';
       const contacts = [['On-call manager', 'Any time, for anything you’re worried about'], ['Police', '999 if you think they’re in danger. Otherwise follow the missing-from-home procedure.'], [y.supportPlan && y.supportPlan.socialWorker ? `Social worker: ${y.supportPlan.socialWorker}` : y.supportPlan && y.supportPlan.pa ? `Personal adviser: ${y.supportPlan.pa}` : 'Social worker', 'Office hours'], ['Emergency Duty Team', 'Out of hours, for the local authority']];
-      return { title: `Risk assessment: ${esc(y.name)}`, body: `<div class="plan-doc">${head}
-        ${sec('Summary', p.summary)}${sec(`What helps keep ${first} safe`, p.protective)}${sec('Things that can make it harder', p.triggers)}
+      return { title: `Risk assessment: ${esc(y.name)}`, body: `<div class="plan-doc">${head}${edited}
+        ${sec('Summary', p.summary)}${sec(`What helps keep ${first} safe`, p.protective)}${sec('Things that can make it harder', p.triggers)}${ebs(eb('summary', 'Edit summary'))}
         <h3>Risks and what staff do</h3><p class="small-note" style="margin:0 0 4px">${items.length} risk${items.length === 1 ? '' : 's'}${tally ? ': ' + tally : ''}. Tap a risk to see what to do.</p>
-        ${items.map(riskCard).join('')}
+        ${items.map(riskCard).join('')}${ebs(eb('risk', 'Add a risk', 'new'))}
         <h3>If ${first} is late back or missing</h3>
         ${missingText ? `<div class="notice warn">${icon('door', 18)}<span>${esc(missingText)}</span></div>` : `<div class="notice warn">${icon('door', 18)}<span>Agreed back-by time: <b>${esc(y.backBy || 'none agreed')}</b>. Their picture is at the top of their page, and a description is in the office file for the police.</span></div>
         ${m.places ? `<div class="labelled"><small>Places ${first} might go</small>${esc(m.places)}</div>` : ''}
         ${(m.steps || []).length ? `<div class="labelled"><small>What to do</small></div><div class="card list">${m.steps.map((st, i) => `<div class="row"><span class="step-no">${i + 1}</span><span class="grow"><b>${esc(st.when)}</b><span class="sub">${esc(st.what)}</span></span></div>`).join('')}</div>` : ''}
-        ${m.onReturn ? `<div class="labelled"><small>When ${first} comes back</small>${esc(m.onReturn)}</div>` : ''}`}
+        ${m.onReturn ? `<div class="labelled"><small>When ${first} comes back</small>${esc(m.onReturn)}</div>` : ''}`}${ebs(eb('missing', 'Edit missing-from-home steps'))}
         <h3>Who to contact</h3><div class="card list">${contacts.map(([a, b]) => `<div class="row"><span class="grow"><b>${esc(a)}</b><span class="sub">${esc(b)}</span></span></div>`).join('')}</div>
         <h3>Review and sign-off</h3>${kv([['Version', p.version], ['Reviewed', p.reviewed && `${long(p.reviewed)} by ${p.by}`], [`Talked through with ${first}`, p.discussedOn && long(p.discussedOn)], ['Approved by', p.approvedBy && `${p.approvedBy}, ${long(p.approvedOn)}`], ['Next review', p.next && long(p.next)]])}
-        ${p.changes ? `<div class="labelled"><small>What changed in this version</small>${esc(p.changes)}</div>` : ''}${foot}</div>` };
+        ${p.changes ? `<div class="labelled"><small>What changed in this version</small>${esc(p.changes)}</div>` : ''}${signoff}${foot}</div>` };
     }
     const meds = d.meds.filter(m => m.youngId === y.id && medActive(m)).map(m => `${m.name}, ${m.dose} ${medTimesText(m)}`);
     const areas = p.areas || [], onTrack = areas.filter(a => a.status === 'On track').length;
@@ -1378,16 +1456,16 @@ const SHEETS = {
     const areaCard = (a, i) => `<details class="card acc" data-acc="sp-${y.id}-${i}" ${ui.openAcc['sp-' + y.id + '-' + i] ? 'open' : ''}><summary><span class="grow"><b>${esc(a.area)}</b><span class="sub">${esc(a.goal)}</span></span>${chip(a.status)}<span class="chev">${icon('chev', 18)}</span></summary>
       <div class="acc-body"><div class="labelled"><small>Where things are now</small>${esc(a.now)}${a.area === 'Health' && meds.length ? ` Current medication: ${esc(meds.join('; '))}.` : ''}</div>
       <div class="labelled"><small>What ${first} wants to achieve</small>${esc(a.goal)}</div>
-      <div class="labelled"><small>Actions</small></div>${a.actions.length ? a.actions.map(action).join('') : '<p class="small-note" style="margin:6px 0 0">No actions needed right now.</p>'}</div></details>`;
-    return { title: `Support plan: ${esc(y.name)}`, body: `<div class="plan-doc">${head}
+      <div class="labelled"><small>Actions</small></div>${a.actions.length ? a.actions.map(action).join('') : '<p class="small-note" style="margin:6px 0 0">No actions needed right now.</p>'}${ebs(eb('area', 'Edit this area', i))}</div></details>`;
+    return { title: `Support plan: ${esc(y.name)}`, body: `<div class="plan-doc">${head}${edited}${ebs(eb('details', 'Edit details and goals'))}
       ${sec(`About ${first}`, p.about)}${sec('What’s going well', p.strengths)}${sec(`How to talk with ${first}`, p.communication)}
       <h3>Key information</h3>${kv([['Date of birth', `${fmt(y.dob, { day: 'numeric', month: 'long', year: 'numeric' })} (${ageOf(y)})`], ['Moved in', p.moveIn && long(p.moveIn)], ['Legal status', p.legal], ['Placing authority', p.la], ['Social worker', p.socialWorker], ['Personal adviser', p.pa], ['Keyworker', y.keyworker], ['Keywork sessions', p.keywork], ['Support hours', p.hours], ['GP', p.gp], ['Agreed back-by time', y.backBy]])}
       <h3>${first}’s main goals</h3><div class="card"><ol class="goals">${y.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ol></div>
       <h3>Areas of support</h3><p class="small-note" style="margin:0 0 4px">${onTrack} of ${areas.length} on track. Tap an area to see what’s happening and who’s doing what.</p>
       ${areas.map(areaCard).join('')}
-      ${(p.contacts || []).length ? `<h3>Professionals and contacts</h3><div class="card list">${p.contacts.map(c => `<div class="row"><span class="grow"><b>${esc(c.role)}: ${esc(c.name)}</b>${c.org ? `<span class="sub">${esc(c.org)}</span>` : ''}</span></div>`).join('')}</div>` : ''}
+      ${(p.contacts || []).length || mgr ? `<h3>Professionals and contacts</h3>${(p.contacts || []).length ? `<div class="card list">${p.contacts.map(c => `<div class="row"><span class="grow"><b>${esc(c.role)}: ${esc(c.name)}</b>${c.org ? `<span class="sub">${esc(c.org)}</span>` : ''}</span></div>`).join('')}</div>` : ''}${ebs(eb('contacts', 'Edit contacts'))}` : ''}
       <h3>Review and sign-off</h3>${kv([['Version', p.version], ['Reviewed', `${long(p.reviewed)} by ${p.by}`], [`Agreed with ${y.name.split(' ')[0]}`, p.agreedOn && long(p.agreedOn)], ['Approved by', p.approvedBy && `${p.approvedBy}, ${long(p.approvedOn)}`], ['Next review', long(y.nextReview)]])}
-      ${p.changes ? `<div class="labelled"><small>What changed in this version</small>${esc(p.changes)}</div>` : ''}${foot}</div>` };
+      ${p.changes ? `<div class="labelled"><small>What changed in this version</small>${esc(p.changes)}</div>` : ''}${signoff}${foot}</div>` };
   },
   staffHome: sd => {
     const st = d.staff.find(x => x.id === sd.staff);
@@ -1677,7 +1755,7 @@ function toast(msg) {
   el.innerHTML = icon('check', 18) + `<span>${esc(msg)}</span>`; el.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
-const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto'];
+const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto', 'planEdit'];
 const openSheet = (name, data = {}) => { if (isWorker() && MANAGER_SHEETS.includes(name)) { toast('Only managers can do that.'); return; } ui.sheet = name; ui.sheetData = data; render(); };
 const closeSheet = () => { ui.sheet = null; ui.sheetData = {}; render(); };
 
@@ -1713,6 +1791,15 @@ document.addEventListener('click', e => {
   if (ds.missing) {
     const m = d.moves.find(x => x.id === ds.missing); if (!m) return;
     return openSheet('incident', { moveId: m.id, young: m.youngId, type: 'Missing episode', date: TODAY, description: `Signed out at ${m.out}${m.where ? ' (' + m.where + ')' : ''}, agreed to be back by ${m.backBy}. Not back and can’t be reached. Following their missing-from-home plan.` });
+  }
+  if (ds.riskRemove) {
+    if (isWorker()) return;
+    const [yid, idx] = ds.riskRemove.split('|'), y = person(yid), p = y && y.riskAssessment;
+    if (!p || !p.items[Number(idx)]) return;
+    const gone = p.items.splice(Number(idx), 1)[0];
+    Object.assign(p, { edited: true, editedBy: me().name, editedOn: TODAY });
+    Object.keys(ui.openAcc).filter(k => k.startsWith(`ra-${yid}-`)).forEach(k => delete ui.openAcc[k]);
+    ui.sheet = 'ypPlan'; ui.sheetData = { young: yid, kind: 'risk' }; render(); toast(`${gone.area} removed`); return;
   }
   if (ds.photoRemove) { if (isWorker()) return; const y = person(ds.photoRemove); if (y) { y.photo = ''; ui.sheet = null; ui.sheetData = {}; render(); toast('Photo removed. The drawn picture is back.'); } return; }
   if (ds.incNext) { const i = d.incidents.find(x => x.id === ds.incNext); if (i && i.status !== 'Resolved') { i.status = i.status === 'Open' ? 'Under review' : 'Resolved'; render(); toast(`Status changed to ${i.status.toLowerCase()}`); } return; }
@@ -1780,7 +1867,7 @@ document.addEventListener('submit', e => {
   if (isWorker() && v.youngId && !sees(person(v.youngId))) { toast('You can only record for young people in your house.'); return; }
   const sd = ui.sheetData || {};
   const trim = x => String(x || '').trim();
-  let msg = 'Saved', dest = null;
+  let msg = 'Saved', dest = null, reopen = null;
   switch (f.dataset.form) {
     case 'dose': {
       const m = d.meds.find(x => x.id === v.medId); if (!m) break;
@@ -1805,6 +1892,43 @@ document.addEventListener('submit', e => {
       if (!times.length && !v.asNeeded) { toast('Choose when it’s taken, or “When needed”.'); return; }
       d.meds.push({ id: uid('md'), youngId: v.youngId, name: trim(v.name), dose: trim(v.dose), times, asNeeded: !times.length, support: v.support, from: TODAY, until: v.until || '', note: trim(v.note) });
       msg = `${trim(v.name)} added to ${nameOf(v.youngId)}’s plan`; break;
+    }
+    case 'planEdit': {
+      const y = person(v.youngId); if (!y) break;
+      const kind = v.kind === 'risk' ? 'risk' : 'support', p = planOf(y, kind), part = v.part, i = Number(v.i);
+      const rows = (prefix, keys, main) => { const out = []; for (let j = 0; `${prefix}${j}_${main}` in v; j++) { const r = {}; keys.forEach(k => { r[k] = trim(v[`${prefix}${j}_${k}`]); }); if (r[main]) out.push(r); } return out; };
+      if (part === 'details') {
+        Object.assign(p, { about: trim(v.about), strengths: trim(v.strengths), communication: trim(v.communication), moveIn: v.moveIn || '', legal: trim(v.legal), la: trim(v.la), socialWorker: trim(v.socialWorker), pa: trim(v.pa), keywork: trim(v.keywork), hours: trim(v.hours), gp: trim(v.gp) });
+        const goals = String(v.goals || '').split('\n').map(trim).filter(Boolean); if (goals.length) y.goals = goals.slice(0, 8);
+        msg = 'Support plan details saved';
+      } else if (part === 'area') {
+        const a = (p.areas || [])[i]; if (!a) break;
+        Object.assign(a, { status: PLAN_STATUS.includes(v.status) ? v.status : a.status, now: trim(v.now), goal: trim(v.goal), actions: rows('a', ['what', 'who', 'by', 'status'], 'what').map(r => ({ ...r, status: ACTION_STATUS.includes(r.status) ? r.status : 'Not started' })) });
+        ui.openAcc[`sp-${y.id}-${i}`] = true; msg = `${a.area} saved`;
+      } else if (part === 'contacts') {
+        p.contacts = rows('c', ['role', 'name', 'org'], 'role'); msg = 'Contacts saved';
+      } else if (part === 'summary') {
+        if (LEVELS.includes(v.overall)) y.risk = v.overall;
+        Object.assign(p, { summary: trim(v.summary), protective: trim(v.protective), triggers: trim(v.triggers) }); msg = 'Risk assessment summary saved';
+      } else if (part === 'risk') {
+        const it = { area: trim(v.area), level: LEVELS.includes(v.level) ? v.level : 'Medium', after: LEVELS.includes(v.after) ? v.after : 'Medium', history: trim(v.history), signs: trim(v.signs), plan: trim(v.plan), yp: trim(v.yp), tell: trim(v.tell) };
+        p.items = p.items || [];
+        if (v.i === 'new') { p.items.push(it); ui.openAcc[`ra-${y.id}-${p.items.length - 1}`] = true; msg = `${it.area} added`; }
+        else { if (!p.items[i]) break; p.items[i] = it; ui.openAcc[`ra-${y.id}-${i}`] = true; msg = `${it.area} saved`; }
+      } else if (part === 'missing') {
+        p.missing = { places: trim(v.places), steps: rows('s', ['when', 'what'], 'when'), onReturn: trim(v.onReturn) }; msg = 'Missing-from-home steps saved';
+      } else if (part === 'signoff') {
+        if (!v.next || v.next < TODAY) { toast('Choose a next review date that’s today or later.'); return; }
+        const version = String((parseInt(p.version, 10) || 0) + 1);
+        Object.assign(p, { version, reviewed: TODAY, by: me().name, approvedBy: me().name, approvedOn: TODAY, changes: trim(v.changes), edited: false, editedBy: '', editedOn: '' });
+        if (kind === 'risk') { p.discussedOn = v.agreed || ''; p.next = v.next; } else { p.agreedOn = v.agreed || ''; y.nextReview = v.next; y.plan = 'Current'; }
+        const name = kind === 'risk' ? 'Risk assessment' : 'Support plan', doc = d.docs.find(x => x.subject === y.name && x.name === name);
+        if (doc) Object.assign(doc, { version: Number(version), status: 'Approved', review: v.next }); else d.docs.unshift({ id: uid('doc'), name, subject: y.name, owner: y.keyworker, version: Number(version), status: 'Approved', review: v.next });
+        msg = `Version ${version} signed off`;
+      }
+      if (part !== 'signoff') Object.assign(p, { edited: true, editedBy: me().name, editedOn: TODAY });
+      reopen = ['ypPlan', { young: y.id, kind }];
+      break;
     }
     case 'ypPhoto': {
       const y = person(v.youngId); if (!y) break;
@@ -1854,7 +1978,7 @@ document.addEventListener('submit', e => {
     case 'message': d.messages.unshift({ id: uid('msg'), by: me().name, subject: trim(v.subject), body: trim(v.body), date: TODAY, time: nowTime() }); msg = 'Message posted'; dest = 'team?tab=messages'; break;
     case 'leave': if (v.to < v.from) { toast('The end date can’t be before the start date'); return; } d.leave.unshift({ id: uid('l'), staff: me().name, from: v.from, to: v.to, reason: v.reason, status: 'Pending' }); msg = 'Leave request sent'; dest = 'team?tab=leave'; break;
   }
-  ui.sheet = null; ui.sheetData = {};
+  ui.sheet = reopen ? reopen[0] : null; ui.sheetData = reopen ? reopen[1] : {};
   if (dest) go(dest); else render();
   toast(msg);
 });

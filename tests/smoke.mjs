@@ -382,6 +382,56 @@ try {
     await ctx.close();
   }
 
+  // ---------------------------------------------------------------- managers edit and sign off plans and risk assessments
+  {
+    const { ctx, page } = await signedIn('amira@placementhub.demo');
+    check('Manager isn’t asked to read their own handover', !(await pageText(page)).includes('from Amira R.'));
+    await goTo(page, 'person-yp2');
+    await page.click('.profile-head [data-sheet=ypPlan][data-kind=support]'); await page.waitForTimeout(200);
+    check('Edit: manager sees edit buttons on the support plan', await page.locator('.sheet [data-sheet=planEdit][data-part=details]').count() === 1 && await page.locator('.sheet [data-sheet=planEdit][data-part=area]').count() === 9 && await page.locator('.sheet [data-part=signoff]').count() === 1);
+    await page.click('.sheet details.acc:has-text("Health") summary'); await page.waitForTimeout(100);
+    await page.click('.sheet details.acc:has-text("Health") [data-part=area]'); await page.waitForTimeout(200);
+    await page.click('form[data-form=planEdit] input[value="On track"] + span');
+    await page.fill('form[data-form=planEdit] [name=a2_what]', 'Book an eye test');
+    await page.fill('form[data-form=planEdit] [name=a2_who]', 'Jordan with Daniel O.');
+    await page.click('form[data-form=planEdit] button[type=submit]'); await page.waitForTimeout(250);
+    let t = await page.innerText('.sheet');
+    check('Edit: manager can change an area and add an action', t.includes('Book an eye test') && t.includes('Not signed off yet'), t.slice(0, 160));
+    await page.click('.sheet [data-part=signoff]'); await page.waitForTimeout(200);
+    await page.fill('form[data-form=planEdit] [name=changes]', 'Added an eye test to the health actions.');
+    await page.click('form[data-form=planEdit] button[type=submit]'); await page.waitForTimeout(250);
+    t = await page.innerText('.sheet');
+    check('Edit: signing off makes a new version and clears the warning', !t.includes('Not signed off yet') && t.includes('Added an eye test to the health actions.') && /Version\s*3/.test(t) && t.includes('by Amira R.'));
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await goTo(page, 'documents');
+    check('Edit: the Documents list shows the new version', (await pageText(page)).includes('Jordan K. · v3'));
+    await goTo(page, 'person-yp2');
+    await page.click('.profile-head [data-sheet=ypPlan][data-kind=risk]'); await page.waitForTimeout(200);
+    await page.click('.sheet [data-part=risk][data-i=new]'); await page.waitForTimeout(200);
+    await page.fill('form[data-form=planEdit] [name=area]', 'Online safety');
+    await page.fill('form[data-form=planEdit] [name=signs]', 'Talking to people online they haven’t met.');
+    await page.fill('form[data-form=planEdit] [name=plan]', 'Talk about online safety in keywork.');
+    await page.click('form[data-form=planEdit] button[type=submit]'); await page.waitForTimeout(250);
+    t = await page.innerText('.sheet');
+    check('Edit: manager can add a risk', t.includes('Online safety') && t.includes('5 risks'));
+    await page.click('.sheet details.acc:has-text("Online safety") [data-part=risk]'); await page.waitForTimeout(200);
+    await page.click('[data-risk-remove]'); await page.waitForTimeout(250);
+    t = await page.innerText('.sheet');
+    check('Edit: manager can remove a risk', !t.includes('Online safety') && t.includes('4 risks'));
+    check('Edit (manager): no errors', page.errors.length === 0, page.errors.join(' | '));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await signedIn('nia@placementhub.demo');
+    await goTo(page, 'person-yp2');
+    await page.click('.profile-head [data-sheet=ypPlan][data-kind=support]'); await page.waitForTimeout(200);
+    check('Edit: support workers get no edit or sign-off buttons', await page.locator('.sheet [data-sheet=planEdit]').count() === 0);
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await openSheet(page, 'planEdit'); await page.waitForTimeout(150);
+    check('Edit: support workers can’t open the edit form', await page.locator('.sheet').count() === 0);
+    await ctx.close();
+  }
+
   // ---------------------------------------------------------------- welfare checks were removed (15 Nov 2026)
   {
     const { ctx, page } = await shiftAt(23, 30);
