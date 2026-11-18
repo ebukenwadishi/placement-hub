@@ -297,11 +297,13 @@ try {
     let t = await pageText(page);
     check('Manager sees young people in every house', ['Alex Y.', 'Jordan K.', 'Sam L.', 'Taylor M.'].every(n => t.includes(n)));
     await goTo(page, 'team');
+    await page.click('[data-seg="team|staff"]'); await page.waitForTimeout(150);
     check('Manager sees each worker’s house', (await pageText(page)).includes('House: Brookside House'));
-    await page.click('[data-sheet=staffHome][data-staff=st2]'); await page.waitForTimeout(150);
+    await page.click('#page .row:has-text("Nia P.")'); await page.waitForTimeout(200);
+    await page.click('#page [data-sheet=staffHome]'); await page.waitForTimeout(150);
     await page.click('form[data-form=staffHome] input[value="Willow House"] + span');
     await page.click('form[data-form=staffHome] button[type=submit]'); await page.waitForTimeout(250);
-    t = await page.innerText('.row:has-text("Nia P."):has-text("House:")');
+    t = await page.innerText('.profile-head');
     check('Manager can change a worker’s house', t.includes('House: Willow House'), t);
     check('House (manager): no errors', page.errors.length === 0, page.errors.join(' | '));
     await ctx.close();
@@ -616,6 +618,107 @@ try {
     await page.click('[data-seg="person|files"]'); await page.waitForTimeout(150);
     check('Files: nothing can be added to an archived file', await page.locator('#page [data-sheet=fileAdd]').count() === 0);
     check('Files (manager): no errors', page.errors.length === 0, page.errors.join(' | '));
+    await ctx.close();
+  }
+
+  // ---------------------------------------------------------------- staff files: pictures, documents, new staff and staff who have left (managers only)
+  {
+    const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+    const { ctx, page } = await signedIn('amira@placementhub.demo');
+    await goTo(page, 'team');
+    await page.click('[data-seg="team|staff"]'); await page.waitForTimeout(150);
+    let t = await pageText(page);
+    check('Staff (manager): a Staff tab lists the team, with "Add staff member"', ['Amira R.', 'Nia P.', 'Daniel O.', 'Maya T.'].every(n => t.includes(n)) && await page.locator('#page [data-sheet=staffNew]').count() === 1);
+    await page.click('[data-filter="staffView|Archived"]'); await page.waitForTimeout(150);
+    t = await pageText(page);
+    check('Staff (manager): staff who have left are under Archived', t.includes('Chris W.') && t.includes('Resigned') && !t.includes('Nia P.'));
+    await page.click('[data-filter="staffView|Current"]'); await page.waitForTimeout(150);
+
+    // Nia's file
+    await page.click('#page .row:has-text("Nia P.")'); await page.waitForTimeout(250);
+    t = await pageText(page);
+    const certShown = await page.waitForFunction(() => { const im = document.querySelector('img[data-file-img="sf1"]'); return !!im && /^blob:/.test(im.src) && im.complete && im.naturalWidth > 0; }, null, { timeout: 4000 }).then(() => true).catch(() => false);
+    check('Staff file: opens with their files', /#staff-st2/.test(page.url()) && t.includes('Safeguarding training certificate') && t.includes('Supervision notes, October') && certShown, page.url());
+    await page.click('#page [data-sheet=fileAdd]'); await page.waitForTimeout(200);
+    await page.setInputFiles('[data-file-input]', { name: 'DBS 2026.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n% made-up test file\n') }); await page.waitForTimeout(300);
+    await page.click('form[data-form=fileAdd] input[value="DBS check"] + span');
+    await page.click('form[data-form=fileAdd] button[type=submit]'); await page.waitForTimeout(500);
+    t = await pageText(page);
+    check('Staff file: a manager can add a document', t.includes('DBS 2026') && /DBS check · PDF/.test(t), t.slice(0, 300));
+    await page.click('.profile-head [data-sheet=ypPhoto]'); await page.waitForTimeout(200);
+    await page.setInputFiles('[data-photo-input]', { name: 'me.png', mimeType: 'image/png', buffer: PNG }); await page.waitForTimeout(400);
+    await page.click('form[data-form=ypPhoto] button[type=submit]'); await page.waitForTimeout(300);
+    check('Staff file: a manager can add a staff photo', await page.locator('.profile-head .avatar img').count() === 1);
+    await page.click('#page [data-sheet=staffEdit]'); await page.waitForTimeout(200);
+    await page.fill('form[data-form=staffEdit] [name=training]', '95');
+    await page.click('form[data-form=staffEdit] button[type=submit]'); await page.waitForTimeout(250);
+    check('Staff file: a manager can edit their details', (await pageText(page)).includes('95% complete'));
+
+    // a new staff member
+    await goTo(page, 'team');
+    await page.click('[data-seg="team|staff"]'); await page.waitForTimeout(150);
+    await page.click('#page [data-sheet=staffNew]'); await page.waitForTimeout(200);
+    await page.fill('form[data-form=staffNew] [name=name]', 'Nia P.');
+    await page.click('form[data-form=staffNew] button[type=submit]'); await page.waitForTimeout(200);
+    check('Add staff: the same name twice is refused', await page.locator('form[data-form=staffNew]').count() === 1);
+    await page.fill('form[data-form=staffNew] [name=name]', 'Sarah B.');
+    await page.click('form[data-form=staffNew] input[value="Willow House"] + span');
+    await page.click('form[data-form=staffNew] button[type=submit]'); await page.waitForTimeout(300);
+    t = await pageText(page);
+    check('Add staff: their page opens', /#staff-st/.test(page.url()) && t.includes('Sarah B.') && t.includes('House: Willow House'), page.url());
+    await openSheet(page, 'shift'); await page.waitForTimeout(150);
+    check('Add staff: they can go on the rota', (await page.innerText('form[data-form=shift] [name=staffId]')).includes('Sarah B.'));
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+
+    // you can't archive yourself
+    await goTo(page, 'staff-st1');
+    check('Archive staff: no archive option on your own file', await page.locator('[data-sheet=staffArchive]').count() === 0 && (await pageText(page)).includes('Amira R. (you)'));
+
+    // Daniel leaves: Jordan needs a new keyworker, his open task is handed on, his shifts come off the rota
+    await goTo(page, 'staff-st3');
+    await page.click('[data-sheet=staffArchive]'); await page.waitForTimeout(200);
+    t = await page.innerText('.sheet');
+    check('Archive staff: asks who takes over as keyworker and their tasks', t.includes('New keyworker for Jordan K.') && t.includes('Give their 1 open task to') && t.includes('come off the rota'), t);
+    await page.selectOption('form[data-form=staffArchive] [name=kw_yp2]', 'Nia P.');
+    await page.selectOption('form[data-form=staffArchive] [name=tasksTo]', 'Nia P.');
+    await page.click('form[data-form=staffArchive] button[type=submit]'); await page.waitForTimeout(300);
+    t = await pageText(page);
+    check('Archive staff: they move to Archived', t.includes('Daniel O.') && t.includes('Resigned') && t.includes('Chris W.'), t.slice(0, 200));
+    await goTo(page, 'person-yp2');
+    check('Archive staff: the young person gets the new keyworker', (await page.innerText('.profile-head')).includes('Nia P.'));
+    await goTo(page, 'tasks');
+    t = await pageText(page);
+    check('Archive staff: their open task is handed on', /Complete return discussion[\s\S]*Nia P\./.test(t) && !/Complete return discussion[\s\S]{0,60}Daniel O\./.test(t));
+    await goTo(page, 'team');
+    await page.click('[data-seg="team|rota"]'); await page.waitForTimeout(150);
+    check('Archive staff: their shifts come off the rota', !(await pageText(page)).includes('Daniel O.'));
+    await goTo(page, 'staff-st3');
+    t = await pageText(page);
+    check('Archive staff: their file is read-only with a Restore button', t.includes('Archived file') && await page.locator('[data-staff-restore]').count() === 1 && await page.locator('#page [data-sheet=fileAdd]').count() === 0 && await page.locator('[data-sheet=staffEdit]').count() === 0);
+
+    // someone who has left can't sign in
+    await signOut(page);
+    await page.fill('#loginEmail', 'daniel@placementhub.demo'); await page.fill('#loginPassword', 'demo1234');
+    await page.click('form[data-form=login] button[type=submit]'); await page.waitForTimeout(250);
+    check('Archive staff: someone who has left can’t sign in', await page.locator('.tabbar').count() === 0 && (await page.innerText('body')).includes('has left'));
+    await signInAs(page, 'amira');
+    await goTo(page, 'staff-st3');
+    await page.click('[data-staff-restore]'); await page.waitForTimeout(250);
+    check('Restore staff: back on the team', !(await pageText(page)).includes('Archived file') && await page.locator('[data-sheet=staffArchive]').count() === 1);
+    check('Staff files (manager): no errors', page.errors.length === 0, page.errors.join(' | '));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await signedIn('nia@placementhub.demo');
+    await goTo(page, 'team');
+    check('Staff (support worker): no Staff tab', await page.locator('[data-seg="team|staff"]').count() === 0 && (await pageText(page)).includes('Your shifts'));
+    await goTo(page, 'staff-st2');
+    check('Staff (support worker): can’t open a staff file, even their own', await page.locator('.profile-head').count() === 0);
+    await page.evaluate(() => { const b = document.createElement('button'); b.dataset.sheet = 'fileView'; b.dataset.file = 'sf1'; document.getElementById('app').appendChild(b); b.click(); }); await page.waitForTimeout(200);
+    check('Staff (support worker): can’t open staff documents', (await page.innerText('.sheet')).includes('can’t be found'));
+    await page.click('.sheet [data-close]'); await page.waitForTimeout(150);
+    await openSheet(page, 'staffNew'); await page.waitForTimeout(150);
+    check('Staff (support worker): can’t add staff', await page.locator('.sheet').count() === 0);
     await ctx.close();
   }
 

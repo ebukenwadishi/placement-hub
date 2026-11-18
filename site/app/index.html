@@ -505,6 +505,8 @@ const seedData = () => Object.assign(shiftDates({
   ],
   files: [
     { id: 'f1', youngId: 'yp3', name: 'Food hygiene certificate', kind: 'ID or certificate', mime: 'image/svg+xml', size: 1900, date: '2026-10-08', time: '17:20', by: 'Nia P.', note: 'Sam passed the Level 1 food hygiene course at college.', gen: 'cert' },
+    { id: 'sf1', staffId: 'st2', name: 'Safeguarding training certificate', kind: 'Training certificate', mime: 'image/svg+xml', size: 1900, date: '2026-09-12', time: '14:00', by: 'Amira R.', note: 'Level 2 safeguarding, renewed this year.', gen: 'cert', certFor: 'Nia P.', course: 'Safeguarding children, Level 2', issuer: 'Northshire training team' },
+    { id: 'sf2', staffId: 'st2', name: 'Supervision notes, October', kind: 'Supervision', mime: 'text/plain', size: 420, date: '2026-10-09', time: '11:30', by: 'Amira R.', note: 'Next supervision in six weeks.', gen: 'note', text: 'Supervision notes\n(A made-up example for the Placement Hub demo.)\n\nStaff member: Nia P.\nSupervisor: Amira R.\n\nWhat is going well: good relationships with the young people at Brookside House. Daily notes are clear and on time.\n\nTraining: booked on a first aid refresher.\n\nAgreed actions: shadow a missing-from-home review. Next supervision in six weeks.\n' },
     { id: 'f2', youngId: 'yp3', name: 'Letter from Riverside College', kind: 'Letter', mime: 'text/plain', size: 340, date: '2026-10-02', time: '10:05', by: 'Amira R.', note: 'Confirms Sam’s course times for this term.', gen: 'letter' }
   ],
   incidents: [
@@ -522,10 +524,14 @@ const seedData = () => Object.assign(shiftDates({
     { id: 't6', title: 'Complete induction checklist', subject: 'Willow House', owner: 'Daniel O.', due: '2026-10-10', priority: 'Low', done: true }
   ],
   staff: [
-    { id: 'st1', name: 'Amira R.', role: 'Deputy Manager', initials: 'AR', training: 100, status: 'On shift', home: '' },
-    { id: 'st2', name: 'Nia P.', role: 'Support Worker', initials: 'NP', training: 92, status: 'On shift', home: 'Brookside House' },
-    { id: 'st3', name: 'Daniel O.', role: 'Support Worker', initials: 'DO', training: 80, status: 'Off shift', home: 'Brookside House' },
-    { id: 'st4', name: 'Maya T.', role: 'Senior Support Worker', initials: 'MT', training: 67, status: 'Off shift', home: 'Maple House' }
+    { id: 'st1', name: 'Amira R.', role: 'Deputy Manager', initials: 'AR', training: 100, status: 'On shift', home: '', started: '2023-02-06' },
+    { id: 'st2', name: 'Nia P.', role: 'Support Worker', initials: 'NP', training: 92, status: 'On shift', home: 'Brookside House', started: '2024-09-02' },
+    { id: 'st3', name: 'Daniel O.', role: 'Support Worker', initials: 'DO', training: 80, status: 'Off shift', home: 'Brookside House', started: '2025-03-17' },
+    { id: 'st4', name: 'Maya T.', role: 'Senior Support Worker', initials: 'MT', training: 67, status: 'Off shift', home: 'Maple House', started: '2022-11-14' }
+  ],
+  /* staff who have left (managers only) */
+  staffArchived: [
+    { id: 'st5', name: 'Chris W.', role: 'Support Worker', initials: 'CW', training: 88, status: 'Off shift', home: 'Maple House', started: '2024-01-08', left: { date: '2026-09-30', reason: 'Resigned', note: 'Moved to a job closer to home.', by: 'Amira R.', on: '2026-09-30' } }
   ],
   shifts: [
     { id: 's1', staffId: 'st1', home: 'Maple House', date: '2026-10-16', start: '07:30', end: '19:30' },
@@ -609,7 +615,7 @@ const STORE_BASE = 'placementhub.demo.v14';
 let STORE = STORE_BASE;
 const WELCOME = 'placementhub.welcomed.v4';
 let d;
-const migrate = () => { d.archived = d.archived || []; if (!d.files) d.files = seedData().files; d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
+const migrate = () => { d.archived = d.archived || []; if (!d.files) d.files = seedData().files; if (!d.staffArchived) { const s0 = seedData(); d.staffArchived = s0.staffArchived; s0.files.filter(f => f.staffId && !d.files.some(x => x.id === f.id)).forEach(f => d.files.push(f)); d.staff.forEach(x => { const o = s0.staff.find(z => z.id === x.id); if (o && !x.started) x.started = o.started; }); } d.meds = d.meds || []; d.medLog = d.medLog || []; d.appts = d.appts || []; d.notes = d.notes || []; d.moves = d.moves || []; d.me = d.me || { name: 'Nia P.', role: 'worker', home: 'Brookside House' }; if (!('shift' in d)) d.shift = null; d.staff.forEach(x => { if (!HOMES.includes(x.home)) x.home = ''; }); (d.standards || []).forEach(st => st.items.forEach(it => { if (it.link === 'Their own words') it.link = 'Daily notes and keywork'; })); };
 /* Each signed-in account gets its own copy of the sample data on this device */
 const loadData = () => { let x = null; try { const s = JSON.parse(localStorage.getItem(STORE) || 'null'); if (s && s.data && Array.isArray(s.data.young)) x = s.data; } catch (e) { /* storage unavailable */ } d = x || seedData(); migrate(); };
 loadData();
@@ -771,9 +777,9 @@ const seenWelcome = () => { try { return !!localStorage.getItem(WELCOME); } catc
 
 const ui = {
   route: 'home', sub: null,
-  tab: { health: 'meds', log: 'notes', safeguarding: 'concerns', evidence: 'standards', team: 'rota', person: 'timeline', people: 'current', tasks: 'Open', repairs: 'Open', documents: 'All' },
+  tab: { health: 'meds', log: 'notes', safeguarding: 'concerns', evidence: 'standards', team: 'rota', person: 'timeline', people: 'current', staff: 'files', tasks: 'Open', repairs: 'Open', documents: 'All' },
   peopleHome: 'All', peopleQ: '', taskWho: 'Mine', healthHome: null, loginEmail: '', loginError: '', forgot: false, focusPw: false, authScreen: 'signin', authError: '', authInfo: '', busy: false, signupName: '', signupRole: 'worker', verifyEmail: '', focusField: '', wantSignup: false, justSignedIn: false, lastSent: 0, incFilter: 'All', logHome: 'All',
-  rotaDate: TODAY, sheet: null, sheetData: {}, searchQ: '', openAcc: {}
+  staffView: 'Current', rotaDate: TODAY, sheet: null, sheetData: {}, searchQ: '', openAcc: {}
 };
 
 /* ================================================================
@@ -785,6 +791,7 @@ const isArchived = y => !!(y && y.left);
 const current = id => d.young.some(y => y.id === id);
 const nameOf = id => (person(id) || {}).name || 'Unknown';
 const staffNames = () => d.staff.map(s => s.name);
+const staffById = id => d.staff.find(x => x.id === id) || (d.staffArchived || []).find(x => x.id === id);
 const ageAt = (dob, on) => { const [a, b, c] = dob.split('-').map(Number), [A, B, C] = on.split('-').map(Number); return A - a - ((B < b || (B === b && C < c)) ? 1 : 0); };
 const ageOf = y => (!y || !y.dob ? '?' : ageAt(y.dob, TODAY));
 const turns18 = y => { if (!y || !y.dob) return null; const [a, b, c] = y.dob.split('-').map(Number); return `${a + 18}-${pad(b)}-${pad(c)}`; };
@@ -849,7 +856,7 @@ function workerView(full) {
   const byYoung = a => (a || []).filter(x => ids.has(x.youngId));
   const aboutSeen = subject => names.has(subject) || hs.includes(subject) || (!allNames.has(subject) && !HOMES.includes(subject));
   const incidents = byYoung(full.incidents), incIds = new Set(incidents.map(i => i.id));
-  return { ...full, young: ys, archived: [], incidents, notes: byYoung(full.notes), moves: byYoung(full.moves),
+  return { ...full, young: ys, archived: [], staffArchived: [], incidents, notes: byYoung(full.notes), moves: byYoung(full.moves),
     meds: byYoung(full.meds), medLog: byYoung(full.medLog), appts: byYoung(full.appts), files: byYoung(full.files),
     repairs: full.repairs.filter(r => hs.includes(r.home)), handovers: full.handovers.filter(h => hs.includes(h.home)),
     tasks: full.tasks.filter(t => aboutSeen(t.subject)), docs: (full.docs || []).filter(x => aboutSeen(x.subject)),
@@ -927,6 +934,11 @@ const planOf = (y, kind) => kind === 'risk' ? (y.riskAssessment = y.riskAssessme
    The list lives in d.files. The files themselves are kept in this browser's own storage (IndexedDB, which has
    room for photos), on this device only. Nothing is uploaded anywhere. ---- */
 const FILE_KINDS = ['Photo', 'Letter', 'Report or assessment', 'ID or certificate', 'Other'];
+const STAFF_FILE_KINDS = ['Photo', 'DBS check', 'Reference', 'Training certificate', 'Supervision', 'Contract or letter', 'Other'];
+const STAFF_ROLES = ['Support Worker', 'Senior Support Worker', 'Bank Support Worker', 'Deputy Manager', 'Registered Manager'];
+const STAFF_LEAVING = ['Resigned', 'Contract ended', 'Moved to another role', 'Retired', 'Other'];
+/* whose file is this: a young person's or a staff member's */
+const fileOwner = f => (f.staffId ? staffById(f.staffId) : person(f.youngId));
 const FILE_EXT = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', heic: 'image/heic', heif: 'image/heif', pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', rtf: 'application/rtf', xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', csv: 'text/csv', txt: 'text/plain' };
 const FILE_LABEL = { 'application/pdf': 'PDF', 'application/msword': 'Word', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word', 'application/rtf': 'Word', 'application/vnd.ms-excel': 'Excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel', 'text/csv': 'Spreadsheet', 'text/plain': 'Text' };
 const FILE_ACCEPT = 'image/*,' + Object.keys(FILE_EXT).map(x => '.' + x).join(',');
@@ -946,10 +958,11 @@ const putBlob = (id, blob) => fileStore('readwrite').then(st => idbReq(st.put(bl
 const delBlob = id => fileStore('readwrite').then(st => idbReq(st.delete(blobKey(id))));
 /* the two sample files are drawn by the app, so the demo has something to show */
 const SAMPLE_FILES = {
-  cert: () => new Blob([`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 566"><rect width="800" height="566" fill="#fbfaf6"/><rect x="22" y="22" width="756" height="522" fill="none" stroke="#1f5fbf" stroke-width="6"/><rect x="38" y="38" width="724" height="490" fill="none" stroke="#9db6dd" stroke-width="2"/><g font-family="Georgia,serif" text-anchor="middle" fill="#14243b"><text x="400" y="130" font-size="46">Certificate of achievement</text><text x="400" y="200" font-size="22" fill="#5b697e">This is to certify that</text><text x="400" y="262" font-size="40" font-style="italic">Sam L.</text><text x="400" y="322" font-size="22" fill="#5b697e">has completed</text><text x="400" y="372" font-size="30">Food hygiene, Level 1</text><text x="400" y="470" font-size="18" fill="#5b697e">Riverside College · made-up example for the Placement Hub demo</text></g><circle cx="680" cy="440" r="42" fill="#1f5fbf" opacity=".12"/><path d="m660 440 14 14 26-30" fill="none" stroke="#1f5fbf" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`], { type: 'image/svg+xml' }),
+  cert: f => new Blob([`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 566"><rect width="800" height="566" fill="#fbfaf6"/><rect x="22" y="22" width="756" height="522" fill="none" stroke="#1f5fbf" stroke-width="6"/><rect x="38" y="38" width="724" height="490" fill="none" stroke="#9db6dd" stroke-width="2"/><g font-family="Georgia,serif" text-anchor="middle" fill="#14243b"><text x="400" y="130" font-size="46">Certificate of achievement</text><text x="400" y="200" font-size="22" fill="#5b697e">This is to certify that</text><text x="400" y="262" font-size="40" font-style="italic">${esc(f.certFor || 'Sam L.')}</text><text x="400" y="322" font-size="22" fill="#5b697e">has completed</text><text x="400" y="372" font-size="30">${esc(f.course || 'Food hygiene, Level 1')}</text><text x="400" y="470" font-size="18" fill="#5b697e">${esc(f.issuer || 'Riverside College')} · made-up example for the Placement Hub demo</text></g><circle cx="680" cy="440" r="42" fill="#1f5fbf" opacity=".12"/><path d="m660 440 14 14 26-30" fill="none" stroke="#1f5fbf" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`], { type: 'image/svg+xml' }),
+  note: f => new Blob([String(f.text || '')], { type: 'text/plain' }),
   letter: () => new Blob(['Riverside College\n(A made-up example letter for the Placement Hub demo.)\n\nDear Sam,\n\nThis letter confirms your timetable for this term on the Level 1 Catering course:\nMonday, Tuesday and Thursday, 9:30am to 3pm.\n\nIf you need to miss a session, please let your tutor know before 9am.\n\nBest wishes,\nStudent Services\n'], { type: 'text/plain' })
 };
-const fileBlob = f => (f.gen ? Promise.resolve(SAMPLE_FILES[f.gen] ? SAMPLE_FILES[f.gen]() : null) : fileStore('readonly').then(st => idbReq(st.get(blobKey(f.id)))));
+const fileBlob = f => (f.gen ? Promise.resolve(SAMPLE_FILES[f.gen] ? SAMPLE_FILES[f.gen](f) : null) : fileStore('readonly').then(st => idbReq(st.get(blobKey(f.id)))));
 const fileUrl = f => (fileUrls.has(f.id) ? Promise.resolve(fileUrls.get(f.id)) : fileBlob(f).then(b => { if (!b) return null; const u = URL.createObjectURL(b); fileUrls.set(f.id, u); return u; }));
 const fileImg = (f, alt = '') => `<img data-file-img="${f.id}" alt="${esc(alt)}"${fileUrls.has(f.id) ? ` src="${fileUrls.get(f.id)}"` : ''}>`;
 /* after each render, fill in pictures from storage */
@@ -994,14 +1007,15 @@ async function pickFile(file, form) {
   }
 }
 async function saveFile(v) {
-  const y = person(v.youngId); if (!y) return;
+  const staff = !!v.staffId, y = staff ? staffById(v.staffId) : person(v.youngId); if (!y || y.left) return;
+  if (staff && isWorker()) { toast('Only managers can add to a staff file.'); return; }
   if (!pendingFile) { toast('Take a photo or choose a file first.'); return; }
-  if (!FILE_KINDS.includes(v.kind)) { toast('Choose what it is.'); return; }
+  if (!(staff ? STAFF_FILE_KINDS : FILE_KINDS).includes(v.kind)) { toast('Choose what it is.'); return; }
   const pf = pendingFile, name = String(v.name || '').trim().slice(0, 80) || pf.original, id = uid('f');
   try { await putBlob(id, pf.blob); } catch (e) { toast('This browser couldn’t save the file. It may be in private browsing, or out of space.'); return; }
-  d.files.unshift({ id, youngId: y.id, name, kind: v.kind, mime: pf.mime, size: pf.size, date: TODAY, time: nowTime(), by: me().name, note: String(v.note || '').trim() });
+  d.files.unshift({ id, [staff ? 'staffId' : 'youngId']: y.id, name, kind: v.kind, mime: pf.mime, size: pf.size, date: TODAY, time: nowTime(), by: me().name, note: String(v.note || '').trim() });
   fileUrls.set(id, pf.url || URL.createObjectURL(pf.blob)); pendingFile = null;
-  ui.sheet = null; ui.sheetData = {}; ui.tab.person = 'files';
+  ui.sheet = null; ui.sheetData = {}; ui.tab[staff ? 'staff' : 'person'] = 'files';
   render(); toast(`${name} added to ${y.name}’s file`);
 }
 const PHOTO_OK = x => typeof x === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(x) && x.length < 400000;
@@ -1197,6 +1211,18 @@ function peopleList() {
   }).join('') || empty('No one found', 'Try a different name or home.');
 }
 
+/* the Files tab, for a young person (kind 'young') or a staff member (kind 'staff') */
+function filesPanel(kind, id, arch) {
+  const key = kind === 'staff' ? 'staffId' : 'youngId';
+  const fs = (d.files || []).filter(f => f[key] === id).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
+  const pics = fs.filter(isImg), docs = fs.filter(f => !isImg(f));
+  return (arch ? '' : `<button class="btn primary block" data-sheet="fileAdd" data-${kind}="${id}" style="margin:4px 0 4px">${icon('camera', 18)} Add a photo or file</button>`) +
+    (fs.length ? '' : `<div class="card" style="margin-top:12px">${empty('No files yet', arch ? '' : kind === 'staff' ? 'Add their DBS check, references, training certificates or supervision notes.' : 'Add letters, reports, certificates or photos.')}</div>`) +
+    (pics.length ? `<div class="section-head"><h2>Pictures</h2></div><div class="file-grid">${pics.map(f => `<button class="file-thumb" data-sheet="fileView" data-file="${f.id}" aria-label="Open ${esc(f.name)}">${fileImg(f)}<span>${esc(f.name)}</span></button>`).join('')}</div>` : '') +
+    (docs.length ? `<div class="section-head"><h2>Files</h2></div><div class="card list">${docs.map(f => `<button class="row" data-sheet="fileView" data-file="${f.id}"><span class="ico">${icon('file')}</span><span class="grow"><b>${esc(f.name)}</b><span class="sub">${esc(f.kind)} · ${typeLabel(f)} · ${sizeText(f.size)}</span><span class="sub">${relDay(f.date)} · ${esc(f.by)}</span></span><span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>` : '') +
+    `<p class="small-note">${kind === 'staff' ? 'Only managers can see staff files. ' : ''}Files are saved on this phone or computer only.${kind !== 'staff' && isWorker() ? ' Only a manager can remove a file.' : ''}</p>`;
+}
+
 function profile(y) {
   const t = ui.tab.person, arch = isArchived(y), mgr = !isWorker(), first = esc(y.name.split(' ')[0]);
   const long = x => fmt(x, { day: 'numeric', month: 'long', year: 'numeric' });
@@ -1233,15 +1259,7 @@ function profile(y) {
       <div class="section-head"><h2>Appointments</h2>${arch ? '' : `<button class="link" data-sheet="appt" data-young="${y.id}">${icon('plus', 16)} Add</button>`}</div>
       <div class="card list">${ap.map(a => apptRow(a, true)).join('') || empty('No appointments')}</div>`;
   }
-  if (t === 'files') {
-    const fs = (d.files || []).filter(f => f.youngId === y.id).sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
-    const pics = fs.filter(isImg), docs = fs.filter(f => !isImg(f));
-    body = (arch ? '' : `<button class="btn primary block" data-sheet="fileAdd" data-young="${y.id}" style="margin:4px 0 4px">${icon('camera', 18)} Add a photo or file</button>`) +
-      (fs.length ? '' : `<div class="card" style="margin-top:12px">${empty('No files yet', arch ? '' : 'Add letters, reports, certificates or photos.')}</div>`) +
-      (pics.length ? `<div class="section-head"><h2>Pictures</h2></div><div class="file-grid">${pics.map(f => `<button class="file-thumb" data-sheet="fileView" data-file="${f.id}" aria-label="Open ${esc(f.name)}">${fileImg(f)}<span>${esc(f.name)}</span></button>`).join('')}</div>` : '') +
-      (docs.length ? `<div class="section-head"><h2>Files</h2></div><div class="card list">${docs.map(f => `<button class="row" data-sheet="fileView" data-file="${f.id}"><span class="ico">${icon('file')}</span><span class="grow"><b>${esc(f.name)}</b><span class="sub">${esc(f.kind)} · ${typeLabel(f)} · ${sizeText(f.size)}</span><span class="sub">${relDay(f.date)} · ${esc(f.by)}</span></span><span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>` : '') +
-      `<p class="small-note">Files are saved on this phone or computer only.${isWorker() ? ' Only a manager can remove a file.' : ''}</p>`;
-  }
+  if (t === 'files') body = filesPanel('young', y.id, arch);
   if (t === 'details') {
     const open = d.incidents.filter(i => i.youngId === y.id && i.status !== 'Resolved').length;
     body = `<div class="card kv">${[...(arch ? [['Left', long(y.left.date)], ['Why', y.left.reason]] : []), ['Home', y.home], ['Moved in', y.supportPlan && y.supportPlan.moveIn ? long(y.supportPlan.moveIn) : '—'], ['Age', `${ageOf(y)} (${turns18(y) <= TODAY ? 'turned' : 'turns'} 18 on ${long(turns18(y))})`], ['Keyworker', y.keyworker], ['Agreed back-by time', y.backBy || '—'], ['Engagement', y.engagement], ['Support plan', y.plan], ['Next plan review', fmt(y.nextReview, { day: 'numeric', month: 'long' })], ['Risk level', y.risk], ['Open concerns', String(open)]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>
@@ -1381,10 +1399,19 @@ function documents() {
     `<div class="card list">${list.map(docRow).join('') || empty('Nothing needs action')}</div><p class="small-note">This demo keeps track of documents. It doesn’t store the files themselves.</p>`;
 }
 
+const staffRow = s => `<button class="row" data-go="staff-${s.id}">${avatar(s)}<span class="grow"><b>${esc(s.name)}</b><span class="sub">${esc(s.role)} · <span class="mini-bar"><span style="width:${s.training}%"></span></span>${s.training}% training</span><span class="sub small">${s.home ? 'House: ' + esc(s.home) : 'All houses'}</span></span>${chip(onShiftNow(s) ? 'On shift' : 'Off shift')}<span class="chev">${icon('chev', 18)}</span></button>`;
 function team() {
+  if (ui.sub && !isWorker()) { const st = staffById(ui.sub); if (st) return staffPage(st); }
+  if (isWorker() && ui.tab.team === 'staff') ui.tab.team = 'rota';
   const t = ui.tab.team, pending = d.leave.filter(l => l.status === 'Pending');
-  const action = t === 'rota' ? (isWorker() ? '' : addBtn('shift', 'Add shift')) : t === 'messages' ? addBtn('message', 'New message') : addBtn('leave', 'Request leave');
+  const action = t === 'rota' ? (isWorker() ? '' : addBtn('shift', 'Add shift')) : t === 'staff' ? addBtn('staffNew', 'Add staff member') : t === 'messages' ? addBtn('message', 'New message') : addBtn('leave', 'Request leave');
   let body = '';
+  if (t === 'staff') {
+    const arch = ui.staffView === 'Archived', list = arch ? (d.staffArchived || []).slice().sort((a, b) => b.left.date.localeCompare(a.left.date)) : d.staff;
+    body = fchips('staffView', ['Current', 'Archived']) +
+      (list.length ? `<div class="card list">${arch ? list.map(s => `<button class="row" data-go="staff-${s.id}">${avatar(s)}<span class="grow"><b>${esc(s.name)}</b><span class="sub">${esc(s.role)} · left ${fmt(s.left.date, { day: 'numeric', month: 'short', year: 'numeric' })}</span><span class="sub">${esc(s.left.reason)}</span></span>${chip('Archived', 'grey')}<span class="chev">${icon('chev', 18)}</span></button>`).join('') : list.map(staffRow).join('')}</div>` : `<div class="card">${empty(arch ? 'No archived staff' : 'No staff yet')}</div>`) +
+      `<p class="small-note">${arch ? 'Files of staff who have left are kept for managers to read.' : 'Tap someone to see their file, change their house or add documents. Support workers only see young people in their own house, plus a house they’re covering while that shift is running.'}</p>`;
+  }
   if (t === 'rota' && isWorker()) {
     const meStaff = d.staff.find(x => x.name === me().name);
     const mine = meStaff ? d.shifts.filter(x => x.staffId === meStaff.id && x.date >= TODAY && daysBetween(TODAY, x.date) <= 14).sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)) : [];
@@ -1397,14 +1424,41 @@ function team() {
   } else if (t === 'rota') {
     const ss = d.shifts.filter(s => s.date === ui.rotaDate).sort((a, b) => a.start.localeCompare(b.start));
     body = `<div class="card day-nav"><button class="icon-btn" data-rota-step="-1" aria-label="Previous day">${icon('back')}</button><div class="grow"><b style="display:block;color:var(--ink)">${relDay(ui.rotaDate)}</b><input type="date" value="${ui.rotaDate}" data-rota-date aria-label="Choose a date"></div><button class="icon-btn" data-rota-step="1" aria-label="Next day">${icon('chev')}</button></div>
-      <div class="card list">${ss.map(s => { const st = d.staff.find(x => x.id === s.staffId) || { name: 'Unknown', initials: '?' }; return `<div class="row">${avatar(st)}<span class="grow"><b>${esc(st.name)}</b><span class="sub">${esc(s.home)}</span></span>${chip(`${s.start}–${s.end}`, s.end < s.start ? 'info' : 'grey')}</div>`; }).join('') || empty('No shifts on this day', isWorker() ? 'Your manager plans the rota.' : 'Use “Add shift” to plan one.')}</div>
-      <div class="section-head"><h2>The team</h2></div>
-      <div class="card list">${d.staff.map(s => `<button class="row" data-sheet="staffHome" data-staff="${s.id}" aria-label="${esc(s.name)}: change their house">${avatar(s)}<span class="grow"><b>${esc(s.name)}</b><span class="sub">${esc(s.role)} · <span class="mini-bar"><span style="width:${s.training}%"></span></span>${s.training}% training</span><span class="sub small">${s.home ? 'House: ' + esc(s.home) : 'All houses'}</span></span>${chip(onShiftNow(s) ? 'On shift' : 'Off shift')}<span class="chev">${icon('chev', 18)}</span></button>`).join('')}</div>
-      <p class="small-note">Tap someone to change their house. Support workers only see young people in their own house, plus a house they’re covering while that shift is running.</p>`;
+      <div class="card list">${ss.map(s => { const st = staffById(s.staffId) || { name: 'Unknown', initials: '?' }; return `<div class="row">${avatar(st)}<span class="grow"><b>${esc(st.name)}</b><span class="sub">${esc(s.home)}</span></span>${chip(`${s.start}–${s.end}`, s.end < s.start ? 'info' : 'grey')}</div>`; }).join('') || empty('No shifts on this day', isWorker() ? 'Your manager plans the rota.' : 'Use “Add shift” to plan one.')}</div>
+      <p class="small-note">See everyone on the team, and their files, under Staff.</p>`;
   }
   if (t === 'messages') body = `<div class="card">${d.messages.map(m => `<div class="entry"><div class="entry-top"><div><b>${esc(m.subject)}</b><span class="meta">${esc(m.by)} · ${relDay(m.date)} ${esc(m.time || '')}</span></div></div><p>${esc(m.body)}</p></div>`).join('') || empty('No messages')}</div><p class="small-note">Messages stay in this demo. Nothing is sent to anyone.</p>`;
   if (t === 'leave') body = `<div class="card">${d.leave.map(l => `<div class="entry"><div class="entry-top"><div><b>${esc(l.staff)}</b><span class="meta">${esc(l.reason)} · ${fmt(l.from)}${l.to !== l.from ? ' to ' + fmt(l.to) : ''}</span></div>${chip(l.status)}</div>${l.status === 'Pending' && !isWorker() ? `<div class="btn-row"><button class="btn small primary" data-leave="${l.id}|Approved">Approve</button><button class="btn small secondary" data-leave="${l.id}|Declined">Decline</button></div>` : ''}</div>`).join('') || empty('No leave requests')}</div>`;
-  return head('Team & rota', 'Shifts, team messages and leave.', action) + seg('team', [['rota', 'Rota'], ['messages', 'Messages'], ['leave', 'Leave', pending.length && !isWorker() ? `${pending.length} to decide` : '']]) + body;
+  return head('Team & rota', isWorker() ? 'Shifts, team messages and leave.' : 'Shifts, staff files, messages and leave.', action) + seg('team', [['rota', 'Rota'], ...(isWorker() ? [] : [['staff', 'Staff']]), ['messages', 'Messages'], ['leave', 'Leave', pending.length && !isWorker() ? pending.length : '']]).replace('class="seg"', 'class="seg five"') + body;
+}
+
+function staffPage(st) {
+  const arch = !!st.left, self = st.name === me().name, first = esc(st.name.split(' ')[0]), t = ui.tab.staff || 'files';
+  const long = x => fmt(x, { day: 'numeric', month: 'long', year: 'numeric' });
+  const shifts = d.shifts.filter(x => x.staffId === st.id).sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+  const next = shifts.find(x => x.date >= TODAY);
+  const kw = d.young.filter(y => y.keyworker === st.name), tasksOpen = d.tasks.filter(x => !x.done && x.owner === st.name);
+  let body = '';
+  if (t === 'files') body = filesPanel('staff', st.id, arch);
+  if (t === 'shifts') {
+    const row = x => `<div class="row"><span class="ico">${icon('calendar')}</span><span class="grow"><b>${relDay(x.date)}</b><span class="sub">${esc(x.home)} · ${esc(x.start)}–${esc(x.end)}${x.end < x.start ? ' (overnight)' : ''}</span></span></div>`;
+    const up = shifts.filter(x => x.date >= TODAY && daysBetween(TODAY, x.date) <= 28), past = shifts.filter(x => x.date < TODAY && daysBetween(x.date, TODAY) <= 28).reverse();
+    body = `<div class="section-head" style="margin-top:4px"><h2>Coming up</h2>${arch ? '' : `<button class="link" data-sheet="shift">${icon('plus', 16)} Add shift</button>`}</div><div class="card list">${up.map(row).join('') || empty('No shifts coming up')}</div>
+      ${past.length ? `<div class="section-head"><h2>Last four weeks</h2></div><div class="card list">${past.map(row).join('')}</div>` : ''}`;
+  }
+  if (t === 'details') {
+    body = `<div class="card kv">${[...(arch ? [['Left', long(st.left.date)], ['Why', st.left.reason]] : []), ['Role', st.role], ['House', st.home || 'All houses'], ['Started', st.started ? long(st.started) : '—'], ['Training', `${st.training}% complete`], ['Keyworker for', kw.map(y => y.name).join(', ') || '—'], ['Open tasks', String(tasksOpen.length)]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>
+      <p class="small-note">Only managers can see this page.</p>`;
+  }
+  const archNote = arch ? `<div class="notice">${icon('archive', 18)}<div class="grow"><b>Archived file.</b> ${first} left on ${long(st.left.date)}: ${esc(st.left.reason.toLowerCase())}.${st.left.note ? ' ' + esc(st.left.note) : ''} ${esc(st.left.by)} archived the file. You can read everything here, but nothing new can be added.<div class="btn-row"><button class="btn small secondary" data-staff-restore="${st.id}">Restore to the team</button></div></div></div>` : '';
+  const archLink = !arch && !self ? `<div class="foot-links"><button class="link" data-sheet="staffArchive" data-staff="${st.id}">${icon('archive', 16)} ${first} has left? Archive this file</button></div>` : '';
+  return `<button class="back" data-go="team?tab=staff">${icon('back', 20)} Team</button>
+    <section class="card profile-head"><div class="ph-top">${arch ? avatar(st, 'lg') : `<button class="avatar-btn" data-sheet="ypPhoto" data-staff="${st.id}" aria-label="Change ${esc(st.name)}’s picture">${avatar(st, 'lg')}<span class="cam" aria-hidden="true">${icon('camera', 14)}</span></button>`}<div class="grow"><h1>${esc(st.name)}${self ? ' (you)' : ''}</h1><span class="sub">${esc(st.role)}</span></div>${arch ? chip('Archived', 'grey') : chip(onShiftNow(st) ? 'On shift' : 'Off shift')}</div>
+      <div class="where-line">${arch ? esc(st.left.reason) : st.home ? 'House: ' + esc(st.home) : 'All houses'}</div>
+      <dl class="facts"><div><dt>Started</dt><dd>${st.started ? fmt(st.started, { month: 'short', year: 'numeric' }) : '—'}</dd></div><div><dt>Training</dt><dd>${st.training}%</dd></div>${arch ? `<div><dt>Left</dt><dd>${fmt(st.left.date, { day: 'numeric', month: 'short', year: 'numeric' })}</dd></div>` : `<div><dt>Next shift</dt><dd>${next ? `${relDay(next.date)} ${esc(next.start)}` : '—'}</dd></div>`}</dl>
+      ${arch ? '' : `<div class="action-row two plan-btns"><button class="btn secondary" data-sheet="staffHome" data-staff="${st.id}">${icon('home', 18)} Change house</button><button class="btn secondary" data-sheet="staffEdit" data-staff="${st.id}">${icon('pencil', 18)} Edit details</button></div>`}</section>
+    <div style="height:16px"></div>${archNote}
+    ${seg('staff', [['files', 'Files'], ['shifts', 'Shifts'], ['details', 'Details']])}${body}${archLink}`;
 }
 
 function repairs() {
@@ -1482,14 +1536,14 @@ const SHEETS = {
     field('Who’s going with them?', sel('with', ['On their own', ...staffNames()], 'On their own')) +
     field('Notes', area('note', 'Optional: anything to bring or remember', '', false)), 'Add appointment') }),
   ypPhoto: sd => {
-    const y = person(sd.young);
-    if (!y) return { title: 'Picture', body: empty('This young person can’t be found') };
+    const staff = !!sd.staff, y = staff ? staffById(sd.staff) : person(sd.young);
+    if (!y || y.left) return { title: 'Picture', body: empty('This person can’t be found') };
     return { title: `${esc(y.name)}: picture`, help: 'Take a photo or choose one from this phone. It’s saved on this device only.', body: form('ypPhoto',
-      `<input type="hidden" name="youngId" value="${y.id}"><input type="hidden" name="photo" value="">
+      `<input type="hidden" name="${staff ? 'staffId' : 'youngId'}" value="${y.id}"><input type="hidden" name="photo" value="">
       <div class="photo-pick"><span class="avatar pic xl" id="photoPreview">${avatarInner(y)}</span>
         <label class="btn secondary">${icon('camera', 18)} Take or choose a photo<input type="file" accept="image/*" data-photo-input hidden></label>
         ${PHOTO_OK(y.photo) ? `<button type="button" class="btn secondary" data-photo-remove="${y.id}">Remove photo</button>` : ''}</div>` +
-      notice('This demo uses made-up records. Don’t upload a photo of a real young person.', true), 'Save picture') };
+      notice(`This demo uses made-up records. Don’t upload a photo of a real ${staff ? 'person' : 'young person'}.`, true), 'Save picture') };
   },
   ypNew: () => ({ title: 'Add a young person', help: 'This starts their file. Next, write their risk assessment and support plan from their page.', body: form('ypNew',
     field('Name', inp('name', 'text', '', 'required maxlength="40" autocomplete="off" placeholder="e.g. Jordan K."'), false, 'First name and the first letter of their surname.') +
@@ -1501,28 +1555,57 @@ const SHEETS = {
     choiceField('Risk level for now', 'risk', LEVELS, 'Medium') + '<p class="small-note" style="grid-column:1/-1;margin:-6px 0 0">Change it when you write their risk assessment.</p>' +
     `<div style="grid-column:1/-1">${notice('This demo uses made-up records. Don’t add a real young person.', true)}</div>`, 'Add young person') }),
   fileAdd: sd => {
-    const y = person(sd.young);
-    if (!y || isArchived(y)) return { title: 'Add a file', body: empty('This young person can’t be found') };
-    return { title: `Add to ${esc(y.name)}’s file`, help: 'A photo, letter, report or certificate. It’s saved on this device only.', body: form('fileAdd',
-      `<input type="hidden" name="youngId" value="${y.id}">
+    const staff = !!sd.staff, y = staff ? staffById(sd.staff) : person(sd.young);
+    if (!y || y.left || (staff && isWorker())) return { title: 'Add a file', body: empty('This file can’t be found') };
+    return { title: `Add to ${esc(y.name)}’s file`, help: staff ? 'For example their DBS check, a reference, a training certificate or supervision notes. Only managers can see staff files. It’s saved on this device only.' : 'A photo, letter, report or certificate. It’s saved on this device only.', body: form('fileAdd',
+      `<input type="hidden" name="${staff ? 'staffId' : 'youngId'}" value="${y.id}">
       <div class="file-pick" style="grid-column:1/-1"><div id="filePreview" class="file-preview">No photo or file chosen yet</div>
         <label class="btn secondary">${icon('camera', 18)} Take a photo or choose a file<input type="file" accept="${FILE_ACCEPT}" data-file-input hidden></label>
         <p class="small-note" style="margin:0">Photos, PDF, Word, Excel or text files, up to 10 MB. Photos are made smaller and lose hidden details such as location.</p></div>` +
       field('Name', inp('name', 'text', '', 'required maxlength="80" placeholder="e.g. College certificate"')) +
-      choiceField('What is it?', 'kind', FILE_KINDS, '') +
+      choiceField('What is it?', 'kind', staff ? STAFF_FILE_KINDS : FILE_KINDS, '') +
       field('Notes', area('note', 'Optional: what it is and why it’s in their file', '', false)) +
-      `<div style="grid-column:1/-1">${notice('This demo uses made-up records. Don’t add real documents or photos of real young people.', true)}</div>`, 'Add file') };
+      `<div style="grid-column:1/-1">${notice(`This demo uses made-up records. Don’t add real documents or photos of real ${staff ? 'people' : 'young people'}.`, true)}</div>`, 'Add file') };
   },
   fileView: sd => {
-    const f = (d.files || []).find(x => x.id === sd.file), y = f && person(f.youngId);
-    if (!f || !y) return { title: 'File', body: empty('This file can’t be found') };
-    const canRemove = !isWorker() && !isArchived(y), first = esc(y.name.split(' ')[0]);
+    const f = (d.files || []).find(x => x.id === sd.file), y = f && fileOwner(f);
+    if (!f || !y || (f.staffId && isWorker())) return { title: 'File', body: empty('This file can’t be found') };
+    const canRemove = !isWorker() && !y.left, first = esc(y.name.split(' ')[0]);
     const top = isImg(f) ? `<div class="file-view">${fileImg(f, f.name)}</div>` : `<div class="card row me-card static"><span class="ico">${icon('file')}</span><span class="grow"><b>${esc(f.name)}</b><span class="sub">${typeLabel(f)} · ${sizeText(f.size)}</span></span></div>`;
-    const info = `<div class="card kv">${[['Young person', y.name], ['What it is', f.kind], ['Added', `${relDay(f.date)}${f.time ? ' at ' + f.time : ''} by ${f.by}`], ['Type', `${typeLabel(f)} · ${sizeText(f.size)}`]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` + (f.note ? `<div class="labelled"><small>Notes</small>${esc(f.note)}</div>` : '');
+    const info = `<div class="card kv">${[[f.staffId ? 'Staff member' : 'Young person', y.name], ['What it is', f.kind], ['Added', `${relDay(f.date)}${f.time ? ' at ' + f.time : ''} by ${f.by}`], ['Type', `${typeLabel(f)} · ${sizeText(f.size)}`]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` + (f.note ? `<div class="labelled"><small>Notes</small>${esc(f.note)}</div>` : '');
     const foot = sd.confirm
       ? `${notice(`Remove “${esc(f.name)}” from ${first}’s file? It’s deleted from this device and can’t be undone.`, true)}<div class="sheet-foot"><button type="button" class="btn secondary" data-file-keep="${f.id}">Keep it</button><button type="button" class="btn danger" data-file-remove-yes="${f.id}">Yes, remove</button></div>`
       : `<div class="sheet-foot">${canRemove ? `<button type="button" class="btn secondary" data-file-remove="${f.id}">Remove</button>` : ''}<button type="button" class="btn primary" data-file-download="${f.id}">${icon('download', 18)} ${isImg(f) ? 'Save a copy' : 'Open or save'}</button></div>`;
     return { title: esc(f.name), body: top + info + foot };
+  },
+  staffNew: () => ({ title: 'Add a staff member', help: 'They can go on the rota straight away. Add their DBS check, references and training to their file afterwards.', body: form('staffNew',
+    field('Name', inp('name', 'text', '', 'required maxlength="40" autocomplete="off" placeholder="e.g. Sarah B."'), false, 'First name and the first letter of their surname.') +
+    field('Role', sel('role', STAFF_ROLES, STAFF_ROLES[0]), true) + field('Started on', inp('started', 'date', TODAY, 'required'), true) +
+    choiceField('Which house?', 'home', [...HOMES.map(h => [h, h.replace(' House', '')]), ['', 'All houses']], HOMES[1]) +
+    '<p class="small-note" style="grid-column:1/-1;margin:-6px 0 0">Support workers see the young people in their house.</p>' +
+    `<div style="grid-column:1/-1">${notice('This demo uses made-up records. Don’t add a real person.', true)}</div>`, 'Add staff member') }),
+  staffEdit: sd => {
+    const st = staffById(sd.staff);
+    if (!st || st.left) return { title: 'Edit details', body: empty('This person can’t be found') };
+    const roles = [...new Set([...STAFF_ROLES, st.role])];
+    return { title: `${esc(st.name)}: details`, body: form('staffEdit', `<input type="hidden" name="staffId" value="${st.id}">` +
+      field('Role', sel('role', roles, st.role), true) + field('Started on', inp('started', 'date', st.started || '', ''), true) +
+      field('Training complete (%)', inp('training', 'number', st.training, 'min="0" max="100" step="1" inputmode="numeric" required')), 'Save changes') };
+  },
+  staffArchive: sd => {
+    const st = staffById(sd.staff);
+    if (!st || st.left) return { title: 'Archive file', body: empty('This person can’t be found') };
+    const first = esc(st.name.split(' ')[0]), title = `Archive ${esc(st.name)}’s file`;
+    if (st.name === me().name) return { title, body: notice('You can’t archive your own file. Ask another manager.', true) + '<div class="sheet-foot"><button type="button" class="btn secondary" data-close>Close</button></div>' };
+    const others = staffNames().filter(n => n !== st.name), kw = d.young.filter(y => y.keyworker === st.name), tk = d.tasks.filter(x => !x.done && x.owner === st.name);
+    const future = d.shifts.filter(x => x.staffId === st.id && x.date >= TODAY).length;
+    return { title, help: `Use this when ${first} has left. Their file is kept and managers can still read it. Nothing is deleted, and you can restore it later.`, body: form('staffArchive',
+      `<input type="hidden" name="staffId" value="${st.id}">` +
+      field('Date they left', inp('date', 'date', TODAY, `required max="${TODAY}"`), true) + field('Why did they leave?', sel('reason', STAFF_LEAVING, STAFF_LEAVING[0]), true) +
+      field('Anything to know', area('note', 'e.g. Happy to give a reference.', '', false)) +
+      kw.map(y => field(`New keyworker for ${esc(y.name)}`, sel(`kw_${y.id}`, others, others[0]))).join('') +
+      (tk.length ? field(`Give their ${tk.length} open task${tk.length === 1 ? '' : 's'} to`, sel('tasksTo', others, others[0])) : '') +
+      `<div style="grid-column:1/-1">${future ? notice(`Their ${future} shift${future === 1 ? '' : 's'} from today onwards will come off the rota.`, true) : ''}<p class="small-note" style="margin:0">${first} won’t be on the team list or rota any more, and can’t sign in.</p></div>`, 'Archive file') };
   },
   ypArchive: sd => {
     const y = person(sd.young);
@@ -1763,6 +1846,7 @@ function searchResults() {
   const res = [
     ...d.young.filter(y => has(y.name, y.home, y.keyworker)).map(y => ['person-' + y.id, 'users', y.name, `Young person · ${y.home}`]),
     ...(d.archived || []).filter(y => has(y.name, y.home, y.keyworker)).map(y => ['person-' + y.id, 'archive', y.name, `Archived file · left ${fmt(y.left.date)}`]),
+    ...(isWorker() ? [] : [...d.staff, ...(d.staffArchived || [])].filter(x => has(x.name, x.role)).map(x => ['staff-' + x.id, x.left ? 'archive' : 'user', x.name, x.left ? `Staff who left · ${fmt(x.left.date)}` : `Staff · ${x.role}`])),
     ...d.incidents.filter(i => has(i.id, i.type, i.description, nameOf(i.youngId))).map(i => ['concern-' + i.id, 'alert', i.type, `${i.id} · ${nameOf(i.youngId)}`]),
     ...d.tasks.filter(t => has(t.title, t.subject, t.owner)).map(t => ['tasks?tab=' + (t.done ? 'Done' : 'Open'), 'checklist', t.title, `Task · ${t.subject}`]),
     ...d.docs.filter(x => has(x.name, x.subject)).map(x => ['documents', 'file', x.name, `Document · ${x.subject}`]),
@@ -1845,6 +1929,7 @@ function signIn(email, password, remember) {
   if (!email || !password) { ui.loginError = 'Enter your email and password.'; ui.focusPw = !!email; return render(); }
   const a = ACCOUNTS.find(x => x.email === email);
   if (!a || password !== DEMO_PASSWORD) { ui.loginError = 'That email or password isn’t right. Check them and try again.'; ui.focusPw = true; return render(); }
+  if ((d.staffArchived || []).some(x => x.name === a.name)) { ui.loginError = `${a.name} has left, so this account is switched off. A manager can restore them from Team → Staff.`; return render(); }
   session = { email: a.email, at: Date.now() }; saveSession(session, remember);
   ui.loginError = ''; ui.forgot = false; ui.loginEmail = '';
   syncMe(); d.me.role = a.role;
@@ -1892,11 +1977,12 @@ function sheetMarkup() {
 }
 
 /* Routes live in the address as #home, #people, #person-yp1, #concern-INC-104 … */
-const hashOf = () => ui.route === 'people' && ui.sub ? 'person-' + ui.sub : ui.route === 'safeguarding' && ui.sub ? 'concern-' + ui.sub : ui.route;
+const hashOf = () => ui.route === 'people' && ui.sub ? 'person-' + ui.sub : ui.route === 'safeguarding' && ui.sub ? 'concern-' + ui.sub : ui.route === 'team' && ui.sub ? 'staff-' + ui.sub : ui.route;
 function readHash() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith('person-')) { ui.route = 'people'; ui.sub = h.slice(7); }
   else if (h.startsWith('concern-')) { ui.route = 'safeguarding'; ui.sub = h.slice(8); }
+  else if (h.startsWith('staff-')) { ui.route = 'team'; ui.sub = h.slice(6); }
   else { ui.route = ROUTES.includes(h) ? h : 'home'; ui.sub = null; }
 }
 function go(target) {
@@ -1904,6 +1990,7 @@ function go(target) {
   const before = hashOf();
   if (path.startsWith('person-')) { ui.route = 'people'; ui.sub = path.slice(7); ui.tab.person = 'timeline'; }
   else if (path.startsWith('concern-')) { ui.route = 'safeguarding'; ui.sub = path.slice(8); }
+  else if (path.startsWith('staff-')) { ui.route = 'team'; ui.sub = path.slice(6); ui.tab.staff = 'files'; }
   else { ui.route = ROUTES.includes(path) ? path : 'home'; ui.sub = null; }
   if (q) new URLSearchParams(q).forEach((v, k) => { if (k === 'tab') ui.tab[ui.route] = v; });
   ui.sheet = null; ui.sheetData = {};
@@ -1943,7 +2030,7 @@ function toast(msg) {
   el.innerHTML = icon('check', 18) + `<span>${esc(msg)}</span>`; el.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
-const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto', 'planEdit', 'ypNew', 'ypArchive'];
+const MANAGER_SHEETS = ['shift', 'reg27', 'document', 'medPlan', 'staffHome', 'ypPhoto', 'planEdit', 'ypNew', 'ypArchive', 'staffNew', 'staffEdit', 'staffArchive'];
 const openSheet = (name, data = {}) => { if (isWorker() && MANAGER_SHEETS.includes(name)) { toast('Only managers can do that.'); return; } if (name === 'fileAdd') pendingFile = null; ui.sheet = name; ui.sheetData = data; render(); };
 const closeSheet = () => { ui.sheet = null; ui.sheetData = {}; render(); };
 
@@ -1990,7 +2077,7 @@ document.addEventListener('click', e => {
     ui.sheet = 'ypPlan'; ui.sheetData = { young: yid, kind: 'risk' }; render(); toast(`${gone.area} removed`); return;
   }
   if (ds.fileDownload) {
-    const f = (d.files || []).find(x => x.id === ds.fileDownload); if (!f || (isWorker() && !sees(person(f.youngId)))) return;
+    const f = (d.files || []).find(x => x.id === ds.fileDownload); if (!f || (isWorker() && (f.staffId || !sees(person(f.youngId))))) return;
     fileUrl(f).then(u => { if (!u) { toast('This file isn’t saved on this device.'); return; } const a = document.createElement('a'); a.href = u; a.download = downloadName(f); document.body.appendChild(a); a.click(); a.remove(); })
       .catch(() => toast('This file couldn’t be opened on this device.'));
     return;
@@ -2000,7 +2087,7 @@ document.addEventListener('click', e => {
   if (ds.fileRemoveYes) {
     if (isWorker()) return;
     const i = (d.files || []).findIndex(x => x.id === ds.fileRemoveYes); if (i < 0) return;
-    const f = d.files[i]; if (isArchived(person(f.youngId))) return;
+    const f = d.files[i]; if ((fileOwner(f) || {}).left) return;
     d.files.splice(i, 1);
     if (!f.gen) delBlob(f.id).catch(() => {});
     if (fileUrls.has(f.id)) { URL.revokeObjectURL(fileUrls.get(f.id)); fileUrls.delete(f.id); }
@@ -2013,7 +2100,14 @@ document.addEventListener('click', e => {
     y.pastStays = [...(y.pastStays || []), y.left]; delete y.left; d.young.push(y);
     render(); toast(`${y.name} is back on the current list. Check their house, keyworker and review dates.`); return;
   }
-  if (ds.photoRemove) { if (isWorker()) return; const y = person(ds.photoRemove); if (y) { y.photo = ''; ui.sheet = null; ui.sheetData = {}; render(); toast('Photo removed. The drawn picture is back.'); } return; }
+  if (ds.photoRemove) { if (isWorker()) return; const y = person(ds.photoRemove) || staffById(ds.photoRemove); if (y) { y.photo = ''; ui.sheet = null; ui.sheetData = {}; render(); toast(y.portrait ? 'Photo removed. The drawn picture is back.' : 'Photo removed'); } return; }
+  if (ds.staffRestore) {
+    if (isWorker()) return;
+    const i = (d.staffArchived || []).findIndex(x => x.id === ds.staffRestore); if (i < 0) return;
+    const st = d.staffArchived.splice(i, 1)[0];
+    st.pastStays = [...(st.pastStays || []), st.left]; delete st.left; d.staff.push(st);
+    render(); toast(`${st.name} is back on the team. Add them to the rota when they’re ready.`); return;
+  }
   if (ds.incNext) { const i = d.incidents.find(x => x.id === ds.incNext); if (i && i.status !== 'Resolved') { i.status = i.status === 'Open' ? 'Under review' : 'Resolved'; render(); toast(`Status changed to ${i.status.toLowerCase()}`); } return; }
   if (ds.bundle) {
     const i = d.incidents.find(x => x.id === ds.bundle); if (!i || d.bundles.includes(i.id)) return;
@@ -2079,6 +2173,8 @@ document.addEventListener('submit', e => {
   const v = Object.fromEntries(new FormData(f).entries());
   if (isWorker() && v.youngId && !sees(person(v.youngId))) { toast('You can only record for young people in your house.'); return; }
   if (v.youngId && isArchived(person(v.youngId))) { toast(`${nameOf(v.youngId)}’s file is archived. A manager can restore it from their page.`); return; }
+  if (v.staffId && (staffById(v.staffId) || {}).left) { toast(`${staffById(v.staffId).name} has left, so their file is archived. Restore it first.`); return; }
+  if (v.staffId && isWorker()) { toast('Only managers can do that.'); return; }
   if (f.dataset.form === 'fileAdd') { saveFile(v); return; }
   const sd = ui.sheetData || {};
   const trim = x => String(x || '').trim();
@@ -2147,10 +2243,10 @@ document.addEventListener('submit', e => {
       break;
     }
     case 'ypPhoto': {
-      const y = person(v.youngId); if (!y) break;
+      const y = v.staffId ? staffById(v.staffId) : person(v.youngId); if (!y) break;
       if (!v.photo) { toast('Take or choose a photo first.'); return; }
       if (!PHOTO_OK(v.photo)) { toast('That picture couldn’t be saved. Try another photo.'); return; }
-      y.photo = v.photo; msg = `Picture saved for ${y.name}`; dest = 'person-' + y.id; break;
+      y.photo = v.photo; msg = `Picture saved for ${y.name}`; dest = (v.staffId ? 'staff-' : 'person-') + y.id; break;
     }
     case 'ypNew': {
       const name = trim(v.name).replace(/\s+/g, ' ');
@@ -2173,6 +2269,33 @@ document.addEventListener('submit', e => {
       y.left = { date: v.date, reason: LEAVING_REASONS.includes(v.reason) ? v.reason : 'Other', note: trim(v.note), by: me().name, on: TODAY };
       d.young.splice(d.young.indexOf(y), 1); d.archived.unshift(y);
       msg = `${y.name}’s file is archived. Find it under People → Archived.`; dest = 'people?tab=archived'; break;
+    }
+    case 'staffNew': {
+      const name = trim(v.name).replace(/\s+/g, ' ');
+      if (!name) { toast('Add their name.'); return; }
+      if ([...d.staff, ...(d.staffArchived || [])].some(x => x.name.toLowerCase() === name.toLowerCase())) { toast(`There’s already a ${name}. Add another letter to tell them apart.`); return; }
+      const st = { id: uid('st'), name, role: STAFF_ROLES.includes(v.role) ? v.role : STAFF_ROLES[0], initials: initialsOf(name), training: 0, status: 'Off shift', home: HOMES.includes(v.home) ? v.home : '', started: v.started || TODAY };
+      d.staff.push(st);
+      msg = `${name} added. You can put them on the rota now.`; dest = 'staff-' + st.id; break;
+    }
+    case 'staffEdit': {
+      const st = staffById(v.staffId); if (!st) break;
+      const tr = Math.round(Number(v.training));
+      if (!(tr >= 0 && tr <= 100)) { toast('Training should be a number from 0 to 100.'); return; }
+      Object.assign(st, { role: trim(v.role) || st.role, started: v.started || st.started, training: tr });
+      msg = `${st.name}’s details saved`; ui.tab.staff = 'details'; break;
+    }
+    case 'staffArchive': {
+      const st = staffById(v.staffId); if (!st || st.left) break;
+      if (st.name === me().name) { toast('You can’t archive your own file.'); return; }
+      if (!v.date || v.date > TODAY) { toast('The leaving date can’t be in the future.'); return; }
+      const others = staffNames().filter(n => n !== st.name);
+      d.young.filter(y => y.keyworker === st.name).forEach(y => { const n = v['kw_' + y.id]; if (others.includes(n)) y.keyworker = n; });
+      if (others.includes(v.tasksTo)) d.tasks.filter(x => !x.done && x.owner === st.name).forEach(x => { x.owner = v.tasksTo; });
+      d.shifts = d.shifts.filter(x => !(x.staffId === st.id && x.date >= TODAY));
+      st.left = { date: v.date, reason: STAFF_LEAVING.includes(v.reason) ? v.reason : 'Other', note: trim(v.note), by: me().name, on: TODAY };
+      d.staff.splice(d.staff.indexOf(st), 1); d.staffArchived.unshift(st);
+      ui.staffView = 'Archived'; msg = `${st.name}’s file is archived`; dest = 'team?tab=staff'; break;
     }
     case 'staffHome': {
       const st = d.staff.find(x => x.id === v.staffId); if (!st) break;
